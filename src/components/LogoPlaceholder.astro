@@ -16,7 +16,7 @@ interface Props {
 
 const { logo, name, tint, size = 48, class: className = '' } = Astro.props;
 
-// 自动为相对路径的 logo 加上 BASE_URL 前缀（GitHub Pages 部署在子路径 /AstroW-Website/ 下）
+// 自动为相对路径的 logo 加上 BASE_URL 前缀（GitHub Pages 部署在子路径 /Astro/ 下）
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const logoSrc = logo
   ? (logo.startsWith('http') || logo.startsWith(base + '/')

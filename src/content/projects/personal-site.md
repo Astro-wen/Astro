@@ -2,7 +2,7 @@
 name: 'Personal Site'
 summary: '你正在看的这个站点。基于 Astro + Tailwind + MDX，静态部署到 GitHub Pages。'
 stack: ['Astro', 'TypeScript', 'Tailwind', 'MDX']
-url: 'https://example.github.io'
+url: 'https://astro-wen.github.io/Astro'
 repo: 'https://github.com/your-handle/personal-site'
 order: 1
 featured: true
