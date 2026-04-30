@@ -3,6 +3,7 @@ import '@/styles/global.css';
 import SEO from '@/components/SEO.astro';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
+import IntroSplash from '@/components/IntroSplash.astro';
 import { SITE } from '@/lib/site';
 
 interface Props {
@@ -23,6 +24,30 @@ const { title, description, image, article, publishedTime, bodyClass = '' } = As
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
 
+    {/* ============================================================
+        防 FOUC：如果本 session 还没播过 intro，立即给 <html> 加
+        data-intro="playing"，配合下面内联 <style> 让主内容在 splash
+        播放期间不可见，避免半帧主页闪出。
+        ============================================================ */}
+    <script is:inline>
+      (function () {
+        try {
+          var played = sessionStorage.getItem('intro-played') === '1';
+          var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          if (!played && !reduced) {
+            document.documentElement.setAttribute('data-intro', 'playing');
+          }
+        } catch (e) {}
+      })();
+    </script>
+    <style is:inline>
+      html[data-intro="playing"] body > header,
+      html[data-intro="playing"] body > main,
+      html[data-intro="playing"] body > footer {
+        visibility: hidden;
+      }
+    </style>
+
     {/* Google Fonts preconnect —— 提升字体首次加载速度 */}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -38,6 +63,7 @@ const { title, description, image, article, publishedTime, bodyClass = '' } = As
     />
   </head>
   <body class:list={['min-h-screen flex flex-col', bodyClass]}>
+    <IntroSplash />
     <Header />
     <main class="flex-1">
       <slot />

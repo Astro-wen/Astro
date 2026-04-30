@@ -1,0 +1,365 @@
+---
+/**
+ * IntroSplash.astro
+ * ——————————————————————————————————————————————
+ * 明日方舟《孤星》LONETRAIL 风格开屏动画
+ *
+ * 结构（自底向上 z-index）：
+ *   paper-bg   : 近黑底 + vignette + 颗粒 + 扫描线
+ *   bars       : 三条低饱和彩带（青/黄/红）从屏幕底部垂直生长
+ *   copy       : AARON WEN 主标（RGB 错位）+ 副标
+ *   blackout   : 收尾黑屏，快速变黑 → 淡出
+ *
+ * 行为（inline script）：
+ *   - sessionStorage('intro-played') 去重：已播过直接自毁
+ *   - prefers-reduced-motion: reduce → 跳过动画
+ *   - 点击任意处：--intro-speed = 2，整段 2× 加速
+ *   - 最后一个动画结束 → root.remove() + 解锁 html
+ */
+---
+
+<div id="intro-splash" class="intro-root" role="presentation" aria-hidden="true">
+  {/* 底层：深色底 + vignette + 颗粒 + 扫描线 */}
+  <div class="intro-bg" aria-hidden="true"></div>
+  <div class="intro-grain" aria-hidden="true"></div>
+  <div class="intro-scanlines" aria-hidden="true"></div>
+  <div class="intro-vignette" aria-hidden="true"></div>
+
+  {/* 三色条（在文字之下，使"色条从字后穿过"的穿透感成立） */}
+  <div class="intro-bars" aria-hidden="true">
+    <span class="intro-bar intro-bar-cyan"></span>
+    <span class="intro-bar intro-bar-yellow"></span>
+    <span class="intro-bar intro-bar-red"></span>
+  </div>
+
+  {/* 文案（叠在色条之上） */}
+  <div class="intro-copy">
+    <p class="intro-subtitle">WELCOME TO MY PERSONAL WEBSITE</p>
+    <h1 class="intro-title" data-text="AARON WEN">AARON WEN</h1>
+  </div>
+
+  {/* 收尾黑屏 */}
+  <div class="intro-blackout" aria-hidden="true"></div>
+</div>
+
+<style>
+  /* ============================================================
+     根容器 + 动画速度变量
+     ============================================================ */
+  .intro-root {
+    --intro-speed: 1;
+    --bg: #0b0d0e;
+    --ink: #f0f2f4;
+    --ink-dim: #9aa3a9;
+    --cyan: #29d2c8;
+    --yellow: #f4c341;
+    --red: #e8483d;
+    --bar-w: 14px;
+    --bar-gap: 2px;
+
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    overflow: hidden;
+    background: var(--bg);
+    cursor: pointer;
+    /* 整个 root 最后淡出 */
+    animation: introRootFade calc(0.35s / var(--intro-speed)) ease-out
+      calc(2.1s / var(--intro-speed)) forwards;
+  }
+
+  @keyframes introRootFade {
+    to {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  /* ============================================================
+     底色 + vignette + 颗粒 + 扫描线
+     ============================================================ */
+  .intro-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(
+        ellipse at center,
+        #14181a 0%,
+        #0b0d0e 55%,
+        #060708 100%
+      );
+    animation: introFadeIn calc(0.3s / var(--intro-speed)) ease-out both;
+  }
+
+  .intro-vignette {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 40%,
+      rgba(0, 0, 0, 0.45) 85%,
+      rgba(0, 0, 0, 0.75) 100%
+    );
+    animation: introFadeIn calc(0.3s / var(--intro-speed)) ease-out both;
+  }
+
+  .intro-grain {
+    position: absolute;
+    inset: -50%;
+    pointer-events: none;
+    opacity: 0.09;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    background-size: 180px 180px;
+    animation: introGrainShift calc(0.36s / var(--intro-speed)) steps(3) infinite,
+      introFadeIn calc(0.3s / var(--intro-speed)) ease-out both;
+  }
+
+  @keyframes introGrainShift {
+    0%   { background-position: 0 0; }
+    33%  { background-position: -30px 20px; }
+    66%  { background-position: 40px -10px; }
+    100% { background-position: 0 0; }
+  }
+
+  .intro-scanlines {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.05;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.5) 0px,
+      rgba(255, 255, 255, 0.5) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    animation: introFadeIn calc(0.3s / var(--intro-speed)) ease-out both;
+  }
+
+  /* ============================================================
+     三色条
+     ============================================================ */
+  .intro-bars {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    top: 0;
+    transform: translateX(-50%);
+    display: flex;
+    gap: var(--bar-gap);
+    align-items: flex-end; /* 从下往上生长 */
+    filter: saturate(0.82) brightness(0.92);
+    z-index: 10;
+  }
+
+  .intro-bar {
+    display: block;
+    width: var(--bar-w);
+    height: 100%;
+    transform-origin: bottom;
+    transform: scaleY(0);
+    position: relative;
+    /* 色条顶端的高光（模拟前端射线） */
+    box-shadow: 0 -1px 12px rgba(255, 255, 255, 0.1);
+  }
+  .intro-bar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.35) 0%,
+      rgba(255, 255, 255, 0) 10%
+    );
+    pointer-events: none;
+  }
+
+  .intro-bar-cyan   { background: var(--cyan);   animation: introBarGrow calc(1.3s / var(--intro-speed)) cubic-bezier(0.2, 0.7, 0.1, 1) calc(0.3s / var(--intro-speed)) forwards; }
+  .intro-bar-yellow { background: var(--yellow); animation: introBarGrow calc(1.3s / var(--intro-speed)) cubic-bezier(0.2, 0.7, 0.1, 1) calc(0.38s / var(--intro-speed)) forwards; }
+  .intro-bar-red    { background: var(--red);    animation: introBarGrow calc(1.3s / var(--intro-speed)) cubic-bezier(0.2, 0.7, 0.1, 1) calc(0.46s / var(--intro-speed)) forwards; }
+
+  @keyframes introBarGrow {
+    0%   { transform: scaleY(0); }
+    100% { transform: scaleY(1); }
+  }
+
+  /* ============================================================
+     文案层（副标 + 主标）
+     ============================================================ */
+  .intro-copy {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    z-index: 20;
+    pointer-events: none;
+    padding: 0 24px;
+  }
+
+  .intro-subtitle {
+    margin: 0;
+    font-family: 'JetBrains Mono', ui-monospace, Menlo, monospace;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.4em;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+    opacity: 0;
+    transform: translateY(8px);
+    animation: introFadeUp calc(0.6s / var(--intro-speed))
+      cubic-bezier(0.4, 0, 0.2, 1) calc(0.9s / var(--intro-speed)) forwards;
+  }
+
+  .intro-title {
+    margin: 0;
+    font-family: 'Archivo Black', 'Inter', sans-serif;
+    font-size: clamp(72px, 14vw, 200px);
+    font-weight: 900;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    white-space: nowrap;
+    text-align: center;
+    position: relative;
+    opacity: 0;
+    transform: translateY(8px);
+    /* 两层文字阴影模拟 RGB 错位 */
+    text-shadow:
+      1px 0 0 rgba(232, 72, 61, 0.55),
+      -1px 0 0 rgba(41, 210, 200, 0.55);
+    animation:
+      introFadeUp calc(0.6s / var(--intro-speed))
+        cubic-bezier(0.4, 0, 0.2, 1)
+        calc(1.0s / var(--intro-speed)) forwards,
+      introTitleJitter calc(0.2s / var(--intro-speed)) steps(2)
+        calc(1.6s / var(--intro-speed)) 2;
+  }
+
+  @keyframes introFadeUp {
+    0%   { opacity: 0; transform: translateY(8px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  /* 主标开头极轻微左右抖动（磁带对齐） */
+  @keyframes introTitleJitter {
+    0%   { transform: translate(0, 0); }
+    50%  { transform: translate(1px, 0); }
+    100% { transform: translate(-1px, 0); }
+  }
+
+  /* ============================================================
+     收尾黑屏
+     ============================================================ */
+  .intro-blackout {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    opacity: 0;
+    z-index: 30;
+    animation: introBlackoutIn calc(0.25s / var(--intro-speed)) ease-in
+      calc(1.8s / var(--intro-speed)) forwards;
+  }
+
+  @keyframes introBlackoutIn {
+    0%   { opacity: 0; }
+    100% { opacity: 1; }
+  }
+
+  @keyframes introFadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* ============================================================
+     响应式
+     ============================================================ */
+  @media (max-width: 640px) {
+    .intro-root {
+      --bar-w: 8px;
+      --bar-gap: 2px;
+    }
+    .intro-title {
+      font-size: clamp(48px, 18vw, 96px);
+    }
+    .intro-subtitle {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    .intro-root {
+      --bar-w: 16px;
+      --bar-gap: 3px;
+    }
+  }
+
+  /* ============================================================
+     Reduced motion —— 双保险（JS 也会检测）
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce) {
+    .intro-root { display: none !important; }
+  }
+</style>
+
+<script is:inline>
+  (function () {
+    var root = document.getElementById('intro-splash');
+    if (!root) return;
+
+    var STORAGE_KEY = 'intro-played';
+
+    // reduced motion 或 已播过 → 直接自毁并解锁页面
+    function destroy() {
+      try { root.parentNode && root.parentNode.removeChild(root); } catch (e) {}
+      document.documentElement.removeAttribute('data-intro');
+      document.documentElement.style.overflow = '';
+      document.body && (document.body.style.overflow = '');
+    }
+
+    var reduced = false;
+    try {
+      reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    } catch (e) {}
+
+    var played = false;
+    try {
+      played = sessionStorage.getItem(STORAGE_KEY) === '1';
+    } catch (e) {}
+
+    if (reduced || played) {
+      destroy();
+      return;
+    }
+
+    // 锁滚动
+    document.documentElement.style.overflow = 'hidden';
+    if (document.body) document.body.style.overflow = 'hidden';
+
+    // 点击加速（一次性）
+    function speedUp() {
+      root.style.setProperty('--intro-speed', '2');
+      root.removeEventListener('click', speedUp);
+    }
+    root.addEventListener('click', speedUp);
+
+    // 以"最后一个动画"—— root 本身的 introRootFade ——结束为准
+    function onEnd(ev) {
+      if (ev.animationName !== 'introRootFade') return;
+      try { sessionStorage.setItem(STORAGE_KEY, '1'); } catch (e) {}
+      destroy();
+    }
+    root.addEventListener('animationend', onEnd);
+
+    // 安全兜底：3.5s 后无论如何自毁（防动画事件没触发导致遮挡）
+    setTimeout(function () {
+      try { sessionStorage.setItem(STORAGE_KEY, '1'); } catch (e) {}
+      destroy();
+    }, 3500);
+  })();
+</script>
