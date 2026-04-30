@@ -41,13 +41,19 @@ export default {
           '"Caveat"',
           'cursive',
         ],
+        // mono —— 原来是 JetBrains Mono 代码字体；现在改为平滑无衬线
+        // （NO.001 胶条 / .section-eyebrow 等真正需要代码感的场景，
+        //  在 global.css 里直接硬写 JetBrains Mono，不受此栈影响）
         mono: [
-          '"JetBrains Mono"',
-          'ui-monospace',
-          'SFMono-Regular',
-          'Menlo',
-          'Consolas',
-          'monospace',
+          '"Inter"',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          '"Helvetica Neue"',
+          'Arial',
+          '"PingFang SC"',
+          '"Hiragino Sans GB"',
+          '"Noto Sans SC"',
+          'sans-serif',
         ],
       },
       colors: {

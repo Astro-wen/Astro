@@ -36,6 +36,7 @@ const timeline = defineCollection({
     orgEn: z.string().optional(),    // 英文公司名（用于英文模式下的显示名，中文模式隐藏）
     logo: z.string().optional(),     // Logo 图片路径（相对 public/，如 "/logos/tiktok.svg"），缺省用首字母色块
     tint: z.string().optional(),     // Logo 底色 hint（如 "#25F4EE"），缺省用中性深灰
+    url: z.string().url().optional(),// 外链（整卡可点击跳转，如学校主页 / 公司主页）
     role: z.string(),                // 职位 / 学位（中文模式显示）
     roleEn: z.string().optional(),   // 英文职位（英文模式显示）
     team: z.string().optional(),     // 所在团队 / 部门

@@ -3,11 +3,9 @@
    - Archivo Black  : 展示大标题（极粗西文，印刷感）
    - Oswald         : 窄压缩英文 tag
    - Noto Sans SC   : 中文 400/500/700/900
-   - Inter          : 英文正文（平滑、现代、接近 Arial/黑体气质）
-   - JetBrains Mono : 编号 / 时间戳（UI 元数据专用，不用于正文）
-   - Liu Jian Mao Cao: 毛笔字 fallback（签名 W 实际用 SVG）
+   - Inter          : 英文正文 + UI 元数据（平滑、现代、接近 Arial/黑体气质）
    ============================================================ */
-@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Liu+Jian+Mao+Cao&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Oswald:wght@500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Oswald:wght@500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -65,24 +63,13 @@
   body {
     @apply bg-paper text-ink-900 antialiased;
     font-feature-settings: 'ss01', 'cv11', 'tnum';
-    animation: bodyWake 240ms var(--ease-out-quart) forwards;
     /* 默认（中文模式）：Noto Sans SC 打头，气质严谨 */
     font-family: 'Noto Sans SC', 'Inter', -apple-system, 'Helvetica Neue', Arial, sans-serif;
-    /* 极细网格（橙红微光），贴近工业档案感 */
-    background-image:
-      linear-gradient(to right, rgba(var(--accent-rgb), 0.012) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(var(--accent-rgb), 0.012) 1px, transparent 1px);
-    background-size: 48px 48px;
   }
 
   /* 英文模式：Inter 打头，平滑现代（类 Arial/黑体气质） */
   html[data-lang="en"] body {
     font-family: 'Inter', -apple-system, 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif;
-  }
-
-  @keyframes bodyWake {
-    from { background-color: #000; }
-    to   { background-color: #0B0D0E; }
   }
 
   ::selection {
@@ -118,31 +105,6 @@
   }
   @keyframes revealUp { to { opacity: 1; transform: translateY(0); } }
 
-  .scanline {
-    position: fixed;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(var(--accent-rgb), 0) 10%,
-      rgba(var(--accent-rgb), 0.85) 50%,
-      rgba(var(--accent-rgb), 0) 90%,
-      transparent 100%
-    );
-    pointer-events: none;
-    z-index: 100;
-    animation: scanAcross 1100ms var(--ease-out-quart) 120ms forwards;
-  }
-  @keyframes scanAcross {
-    0%   { left: -100%; opacity: 0; }
-    10%  { opacity: 1; }
-    90%  { opacity: 1; }
-    100% { left: 100%; opacity: 0; }
-  }
-
   /* ============================================================
      CSS counter
      ============================================================ */
@@ -168,7 +130,7 @@
     border-left: calc(var(--1px) * 4) solid var(--accent);
     background: #14171A;
     color: #E8EDEF;
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-family: 'Inter', -apple-system, 'Helvetica Neue', Arial, sans-serif;
     font-weight: 700;
     font-size: 11px;
     letter-spacing: 0.22em;
@@ -346,8 +308,9 @@
     font-variant-numeric: tabular-nums;
   }
   .section-eyebrow {
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-family: 'Inter', -apple-system, 'Helvetica Neue', Arial, sans-serif;
     font-size: 11px;
+    font-weight: 600;
     letter-spacing: 0.25em;
     color: #8A949B;
     text-transform: uppercase;
@@ -424,7 +387,7 @@
     align-items: center;
     border: 1px solid #262C31;
     border-radius: 2px;
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-family: 'Inter', -apple-system, 'Helvetica Neue', Arial, sans-serif;
     font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.15em;
@@ -447,9 +410,8 @@
 
   /* 减弱动效 */
   @media (prefers-reduced-motion: reduce) {
-    .reveal, .scanline, body { animation: none !important; }
+    .reveal, body { animation: none !important; }
     .reveal { opacity: 1; transform: none; }
-    .scanline { display: none; }
     .type-caret { animation: none; opacity: 0.6; }
     .sign-w-svg path {
       stroke-dashoffset: 0 !important;

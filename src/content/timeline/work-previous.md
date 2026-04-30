@@ -2,7 +2,7 @@
 kind: work
 org: "Tencent America · IEGG"
 orgShort: "TENCENT"
-orgZh: "腾讯美国 · IEGG"
+orgZh: "腾讯美洲"
 orgEn: "Tencent America · IEGG"
 logo: "/logos/tencent.png"
 role: "产品经理实习生"

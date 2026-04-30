@@ -2,12 +2,12 @@
 kind: work
 org: "Tencent Games"
 orgShort: "TENCENT"
-orgZh: "腾讯互娱 · 研发效能部"
-orgEn: "Tencent Games · R&D Efficiency"
+orgZh: "腾讯 互动娱乐事业群(IEG) 自研体系管理部"
+orgEn: "Tencent IEG · R&D System Management Department"
 logo: "/logos/tencent-games.jpg"
 role: "产品经理实习生"
 roleEn: "Product Manager Intern"
-team: "R&D System Management Department"
+team: "自研体系管理部"
 teamEn: "R&D System Management Department"
 tint: "#0052D9"
 start: 2025-06-01

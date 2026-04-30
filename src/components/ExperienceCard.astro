@@ -49,19 +49,19 @@ const displayName = orgShort || org;
     >
       <div class="flex items-start gap-4 sm:gap-5">
         {/* Logo */}
-        <LogoPlaceholder logo={logo} name={displayName} tint={tint} size={56} />
+        <LogoPlaceholder logo={logo} name={displayName} tint={tint} size={72} />
 
         {/* 主元信息 */}
         <div class="flex-1 min-w-0">
           <div class="flex items-start justify-between gap-3 flex-wrap">
             <div class="min-w-0">
-              {/* 公司名 —— 中英分离 */}
-              <div class="font-display text-lg sm:text-xl text-ink-900 leading-tight tracking-tight group-hover:text-brand transition-colors">
+              {/* 公司名 —— 中英分离，加大字号醒目 */}
+              <div class="font-display text-xl sm:text-2xl text-ink-900 leading-tight tracking-tight group-hover:text-brand transition-colors">
                 <span class="i18n-zh">{orgZh ?? org}</span>
                 <span class="i18n-en">{orgEn ?? org}</span>
               </div>
               {/* 职位 */}
-              <div class="mt-1 text-sm sm:text-base text-ink-700">
+              <div class="mt-1.5 text-base sm:text-lg text-ink-700">
                 <span class="i18n-zh">{role}</span>
                 <span class="i18n-en">{roleEn ?? role}</span>
                 {team && (
@@ -78,12 +78,11 @@ const displayName = orgShort || org;
             <div class="flex items-center gap-2 shrink-0 pt-0.5">
               {current && (
                 <span class="relative flex h-2 w-2" aria-hidden="true">
-                  <span class="absolute inline-flex h-full w-full rounded-full bg-brand opacity-75 animate-ping"></span>
                   <span class="relative inline-flex h-2 w-2 rounded-full bg-brand"></span>
                 </span>
               )}
               <span class:list={[
-                'font-mono text-[11px] tracking-[0.2em]',
+                'text-xs tracking-[0.2em] font-semibold',
                 current ? 'text-brand' : 'text-ink-500',
               ]}>
                 {current ? (
@@ -99,11 +98,11 @@ const displayName = orgShort || org;
           </div>
 
           {/* 时间 + 地点 */}
-          <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-mono text-ink-500">
-            <span class="tracking-wider">
+          <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-500">
+            <span class="tracking-wide tabular-nums">
               <span class="text-ink-700">{startStr}</span>
               <span class="mx-1.5">→</span>
-              <span class={current ? 'text-brand font-bold' : 'text-ink-700'}>
+              <span class={current ? 'text-brand font-semibold' : 'text-ink-700'}>
                 {current ? (
                   <>
                     <span class="i18n-zh">至今</span>
@@ -192,11 +191,11 @@ const displayName = orgShort || org;
     position: absolute;
     left: 0;
     top: 0.2rem;
-    font-family: 'JetBrains Mono', ui-monospace, monospace;
-    font-size: 0.7rem;
+    font-family: 'Inter', -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
     letter-spacing: 0.15em;
     color: #626A70;
-    font-weight: 600;
     width: 2.4rem;
     border-bottom: 1px solid #2A2F33;
     padding-bottom: 0.15rem;

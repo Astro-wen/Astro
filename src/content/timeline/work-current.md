@@ -2,7 +2,7 @@
 kind: work
 org: "TikTok"
 orgShort: "TIKTOK"
-orgZh: "抖音国际版"
+orgZh: "TikTok"
 orgEn: "TikTok"
 logo: "/logos/tiktok.webp"
 role: "产品经理实习生"
@@ -10,7 +10,7 @@ roleEn: "Product Manager Intern"
 team: "Infrastructure · Account Center"
 teamEn: "Infrastructure · Account Center"
 tint: "#25F4EE"
-start: 2026-03-01
+start: 2026-06-01
 location: "San Jose, CA"
 tags: ["Account Center", "Notification", "Infra PRD", "Multi-account"]
 featured: true

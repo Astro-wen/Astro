@@ -9,8 +9,8 @@ interface Props {
 
 const { entry, index = 0 } = Astro.props;
 const {
-  org, orgShort, orgZh, orgEn, logo, tint,
-  role, roleEn, taglineZh, degreeLine,
+  org, orgShort, orgZh, orgEn, logo, tint, url,
+  role, roleEn,
   start, end, location, current,
 } = entry.data;
 
@@ -20,54 +20,57 @@ const endStr = end ? fmt.format(end).toUpperCase() : null;
 const revealDelay = `${index * 90}ms`;
 
 const displayName = orgShort || org;
+
+// 整卡是否可点击：有 url 则包成 <a>
+const Wrapper = url ? 'a' : 'div';
+const wrapperProps = url
+  ? { href: url, target: '_blank', rel: 'noopener noreferrer' }
+  : {};
 ---
 
 <article
   class="reveal group"
   style={`--reveal-delay: ${revealDelay}`}
 >
-  <div class="relative bg-paper-card border border-line hover:border-line-soft transition-colors duration-150 p-6 sm:p-7">
-    <div class="flex items-start gap-4 sm:gap-5">
-      <LogoPlaceholder logo={logo} name={displayName} tint={tint} size={56} />
+  <Wrapper
+    {...wrapperProps}
+    class:list={[
+      'block relative bg-paper-card border border-line transition-colors duration-150 p-7 sm:p-8',
+      url ? 'hover:border-brand cursor-pointer' : 'hover:border-line-soft',
+    ]}
+  >
+    <div class="flex items-start gap-5 sm:gap-6">
+      <LogoPlaceholder logo={logo} name={displayName} tint={tint} size={72} />
 
       <div class="flex-1 min-w-0">
         <div class="flex items-start justify-between gap-3 flex-wrap">
-          <div class="min-w-0">
-            {/* 学校名 */}
-            <div class="font-display text-lg sm:text-xl text-ink-900 leading-tight tracking-tight">
+          <div class="min-w-0 flex-1">
+            {/* 学校名 —— 加大字号，醒目 */}
+            <div class:list={[
+              'font-display text-xl sm:text-2xl md:text-[1.75rem] text-ink-900 leading-tight tracking-tight',
+              url ? 'group-hover:text-brand transition-colors' : '',
+            ]}>
               <span class="i18n-zh">{orgZh ?? org}</span>
               <span class="i18n-en">{orgEn ?? org}</span>
             </div>
 
-            {/* 中文副标（仅中文模式） */}
-            {taglineZh && (
-              <div class="mt-1 text-sm text-ink-700 i18n-zh">{taglineZh}</div>
-            )}
-            {!taglineZh && (
-              <div class="mt-1 text-sm text-ink-700 i18n-zh">{role}</div>
-            )}
-            {/* 英文模式 role */}
-            <div class="mt-1 text-sm text-ink-700 i18n-en">{roleEn ?? role}</div>
-
-            {/* 学位行：两种模式都显示（英文） */}
-            {degreeLine && (
-              <div class="mt-1 text-xs sm:text-sm text-ink-500 leading-relaxed">
-                {degreeLine}
-              </div>
-            )}
+            {/* 学位描述 —— 加大字号 */}
+            <div class="mt-2 text-sm sm:text-base text-ink-700 leading-relaxed">
+              <span class="i18n-zh">{role}</span>
+              <span class="i18n-en">{roleEn ?? role}</span>
+            </div>
           </div>
 
           {/* 状态徽标 */}
-          <div class="flex items-center gap-2 shrink-0 pt-0.5">
+          <div class="flex items-center gap-2 shrink-0 pt-1">
             {current && (
               <span class="relative flex h-2 w-2" aria-hidden="true">
-                <span class="absolute inline-flex h-full w-full rounded-full bg-brand opacity-75 animate-ping"></span>
                 <span class="relative inline-flex h-2 w-2 rounded-full bg-brand"></span>
               </span>
             )}
             <span class:list={[
-              'font-mono text-[11px] tracking-[0.2em]',
-              current ? 'text-brand font-bold' : 'text-ink-500',
+              'text-xs tracking-[0.2em] font-semibold',
+              current ? 'text-brand' : 'text-ink-500',
             ]}>
               {current ? (
                 <>
@@ -81,15 +84,27 @@ const displayName = orgShort || org;
                 </>
               )}
             </span>
+
+            {/* 有外链时显示一个外链图标 */}
+            {url && (
+              <svg
+                width="14" height="14" viewBox="0 0 24 24"
+                fill="none" stroke="currentColor" stroke-width="2.5"
+                aria-hidden="true"
+                class="ml-1 text-ink-500 group-hover:text-brand transition-colors"
+              >
+                <path d="M7 17 17 7M9 7h8v8"/>
+              </svg>
+            )}
           </div>
         </div>
 
         {/* 时间 + 地点 */}
-        <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-mono text-ink-500">
-          <span class="tracking-wider">
+        <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm text-ink-500">
+          <span class="tracking-wide tabular-nums">
             <span class="text-ink-700">{startStr}</span>
             <span class="mx-1.5">→</span>
-            <span class={current ? 'text-brand font-bold' : 'text-ink-700'}>
+            <span class={current ? 'text-brand font-semibold' : 'text-ink-700'}>
               {current ? (
                 <>
                   <span class="i18n-zh">至今</span>
@@ -106,5 +121,5 @@ const displayName = orgShort || org;
         </div>
       </div>
     </div>
-  </div>
+  </Wrapper>
 </article>
