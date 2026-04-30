@@ -1,0 +1,65 @@
+---
+/**
+ * SectionHeader —— 编号胶条（非横幅）
+ * ---------------------------------------------------
+ * 视觉结构（Lonetrail/印刷现代主义）：
+ *   [大号橙红数字 01]  粗黑中文标题 · [Oswald 窄体英文 tag]
+ *   ─────────────── 细分隔线 ───────────────
+ *   （可选）副标
+ *
+ * 双语：中文主标受 data-lang 控制；英文 tag 始终保留为窄压缩装饰性角色
+ */
+interface Props {
+  /** 编号，如 "01" / "§" */
+  index: string;
+  /** 中文标题 */
+  title: string;
+  /** 英文 tag（Oswald 窄体；同时也作为 EN 模式下主标替代） */
+  tag?: string;
+  /** 可选副标 */
+  subtitle?: string;
+  /** 可选副标（英文） */
+  subtitleEn?: string;
+  delay?: number;
+  id?: string;
+}
+
+const { index, title, tag, subtitle, subtitleEn, delay = 0, id } = Astro.props;
+---
+
+<header class="reveal mb-8 sm:mb-10" id={id} style={`--reveal-delay: ${delay}ms`}>
+  <div class="flex items-baseline gap-4 sm:gap-6 flex-wrap">
+    {/* 左：大号橙红 Archivo Black 编号 */}
+    <span class="font-display text-brand text-4xl sm:text-5xl leading-none shrink-0 tabular-nums">
+      {index}
+    </span>
+
+    {/* 中：中文主标 / EN 模式下显示 tag 作为主标 */}
+    <h2 class="display-lg text-2xl sm:text-3xl text-ink-900 leading-tight flex-1 min-w-0">
+      <span class="i18n-zh">{title}</span>
+      <span class="i18n-en">{tag ?? title}</span>
+    </h2>
+
+    {/* 右：Oswald 窄体英文 tag —— 仅英文模式下作为装饰显示 */}
+    {tag && (
+      <span class="condensed text-ink-500 text-sm sm:text-base shrink-0 hidden sm:inline i18n-en">
+        {tag}
+      </span>
+    )}
+  </div>
+
+  {/* 细分隔线 + 三原色微点缀 */}
+  <div class="mt-4 flex items-center gap-0">
+    <span class="h-px flex-1 bg-line"></span>
+    <span class="w-1.5 h-1.5 bg-vhs-cyan shrink-0"></span>
+    <span class="w-1.5 h-1.5 bg-vhs-yellow shrink-0"></span>
+    <span class="w-1.5 h-1.5 bg-vhs-red shrink-0"></span>
+  </div>
+
+  {(subtitle || subtitleEn) && (
+    <p class="mt-4 text-ink-700 text-sm sm:text-base max-w-2xl">
+      {subtitle && <span class="i18n-zh">{subtitle}</span>}
+      {(subtitleEn ?? subtitle) && <span class="i18n-en">{subtitleEn ?? subtitle}</span>}
+    </p>
+  )}
+</header>

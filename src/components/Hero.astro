@@ -1,0 +1,226 @@
+---
+import { SITE } from '@/lib/site';
+---
+
+{/*
+  Hero —— 孤星×现代主义风格
+  -------------------------------------------
+  1. 编号胶条（border-left 粗色条 · 孤星系统消息做法）
+  2. 主标题：Geist 900 + 紧字距 + RGB 错位阴影（Lonetrail 海报风）
+  3. 姓名打字：Aaron Wen → 温思源 → AstroW（W 为 SVG 手写）
+  4. 左侧竖色条装饰（Lonetrail 四色条）
+  5. 双语：.i18n-en / .i18n-zh 由 html[data-lang] 控制
+*/}
+
+<section class="relative container-wide pt-24 sm:pt-32 pb-20 sm:pb-28" id="hero-root">
+
+  {/* 顶部编号胶条 */}
+  <div class="reveal flex items-center gap-3" style="--reveal-delay: 0ms">
+    <span class="tape-chip tape-chip--solid">NO.001</span>
+    <span class="section-eyebrow i18n-zh">个人档案</span>
+    <span class="section-eyebrow i18n-en">Personal File</span>
+    <span class="h-px flex-1 bg-line max-w-[100px]"></span>
+    <span class="font-mono text-xs tracking-[0.25em] text-ink-300">{new Date().getFullYear()}</span>
+  </div>
+
+  {/* 主标题 */}
+  <h1
+    class="reveal display-xl text-[clamp(2.75rem,8vw,6rem)] text-ink-900 mt-6"
+    style="--reveal-delay: 120ms"
+  >
+    <span class="block font-mono font-medium text-[0.22em] tracking-[0.35em] text-ink-700 uppercase mb-4">
+      <span class="i18n-zh">你好，我是</span>
+      <span class="i18n-en">Hi, I am</span>
+    </span>
+    <span id="name-type" class="inline-flex items-baseline min-h-[1.05em] rgb-split" aria-live="polite">
+      <span id="name-text"></span><span id="name-caret" class="type-caret" aria-hidden="true"></span>
+    </span>
+  </h1>
+
+  {/* 身份 + 年限 */}
+  <div class="reveal mt-10 flex flex-wrap items-baseline gap-x-4 gap-y-2" style="--reveal-delay: 240ms">
+    <p class="display-lg text-xl sm:text-2xl text-ink-900">
+      <span class="i18n-zh">产品经理</span>
+      <span class="i18n-en">Product Manager</span>
+    </p>
+    <span class="hidden sm:inline h-4 w-px bg-line" aria-hidden="true"></span>
+    <p class="text-sm sm:text-base text-ink-700">
+      <span class="i18n-zh"><span data-exp-years>2</span> 年互联网产品经验</span>
+      <span class="i18n-en"><span data-exp-years>2</span> years in internet products</span>
+    </p>
+  </div>
+
+  {/* 简短自我介绍 */}
+  <p class="reveal mt-6 max-w-2xl text-ink-700 leading-relaxed text-base sm:text-lg i18n-zh" style="--reveal-delay: 320ms">
+    UCLA 在读，聚焦游戏、AI 原生产品与玩家增长。在 TikTok、Tencent America、Tencent Games 做过产品实习。相信好产品是"把复杂系统变得一目了然"这件事的结果。
+  </p>
+  <p class="reveal mt-6 max-w-2xl text-ink-700 leading-relaxed text-base sm:text-lg i18n-en" style="--reveal-delay: 320ms">
+    Studying at UCLA. Focused on games, AI-native products, and player growth. Previously interned in PM roles at TikTok, Tencent America, and Tencent Games. I believe great products are the result of making complex systems feel obvious.
+  </p>
+
+  {/* 快捷索引条 */}
+  <div class="reveal mt-14 flex items-center gap-5 text-sm" style="--reveal-delay: 440ms">
+    <a href="#education" class="group flex items-center gap-2 text-ink-700 hover:text-brand transition-colors">
+      <span class="font-mono text-xs text-ink-300 group-hover:text-brand">01</span>
+      <span class="i18n-zh">教育</span>
+      <span class="i18n-en">Education</span>
+    </a>
+    <span class="h-px w-6 bg-line"></span>
+    <a href="#experience" class="group flex items-center gap-2 text-ink-700 hover:text-brand transition-colors">
+      <span class="font-mono text-xs text-ink-300 group-hover:text-brand">02</span>
+      <span class="i18n-zh">经历</span>
+      <span class="i18n-en">Experience</span>
+    </a>
+    <span class="h-px w-6 bg-line"></span>
+    <a href="#work" class="group flex items-center gap-2 text-ink-700 hover:text-brand transition-colors">
+      <span class="font-mono text-xs text-ink-300 group-hover:text-brand">03</span>
+      <span class="i18n-zh">项目</span>
+      <span class="i18n-en">Work</span>
+    </a>
+  </div>
+
+  {/* 向下滚动提示 */}
+  <div class="reveal mt-20 flex items-center gap-3 text-ink-300 font-mono text-xs tracking-widest" style="--reveal-delay: 560ms">
+    <span class="inline-block w-8 h-px bg-ink-300"></span>
+    <span>SCROLL</span>
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" class="animate-bounce">
+      <path d="M12 5v14m-6-6 6 6 6-6"/>
+    </svg>
+  </div>
+
+  {/* 底部彩条分隔（三原色横条） */}
+  <div class="reveal mt-16 color-bars-h" style="--reveal-delay: 680ms" aria-hidden="true">
+    <span></span><span></span><span></span>
+  </div>
+</section>
+
+{/* 手写签名 W 模板 */}
+<template id="sign-w-template">
+  <svg class="sign-w-svg" viewBox="0 0 64 56" aria-hidden="true" preserveAspectRatio="xMidYMid meet">
+    <path
+      d="M3 6 C 5 18, 10 36, 16 50 C 18 52, 20 52, 22 49 C 25 41, 28 30, 31 20 C 32 17, 34 17, 35 20 C 38 30, 41 41, 44 49 C 46 52, 48 52, 50 50 C 56 36, 60 18, 62 6"
+      stroke-width="5.5"
+    />
+  </svg>
+</template>
+
+<script is:inline>
+  // ============================================================
+  // Experience years · 按入行时间（2024-07-01）自动四舍五入
+  // ============================================================
+  (function () {
+    var start = new Date(2024, 6, 1); // 2024-07-01（月份是 0 索引）
+    var now = new Date();
+    var months =
+      (now.getFullYear() - start.getFullYear()) * 12 +
+      (now.getMonth() - start.getMonth());
+    var years = Math.max(1, Math.round(months / 12));
+    document.querySelectorAll('[data-exp-years]').forEach(function (el) {
+      el.textContent = String(years);
+    });
+  })();
+</script>
+
+<script is:inline>
+  // ============================================================
+  // Hero · 姓名打字状态机 + 手写 W（无手电筒）
+  // ============================================================
+  (function () {
+    const el = document.getElementById('name-text');
+    const caret = document.getElementById('name-caret');
+    const tpl = document.getElementById('sign-w-template');
+    if (!el || !caret || !tpl) return;
+
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReduced) {
+      el.textContent = 'Aaron Wen';
+      caret.remove();
+      return;
+    }
+
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+    function setCaret(v) { caret.classList.toggle('is-hidden', !v); }
+
+    function makeSignW() {
+      const node = tpl.content.firstElementChild.cloneNode(true);
+      const path = node.querySelector('path');
+      // 临时挂载以读取 path 长度
+      document.body.appendChild(node);
+      const len = path.getTotalLength();
+      node.remove();
+      node.style.setProperty('--len', len.toFixed(1));
+      return node;
+    }
+
+    // 节奏
+    const START_DELAY = 900;
+    const TYPE = 78;
+    const DEL = 36;
+    const HOLD_FULL = 1400;
+    const HOLD_EMPTY = 220;
+    const SIGN_WRITE_MS = 900;
+    const SIGN_HOLD_MS = 1600;
+    const SIGN_ERASE_MS = 640;
+
+    async function typePlain(str) {
+      for (let i = 1; i <= str.length; i++) {
+        el.textContent = str.slice(0, i);
+        await sleep(TYPE);
+      }
+    }
+    async function delPlain(str) {
+      for (let i = str.length - 1; i >= 0; i--) {
+        el.textContent = str.slice(0, i);
+        await sleep(DEL);
+      }
+    }
+
+    async function typeAstroW() {
+      await typePlain('Astro');
+      await sleep(220);
+      setCaret(false);
+
+      const wrap = makeSignW();
+      el.appendChild(wrap);
+      void wrap.getBoundingClientRect();
+      wrap.classList.add('is-writing');
+      await sleep(SIGN_WRITE_MS);
+
+      await sleep(SIGN_HOLD_MS);
+
+      wrap.classList.remove('is-writing');
+      wrap.classList.add('is-erasing');
+      await sleep(SIGN_ERASE_MS);
+
+      wrap.remove();
+      setCaret(true);
+      await sleep(180);
+
+      await delPlain('Astro');
+      await sleep(HOLD_EMPTY);
+    }
+
+    async function typeName(str) {
+      await typePlain(str);
+      await sleep(HOLD_FULL);
+      await delPlain(str);
+      await sleep(HOLD_EMPTY);
+    }
+
+    const sequence = [
+      () => typeName('Aaron Wen'),
+      () => typeName('温思源'),
+      () => typeAstroW(),
+    ];
+
+    (async function loop() {
+      await sleep(START_DELAY);
+      let i = 0;
+      while (true) {
+        await sequence[i]();
+        i = (i + 1) % sequence.length;
+      }
+    })();
+  })();
+</script>

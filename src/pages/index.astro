@@ -1,0 +1,118 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/Hero.astro';
+import ExperienceCard from '@/components/ExperienceCard.astro';
+import EducationCard from '@/components/EducationCard.astro';
+import SectionHeader from '@/components/SectionHeader.astro';
+import PostCard from '@/components/PostCard.astro';
+import ProjectCard from '@/components/ProjectCard.astro';
+import { getCollection } from 'astro:content';
+import { SITE } from '@/lib/site';
+
+// ============ 数据加载 ============
+const allTimeline = await getCollection('timeline');
+const education = allTimeline
+  .filter((t) => t.data.kind === 'education')
+  .sort((a, b) => b.data.start.getTime() - a.data.start.getTime());
+
+const experiences = allTimeline
+  .filter((t) => t.data.kind === 'work')
+  .sort((a, b) => {
+    const aEnd = a.data.end ?? new Date(8640000000000000);
+    const bEnd = b.data.end ?? new Date(8640000000000000);
+    return bEnd.getTime() - aEnd.getTime() || b.data.start.getTime() - a.data.start.getTime();
+  });
+
+const posts = (await getCollection('blog', ({ data }) => !data.draft))
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+
+const featuredProjects = (await getCollection('projects'))
+  .filter((p) => p.data.featured)
+  .sort((a, b) => a.data.order - b.data.order);
+const fallbackProjects = (await getCollection('projects'))
+  .sort((a, b) => a.data.order - b.data.order)
+  .slice(0, 3);
+const projects = featuredProjects.length > 0 ? featuredProjects : fallbackProjects;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title={SITE.name} description={SITE.description}>
+  {/* ============ Hero ============ */}
+  <Hero />
+
+  {/* ============ 教育 ============ */}
+  {education.length > 0 && (
+    <section id="education" class="container-wide py-16 sm:py-20 scroll-mt-20">
+      <SectionHeader
+        index="01"
+        title="教育背景"
+        tag="Education"
+        subtitle="当下正在接受的系统化训练。"
+        subtitleEn="The systematic training I'm currently receiving."
+      />
+      <div class="space-y-6">
+        {education.map((entry, i) => <EducationCard entry={entry} index={i} />)}
+      </div>
+    </section>
+  )}
+
+  {/* ============ 经历 ============ */}
+  {experiences.length > 0 && (
+    <section id="experience" class="container-wide py-16 sm:py-20 scroll-mt-20">
+      <SectionHeader
+        index="02"
+        title="产品经历"
+        tag="Experience"
+        subtitle="从腾讯互娱到 Tencent America、再到 TikTok —— 聚焦游戏与 AI 原生产品。"
+        subtitleEn="From Tencent Games to Tencent America, then TikTok — focused on games and AI-native products."
+      />
+      <div class="space-y-8 sm:space-y-10">
+        {experiences.map((entry, i) => (
+          <ExperienceCard entry={entry} index={i} defaultOpen={i === 0} />
+        ))}
+      </div>
+    </section>
+  )}
+
+  {/* ============ 精选项目 ============ */}
+  {projects.length > 0 && (
+    <section id="work" class="container-wide py-16 sm:py-20 scroll-mt-20">
+      <SectionHeader
+        index="03"
+        title="精选项目"
+        tag="Selected Work"
+      />
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {projects.map((p, i) => <ProjectCard project={p} index={i} />)}
+      </div>
+      <div class="mt-6 text-right">
+        <a href={`${base}/projects`} class="font-mono text-xs tracking-[0.2em] text-ink-700 hover:text-brand transition-colors">
+          <span class="i18n-zh">查看全部 →</span>
+          <span class="i18n-en">View all →</span>
+        </a>
+      </div>
+    </section>
+  )}
+
+  {/* ============ 文章 ============ */}
+  {posts.length > 0 && (
+    <section id="writing" class="container-wide py-16 sm:py-20 scroll-mt-20">
+      <SectionHeader
+        index="04"
+        title="想法与笔记"
+        tag="Writing"
+      />
+      <div>
+        {posts.map((post) => <PostCard post={post} />)}
+      </div>
+      <div class="mt-6 text-right">
+        <a href={`${base}/blog`} class="font-mono text-xs tracking-[0.2em] text-ink-700 hover:text-brand transition-colors">
+          <span class="i18n-zh">全部文章 →</span>
+          <span class="i18n-en">All posts →</span>
+        </a>
+      </div>
+    </section>
+  )}
+</BaseLayout>

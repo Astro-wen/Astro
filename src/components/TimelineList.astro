@@ -1,0 +1,23 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import TimelineItem from './TimelineItem.astro';
+
+interface Props {
+  entries: CollectionEntry<'timeline'>[];
+  limit?: number;
+}
+
+const { entries, limit } = Astro.props;
+
+// 按 start 倒序；未结束（end 为空）视为最新
+const sorted = [...entries].sort((a, b) => {
+  const aEnd = a.data.end ?? new Date(8640000000000000);
+  const bEnd = b.data.end ?? new Date(8640000000000000);
+  return bEnd.getTime() - aEnd.getTime() || b.data.start.getTime() - a.data.start.getTime();
+});
+const list = limit ? sorted.slice(0, limit) : sorted;
+---
+
+<ol class="mt-2">
+  {list.map((entry) => <TimelineItem entry={entry} />)}
+</ol>

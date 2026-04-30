@@ -1,0 +1,71 @@
+---
+import '@/styles/global.css';
+import SEO from '@/components/SEO.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import { SITE } from '@/lib/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  article?: boolean;
+  publishedTime?: Date;
+  bodyClass?: string;
+}
+const { title, description, image, article, publishedTime, bodyClass = '' } = Astro.props;
+---
+
+<!doctype html>
+<html lang={SITE.locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    {/* Google Fonts preconnect —— 提升字体首次加载速度 */}
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}favicon.svg`.replace('//', '/')} />
+    <link rel="alternate" type="application/rss+xml" title={SITE.name} href={`${import.meta.env.BASE_URL}rss.xml`.replace('//', '/')} />
+    <SEO
+      title={title}
+      description={description}
+      image={image}
+      article={article}
+      publishedTime={publishedTime}
+    />
+  </head>
+  <body class:list={['min-h-screen flex flex-col', bodyClass]}>
+    <Header />
+    <main class="flex-1">
+      <slot />
+    </main>
+    <Footer />
+
+    {/* 折叠卡片全局交互：点击 .card-trigger 切换父 .card-expandable 的 data-expanded */}
+    <script is:inline>
+      (function () {
+        function bind(root) {
+          root.querySelectorAll('.card-expandable').forEach(function (card) {
+            var trigger = card.querySelector('.card-trigger');
+            if (!trigger || trigger.dataset.bound) return;
+            trigger.dataset.bound = '1';
+            trigger.addEventListener('click', function () {
+              var open = card.getAttribute('data-expanded') === 'true';
+              var next = !open;
+              card.setAttribute('data-expanded', next ? 'true' : 'false');
+              trigger.setAttribute('aria-expanded', next ? 'true' : 'false');
+            });
+          });
+        }
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', function () { bind(document); });
+        } else {
+          bind(document);
+        }
+      })();
+    </script>
+  </body>
+</html>

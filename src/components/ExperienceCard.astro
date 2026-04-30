@@ -1,0 +1,226 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import LogoPlaceholder from './LogoPlaceholder.astro';
+
+interface Props {
+  entry: CollectionEntry<'timeline'>;
+  index?: number;
+  defaultOpen?: boolean;
+}
+
+const { entry, index = 0, defaultOpen = false } = Astro.props;
+const { Content } = await entry.render();
+const {
+  org, orgShort, orgZh, orgEn, logo, tint,
+  role, roleEn, team, teamEn,
+  start, end, location, tags, current, kind,
+} = entry.data;
+
+const fmt = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short' });
+const startStr = fmt.format(start).toUpperCase();
+const endStr = end ? fmt.format(end).toUpperCase() : null;
+
+// 入场延迟
+const revealDelay = `${index * 90}ms`;
+
+// 文字 Logo fallback（给 LogoPlaceholder 取首字母用）
+const displayName = orgShort || org;
+---
+
+<article
+  class="reveal card-expandable group relative"
+  style={`--reveal-delay: ${revealDelay}`}
+  data-expanded={defaultOpen ? 'true' : 'false'}
+>
+  <div
+    class="relative bg-paper-card border border-line transition-colors duration-150
+           hover:border-brand"
+  >
+    {/* 左上编号胶条（孤星风：border-left 橙条 + 实底） */}
+    <div class="absolute -top-px left-6 tape-chip z-10">
+      NO.{String(index + 1).padStart(3, '0')}
+    </div>
+
+    {/* 折叠态触发区（整个头部可点） */}
+    <button
+      type="button"
+      class="card-trigger block w-full p-6 sm:p-7 pt-10 sm:pt-11"
+      aria-expanded={defaultOpen ? 'true' : 'false'}
+    >
+      <div class="flex items-start gap-4 sm:gap-5">
+        {/* Logo */}
+        <LogoPlaceholder logo={logo} name={displayName} tint={tint} size={56} />
+
+        {/* 主元信息 */}
+        <div class="flex-1 min-w-0">
+          <div class="flex items-start justify-between gap-3 flex-wrap">
+            <div class="min-w-0">
+              {/* 公司名 —— 中英分离 */}
+              <div class="font-display text-lg sm:text-xl text-ink-900 leading-tight tracking-tight group-hover:text-brand transition-colors">
+                <span class="i18n-zh">{orgZh ?? org}</span>
+                <span class="i18n-en">{orgEn ?? org}</span>
+              </div>
+              {/* 职位 */}
+              <div class="mt-1 text-sm sm:text-base text-ink-700">
+                <span class="i18n-zh">{role}</span>
+                <span class="i18n-en">{roleEn ?? role}</span>
+                {team && (
+                  <span class="text-ink-500">
+                    <span class="mx-1.5">·</span>
+                    <span class="i18n-zh">{team}</span>
+                    <span class="i18n-en">{teamEn ?? team}</span>
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* 状态徽标 */}
+            <div class="flex items-center gap-2 shrink-0 pt-0.5">
+              {current && (
+                <span class="relative flex h-2 w-2" aria-hidden="true">
+                  <span class="absolute inline-flex h-full w-full rounded-full bg-brand opacity-75 animate-ping"></span>
+                  <span class="relative inline-flex h-2 w-2 rounded-full bg-brand"></span>
+                </span>
+              )}
+              <span class:list={[
+                'font-mono text-[11px] tracking-[0.2em]',
+                current ? 'text-brand' : 'text-ink-500',
+              ]}>
+                {current ? (
+                  <>
+                    <span class="i18n-zh">进行中</span>
+                    <span class="i18n-en">CURRENT</span>
+                  </>
+                ) : (
+                  <span>{end ? end.getFullYear() : start.getFullYear()}</span>
+                )}
+              </span>
+            </div>
+          </div>
+
+          {/* 时间 + 地点 */}
+          <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-mono text-ink-500">
+            <span class="tracking-wider">
+              <span class="text-ink-700">{startStr}</span>
+              <span class="mx-1.5">→</span>
+              <span class={current ? 'text-brand font-bold' : 'text-ink-700'}>
+                {current ? (
+                  <>
+                    <span class="i18n-zh">至今</span>
+                    <span class="i18n-en">PRESENT</span>
+                  </>
+                ) : endStr}
+              </span>
+            </span>
+            {location && (
+              <span class="tracking-wide">
+                <span class="text-accent">◉</span> {location}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* +/− 按钮 */}
+        <span class="plus-toggle mt-1" aria-hidden="true"></span>
+      </div>
+    </button>
+
+    {/* 展开体 */}
+    <div class="card-body-wrap">
+      <div class="card-body-inner">
+        <div class="px-6 sm:px-7 pb-6 sm:pb-7 pt-1 border-t border-line-soft">
+          {/* 分隔线 + section eyebrow */}
+          <div class="mt-4 mb-3 flex items-center gap-3">
+            <span class="h-0.5 w-6 bg-brand"></span>
+            <span class="section-eyebrow">
+              {kind === 'work' ? (
+                <>
+                  <span class="i18n-zh">核心产出</span>
+                  <span class="i18n-en">Key Contributions</span>
+                </>
+              ) : (
+                <>
+                  <span class="i18n-zh">概览</span>
+                  <span class="i18n-en">Overview</span>
+                </>
+              )}
+            </span>
+          </div>
+
+          {/* 自动编号段落 */}
+          <div class="experience-body max-w-none">
+            <Content />
+          </div>
+
+          {/* Tags */}
+          {tags.length > 0 && (
+            <div class="mt-5 flex flex-wrap gap-1.5">
+              {tags.map((t) => (
+                <span class="font-mono text-[11px] tracking-wide text-ink-500 border border-line-soft
+                             px-2 py-0.5 bg-paper/50">
+                  {t}
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+
+<style>
+  /* ==================================================================
+     .experience-body —— Markdown 段落自动编号（深色主题）
+     ================================================================== */
+  .experience-body {
+    counter-reset: contribution;
+  }
+
+  .experience-body :global(p) {
+    counter-increment: contribution;
+    position: relative;
+    padding-left: 3rem;
+    margin: 0.85rem 0;
+    color: #B8BEC2;
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  .experience-body :global(p)::before {
+    content: counter(contribution, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 0.2rem;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: #626A70;
+    font-weight: 600;
+    width: 2.4rem;
+    border-bottom: 1px solid #2A2F33;
+    padding-bottom: 0.15rem;
+    transition: color 150ms, border-color 150ms;
+  }
+
+  .experience-body :global(p:hover)::before {
+    color: #FF5A3C;
+    border-bottom-color: #FF5A3C;
+  }
+
+  .experience-body :global(strong) {
+    color: #F0F2F4;
+    font-weight: 700;
+  }
+
+  .experience-body :global(a) {
+    color: #FF5A3C;
+    text-decoration: none;
+    border-bottom: 1px solid rgba(255, 90, 60, 0.4);
+    transition: border-color 150ms;
+  }
+
+  .experience-body :global(a:hover) {
+    border-bottom-color: #FF5A3C;
+  }
+</style>

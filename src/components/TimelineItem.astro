@@ -1,0 +1,46 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Tag from './Tag.astro';
+
+interface Props {
+  entry: CollectionEntry<'timeline'>;
+}
+const { entry } = Astro.props;
+const { kind, org, role, start, end, location, tags } = entry.data;
+
+const fmt = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short' });
+const range = `${fmt.format(start)} — ${end ? fmt.format(end) : 'Present'}`;
+const isPresent = !end;
+---
+
+<li class="relative pl-6 sm:pl-8 pb-8 last:pb-0">
+  <!-- 竖线 -->
+  <span class="absolute left-[5px] sm:left-[7px] top-2 bottom-0 w-px bg-line" aria-hidden="true"></span>
+  <!-- 圆点 -->
+  <span
+    class:list={[
+      'absolute left-0 top-2 h-3 w-3 rounded-full border-2 border-paper',
+      isPresent ? 'bg-brand' : 'bg-ink-500',
+    ]}
+    aria-hidden="true"
+  ></span>
+
+  <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+    <span class="text-xs uppercase tracking-wider text-ink-500">
+      {kind === 'work' ? 'Work' : 'Education'}
+    </span>
+    <time class="text-xs text-ink-500">{range}</time>
+  </div>
+
+  <h3 class="mt-1 font-medium text-ink-900">
+    {role} <span class="text-ink-700 font-normal">· {org}</span>
+  </h3>
+
+  {location && <div class="mt-0.5 text-sm text-ink-500">{location}</div>}
+
+  {tags.length > 0 && (
+    <div class="mt-2 flex flex-wrap gap-1.5">
+      {tags.map((t) => <Tag label={t} />)}
+    </div>
+  )}
+</li>

@@ -1,0 +1,459 @@
+/* ============================================================
+   Fonts —— 深色档案 × 现代主义印刷
+   - Archivo Black  : 展示大标题（极粗西文，印刷感）
+   - Oswald         : 窄压缩英文 tag
+   - Noto Sans SC   : 中文 400/500/700/900
+   - Inter          : 英文正文（平滑、现代、接近 Arial/黑体气质）
+   - JetBrains Mono : 编号 / 时间戳（UI 元数据专用，不用于正文）
+   - Liu Jian Mao Cao: 毛笔字 fallback（签名 W 实际用 SVG）
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Liu+Jian+Mao+Cao&family=Noto+Sans+SC:wght@300;400;500;700;900&family=Oswald:wght@500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Token 系统（借鉴孤星 CSS 的变量驱动做法）
+   --1px / --size 用于构造统一间距节奏
+   --text-shadow-* 三档描边
+   --rgb-* 用于 RGB 错位（Lonetrail 海报风）
+   ============================================================ */
+@layer base {
+  :root {
+    color-scheme: dark;
+
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+
+    /* 节奏单位 */
+    --1px: 1px;
+    --size: 16px;
+
+    /* 强调色 */
+    --accent: #FF5A3C;
+    --accent-rgb: 255, 90, 60;
+
+    /* RGB 错位偏移色（Lonetrail 彩条 / 大字错位阴影） */
+    --rgb-cyan:   #29D2C8;
+    --rgb-yellow: #F4C341;
+    --rgb-red:    #E8483D;
+    --rgb-blue:   #3A6DB8;
+
+    /* 三档 text-shadow —— 参考孤星做法 */
+    --shadow-color: #000;
+    --text-shadow-extralight:
+      0 0 1px var(--shadow-color),
+      0 0 1px var(--shadow-color);
+    --text-shadow-light:
+      0 0 2px var(--shadow-color),
+      0 0 2px var(--shadow-color),
+      0 0 2px var(--shadow-color);
+    --text-shadow-heavy:
+      0 0 3px var(--shadow-color),
+      0 0 3px var(--shadow-color),
+      0 0 6px var(--shadow-color);
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    background: #000;
+  }
+
+  body {
+    @apply bg-paper text-ink-900 antialiased;
+    font-feature-settings: 'ss01', 'cv11', 'tnum';
+    animation: bodyWake 240ms var(--ease-out-quart) forwards;
+    /* 默认（中文模式）：Noto Sans SC 打头，气质严谨 */
+    font-family: 'Noto Sans SC', 'Inter', -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    /* 极细网格（橙红微光），贴近工业档案感 */
+    background-image:
+      linear-gradient(to right, rgba(var(--accent-rgb), 0.012) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(var(--accent-rgb), 0.012) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  /* 英文模式：Inter 打头，平滑现代（类 Arial/黑体气质） */
+  html[data-lang="en"] body {
+    font-family: 'Inter', -apple-system, 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif;
+  }
+
+  @keyframes bodyWake {
+    from { background-color: #000; }
+    to   { background-color: #0B0D0E; }
+  }
+
+  ::selection {
+    background: rgba(var(--accent-rgb), 0.32);
+    color: #F2F4F5;
+  }
+
+  a { @apply transition-colors duration-150; }
+  p { line-height: 1.75; }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: #0B0D0E; }
+  ::-webkit-scrollbar-thumb {
+    background: #262C31;
+    border-radius: 4px;
+    border: 2px solid #0B0D0E;
+  }
+  ::-webkit-scrollbar-thumb:hover { background: #3A4147; }
+}
+
+@layer utilities {
+  .container-prose { @apply mx-auto w-full max-w-3xl px-4 sm:px-6; }
+  .container-wide  { @apply mx-auto w-full max-w-5xl px-4 sm:px-6; }
+
+  /* ============================================================
+     入场动画
+     ============================================================ */
+  .reveal {
+    opacity: 0;
+    transform: translateY(8px);
+    animation: revealUp 640ms var(--ease-out-expo) forwards;
+    animation-delay: var(--reveal-delay, 0ms);
+  }
+  @keyframes revealUp { to { opacity: 1; transform: translateY(0); } }
+
+  .scanline {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(var(--accent-rgb), 0) 10%,
+      rgba(var(--accent-rgb), 0.85) 50%,
+      rgba(var(--accent-rgb), 0) 90%,
+      transparent 100%
+    );
+    pointer-events: none;
+    z-index: 100;
+    animation: scanAcross 1100ms var(--ease-out-quart) 120ms forwards;
+  }
+  @keyframes scanAcross {
+    0%   { left: -100%; opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { left: 100%; opacity: 0; }
+  }
+
+  /* ============================================================
+     CSS counter
+     ============================================================ */
+  .counter-list { counter-reset: item; }
+  .counter-list > .counter-item { counter-increment: item; }
+  .counter-list > .counter-item::before {
+    content: counter(item, decimal-leading-zero);
+    @apply font-mono text-xs text-ink-300 tracking-wider;
+    display: inline-block;
+    margin-right: 0.875rem;
+    min-width: 1.75rem;
+  }
+
+  /* ============================================================
+     孤星风 · 系统消息胶条 —— 真正的 "border-left 粗色条 + 实底 + 大字"
+     参考 CSS 里 .event--user-block / .event--live-warning 结构
+     ============================================================ */
+  .tape-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.38rem 0.85rem 0.38rem 0.6rem;
+    border-left: calc(var(--1px) * 4) solid var(--accent);
+    background: #14171A;
+    color: #E8EDEF;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    line-height: 1;
+    text-transform: uppercase;
+  }
+  .tape-chip--solid {
+    background: var(--accent);
+    color: #0B0D0E;
+    border-left-color: #0B0D0E;
+  }
+
+  /* ============================================================
+     粗标题 —— Archivo Black（西文印刷感）+ Noto Sans SC 900（中文）
+     参考 Lonetrail 海报的字形压迫感：紧字距、接近 1.0 的行高
+     ============================================================ */
+  .display-xl {
+    font-family: 'Archivo Black', 'Noto Sans SC', sans-serif;
+    font-weight: 900;
+    letter-spacing: -0.035em;
+    line-height: 0.95;
+  }
+  .display-lg {
+    font-family: 'Archivo Black', 'Noto Sans SC', sans-serif;
+    font-weight: 900;
+    letter-spacing: -0.025em;
+    line-height: 1.0;
+  }
+  /* 压缩字体：Lonetrail 式窄体 */
+  .condensed {
+    font-family: 'Oswald', 'Archivo Black', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  /* ============================================================
+     RGB 错位大标题（Lonetrail 海报标志性效果）
+     用法：给文字包一层 .rgb-split，data-text 属性存文字
+     三色 text-shadow 叠成错位 —— 无额外 DOM
+     ============================================================ */
+  .rgb-split {
+    position: relative;
+    color: #F2F4F5;
+    text-shadow:
+      -0.025em 0 0 var(--rgb-cyan),
+       0.025em 0 0 var(--rgb-red),
+       0    0.018em 0 var(--rgb-yellow);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .rgb-split { text-shadow: none; }
+  }
+
+  /* ============================================================
+     现代主义彩色三原色条 —— Lonetrail / Muelsyse 海报的色带语言
+     保留 utility 以备其他场景复用；Hero 本身不再使用左侧竖条
+     ============================================================ */
+  .color-bars {
+    display: inline-flex;
+    gap: 4px;
+    height: 100%;
+  }
+  .color-bars > span {
+    display: block;
+    width: 8px;
+    height: 100%;
+  }
+  .color-bars > span:nth-child(1) { background: var(--rgb-cyan); }
+  .color-bars > span:nth-child(2) { background: var(--rgb-yellow); }
+  .color-bars > span:nth-child(3) { background: var(--rgb-red); }
+
+  /* 水平版（section 分隔用） */
+  .color-bars-h {
+    display: flex;
+    height: 3px;
+    width: 100%;
+  }
+  .color-bars-h > span { flex: 1; }
+  .color-bars-h > span:nth-child(1) { background: var(--rgb-cyan); }
+  .color-bars-h > span:nth-child(2) { background: var(--rgb-yellow); }
+  .color-bars-h > span:nth-child(3) { background: var(--rgb-red); }
+
+  /* ============================================================
+     折叠卡片（档案抽屉）—— 纯 CSS grid-template-rows 高度动画
+     ============================================================ */
+  .card-expandable {
+    position: relative;
+  }
+  .card-body-wrap {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 320ms var(--ease-out-expo);
+  }
+  .card-expandable[data-expanded="true"] .card-body-wrap {
+    grid-template-rows: 1fr;
+  }
+  .card-body-inner {
+    overflow: hidden;
+    min-height: 0;
+  }
+
+  /* +/− 圆环按钮 */
+  .plus-toggle {
+    --btn-size: 32px;
+    position: relative;
+    width: var(--btn-size);
+    height: var(--btn-size);
+    border-radius: 50%;
+    border: 1.5px solid var(--accent);
+    background: transparent;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 180ms ease, transform 180ms ease;
+  }
+  .plus-toggle:hover {
+    background: rgba(var(--accent-rgb), 0.12);
+    transform: scale(1.06);
+  }
+  .plus-toggle:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+  /* 横线 —— 始终显示 */
+  .plus-toggle::before,
+  .plus-toggle::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    background: var(--accent);
+    transition: transform 220ms var(--ease-out-expo);
+  }
+  .plus-toggle::before {
+    width: 12px;
+    height: 1.5px;
+    transform: translate(-50%, -50%);
+  }
+  /* 竖线 —— 展开时缩回变成 "−" */
+  .plus-toggle::after {
+    width: 1.5px;
+    height: 12px;
+    transform: translate(-50%, -50%) scaleY(1);
+  }
+  .card-expandable[data-expanded="true"] .plus-toggle::after {
+    transform: translate(-50%, -50%) scaleY(0);
+  }
+
+  /* 触发区（整卡可点） */
+  .card-trigger {
+    width: 100%;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    text-align: inherit;
+    cursor: pointer;
+    color: inherit;
+    font: inherit;
+  }
+  .card-trigger:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .card-body-wrap { transition: none; }
+    .plus-toggle::before, .plus-toggle::after { transition: none; }
+  }
+
+  /* ============================================================
+     关键指标 / eyebrow / metric
+     ============================================================ */
+  .metric {
+    @apply font-mono text-brand;
+    font-variant-numeric: tabular-nums;
+  }
+  .section-eyebrow {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: #8A949B;
+    text-transform: uppercase;
+  }
+
+  /* ============================================================
+     打字光标
+     ============================================================ */
+  .type-caret {
+    display: inline-block;
+    width: 0.42em;
+    height: 0.88em;
+    background: var(--accent);
+    margin-left: 6px;
+    vertical-align: -0.08em;
+    box-shadow:
+      0 0 14px rgba(var(--accent-rgb), 0.55),
+      0 0 2px rgba(var(--accent-rgb), 0.9);
+    animation: caretBlink 900ms step-end infinite;
+    transition: opacity 220ms ease;
+  }
+  .type-caret.is-hidden { opacity: 0; animation: none; }
+  @keyframes caretBlink {
+    0%, 50%   { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  /* ============================================================
+     SVG 手写签名 W
+     ============================================================ */
+  .sign-w-svg {
+    display: inline-block;
+    vertical-align: -0.08em;
+    margin-left: 0.04em;
+    overflow: visible;
+    height: 0.92em;
+    width: auto;
+  }
+  .sign-w-svg path {
+    stroke: var(--accent);
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 0 8px rgba(var(--accent-rgb), 0.55));
+    stroke-dasharray: var(--len, 200);
+    stroke-dashoffset: var(--len, 200);
+  }
+  .sign-w-svg.is-writing path {
+    animation: strokeDraw 900ms cubic-bezier(0.45, 0, 0.55, 1) forwards;
+  }
+  .sign-w-svg.is-erasing path {
+    animation: strokeErase 640ms cubic-bezier(0.55, 0, 0.7, 0.4) forwards;
+  }
+  @keyframes strokeDraw {
+    from { stroke-dashoffset: var(--len, 200); }
+    to   { stroke-dashoffset: 0; }
+  }
+  @keyframes strokeErase {
+    from { stroke-dashoffset: 0; }
+    to   { stroke-dashoffset: var(--len, 200); }
+  }
+
+  /* ============================================================
+     语言切换 · 纯 CSS 驱动
+     根元素 html[data-lang="en"] 隐藏 .i18n-zh，反之亦然
+     缺省（无 data-lang）显示中文
+     ============================================================ */
+  html[data-lang="en"] .i18n-zh { display: none !important; }
+  html:not([data-lang="en"]) .i18n-en { display: none !important; }
+
+  /* 语言切换按钮 */
+  .lang-switch {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #262C31;
+    border-radius: 2px;
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    overflow: hidden;
+    user-select: none;
+  }
+  .lang-switch button {
+    padding: 4px 8px;
+    background: transparent;
+    color: #8A949B;
+    cursor: pointer;
+    border: none;
+    transition: background 150ms, color 150ms;
+  }
+  .lang-switch button:hover { color: #E8EDEF; }
+  .lang-switch button.is-active {
+    background: var(--accent);
+    color: #0B0D0E;
+  }
+
+  /* 减弱动效 */
+  @media (prefers-reduced-motion: reduce) {
+    .reveal, .scanline, body { animation: none !important; }
+    .reveal { opacity: 1; transform: none; }
+    .scanline { display: none; }
+    .type-caret { animation: none; opacity: 0.6; }
+    .sign-w-svg path {
+      stroke-dashoffset: 0 !important;
+      animation: none !important;
+    }
+  }
+}

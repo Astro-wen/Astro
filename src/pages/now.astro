@@ -1,0 +1,48 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { SITE } from '@/lib/site';
+
+// 手动维护「最后更新时间」；或改成读取本文件的 git mtime
+const lastUpdated = new Date('2026-04-29');
+const lastUpdatedLabel = new Intl.DateTimeFormat('zh-CN', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+}).format(lastUpdated);
+---
+
+<BaseLayout title="Now" description={`What ${SITE.name} is doing now.`}>
+  <section class="container-prose py-12 sm:py-16">
+    <div class="flex items-baseline justify-between flex-wrap gap-2">
+      <h1 class="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-ink-900">Now</h1>
+      <span class="text-sm text-ink-500">最后更新：{lastUpdatedLabel}</span>
+    </div>
+
+    <div class="prose prose-invert max-w-none mt-8">
+      <h2>当前</h2>
+      <p>
+        目前在 <strong>Your Current Company</strong> 担任软件工程师，负责 X / Y / Z。
+      </p>
+
+      <h2>正在做什么</h2>
+      <ul>
+        <li>工作上：在推进 XXX 项目 / 学习 YYY 技术</li>
+        <li>业余：写博客、维护这个个人站点</li>
+        <li>阅读：最近在读《书名》</li>
+      </ul>
+
+      <h2>近期关注</h2>
+      <ul>
+        <li>关注点 A</li>
+        <li>关注点 B</li>
+        <li>关注点 C</li>
+      </ul>
+
+      <hr />
+      <p class="text-sm text-ink-500">
+        此页灵感来自 <a href="https://nownownow.com/about" target="_blank" rel="noopener noreferrer">nownownow.com</a>
+        ——一种比社交媒体更慢、更真诚地告诉朋友「我最近在做什么」的方式。
+      </p>
+    </div>
+  </section>
+</BaseLayout>

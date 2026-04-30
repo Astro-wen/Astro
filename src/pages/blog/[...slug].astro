@@ -1,0 +1,37 @@
+---
+import PostLayout from '@/layouts/PostLayout.astro';
+import { getCollection, type CollectionEntry } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
+    (a, b) => b.data.date.getTime() - a.data.date.getTime(),
+  );
+
+  return posts.map((entry, idx) => ({
+    params: { slug: entry.slug },
+    props: {
+      entry,
+      // 按时间倒序排列下，idx-1 是更新的文章(next)，idx+1 是更旧的文章(prev)
+      next: posts[idx - 1],
+      prev: posts[idx + 1],
+    },
+  }));
+}
+
+type Props = {
+  entry: CollectionEntry<'blog'>;
+  prev?: CollectionEntry<'blog'>;
+  next?: CollectionEntry<'blog'>;
+};
+
+const { entry, prev, next } = Astro.props as Props;
+const { Content, remarkPluginFrontmatter } = await entry.render();
+
+// 粗略估算阅读时间（按中英混合 400 字/分钟）
+const plainText = entry.body.replace(/```[\s\S]*?```/g, '').replace(/[#>*`_\-\[\]!()]/g, '');
+const readingMinutes = Math.max(1, Math.ceil(plainText.length / 400));
+---
+
+<PostLayout entry={entry} prev={prev} next={next} readingMinutes={readingMinutes}>
+  <Content />
+</PostLayout>

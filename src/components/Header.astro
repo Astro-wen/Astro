@@ -1,0 +1,98 @@
+---
+import { SITE } from '@/lib/site';
+
+const { pathname } = Astro.url;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+function withBase(href: string) {
+  if (!href.startsWith('/')) return href;
+  return `${base}${href}`;
+}
+
+function isActive(href: string) {
+  if (href === '/') return pathname === withBase('/') || pathname === '/';
+  return pathname.startsWith(withBase(href));
+}
+
+// 双语导航
+const nav = [
+  { zh: '经历', en: 'Experience', href: '/' },
+  { zh: '关于', en: 'About',      href: '/about' },
+  { zh: '项目', en: 'Work',       href: '/projects' },
+  { zh: '文章', en: 'Writing',    href: '/blog' },
+];
+---
+
+{/* 预初始化语言：避免 hydration 前闪烁 */}
+<script is:inline>
+  (function () {
+    try {
+      var lang = localStorage.getItem('site-lang') || 'zh';
+      if (lang !== 'en' && lang !== 'zh') lang = 'zh';
+      document.documentElement.setAttribute('data-lang', lang);
+    } catch (e) {}
+  })();
+</script>
+
+<header class="border-b border-line bg-paper/85 backdrop-blur-md sticky top-0 z-40">
+  <div class="container-wide flex h-14 items-center justify-between gap-4">
+    {/* Logo */}
+    <a
+      href={withBase('/')}
+      class="group flex items-center gap-2 font-display font-bold tracking-tight text-ink-900 hover:text-brand transition-colors"
+    >
+      <span class="font-mono text-brand text-sm opacity-60 group-hover:opacity-100 transition-opacity">[</span>
+      <span class="text-sm sm:text-base">{SITE.name}</span>
+      <span class="font-mono text-brand text-sm opacity-60 group-hover:opacity-100 transition-opacity">]</span>
+    </a>
+
+    <div class="flex items-center gap-3 sm:gap-4">
+      <nav class="flex items-center gap-0.5 sm:gap-1 text-sm">
+        {nav.map((item) => (
+          <a
+            href={withBase(item.href)}
+            class:list={[
+              'px-2.5 sm:px-3 py-1.5 rounded-sm font-mono text-xs tracking-wider transition-colors',
+              isActive(item.href)
+                ? 'text-brand'
+                : 'text-ink-700 hover:text-ink-900',
+            ]}
+          >
+            <span class="i18n-zh">{item.zh}</span>
+            <span class="i18n-en">{item.en}</span>
+          </a>
+        ))}
+      </nav>
+
+      {/* 语言切换 */}
+      <div class="lang-switch" role="group" aria-label="Language switch">
+        <button type="button" data-lang-set="zh" aria-label="切换到中文">中</button>
+        <button type="button" data-lang-set="en" aria-label="Switch to English">EN</button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script is:inline>
+  // 语言切换逻辑
+  (function () {
+    function applyLang(lang) {
+      document.documentElement.setAttribute('data-lang', lang);
+      try { localStorage.setItem('site-lang', lang); } catch (e) {}
+      document.querySelectorAll('.lang-switch button').forEach(function (b) {
+        b.classList.toggle('is-active', b.getAttribute('data-lang-set') === lang);
+      });
+    }
+
+    // 初始态同步按钮激活样式
+    var current = document.documentElement.getAttribute('data-lang') || 'zh';
+    applyLang(current);
+
+    document.querySelectorAll('.lang-switch button').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var lang = btn.getAttribute('data-lang-set');
+        if (lang) applyLang(lang);
+      });
+    });
+  })();
+</script>

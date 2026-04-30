@@ -1,0 +1,91 @@
+---
+/**
+ * LogoPlaceholder —— 公司/学校 Logo 占位
+ * ============================================================
+ * 优先使用 `logo` 图片，缺省降级为「首字母方块 + 品牌色底」
+ * 深色主题：底色为中性深灰 #1E2225，首字母使用 Archivo Black 白色
+ * 可选 `tint` 属性提供公司品牌色提示（例如 TikTok 青、Tencent 蓝）
+ */
+interface Props {
+  logo?: string;
+  name: string;   // 用于取首字母 / alt
+  tint?: string;  // 可选品牌色 HEX（如 "#25F4EE"）
+  size?: number;  // 像素，默认 48
+  class?: string;
+}
+
+const { logo, name, tint, size = 48, class: className = '' } = Astro.props;
+
+// 取首字母：忽略 "·" 之类分隔符；优先取 ASCII 字符
+function pickInitial(n: string): string {
+  const cleaned = n.replace(/[·\-_/|]/g, ' ').trim();
+  // 优先拿第一个 ASCII 单词的首字母
+  const asciiMatch = cleaned.match(/[A-Za-z]/);
+  if (asciiMatch) return asciiMatch[0].toUpperCase();
+  // 否则取第一个字符（CJK）
+  return cleaned.charAt(0).toUpperCase();
+}
+
+const initial = pickInitial(name);
+
+// 样式：tint 存在时在底色上叠一层极淡 overlay，提升识别度
+const bgStyle = tint
+  ? `background: linear-gradient(135deg, rgba(${hexToRgb(tint)}, 0.18), rgba(30, 34, 37, 0.95)), #1E2225;`
+  : 'background: #1E2225;';
+
+function hexToRgb(hex: string): string {
+  const clean = hex.replace('#', '');
+  const r = parseInt(clean.substring(0, 2), 16);
+  const g = parseInt(clean.substring(2, 4), 16);
+  const b = parseInt(clean.substring(4, 6), 16);
+  return `${r}, ${g}, ${b}`;
+}
+
+const sizeStyle = `width:${size}px;height:${size}px;`;
+---
+
+{logo ? (
+  <div
+    class:list={['logo-ph logo-ph--img', className]}
+    style={sizeStyle}
+  >
+    <img src={logo} alt={name} loading="lazy" decoding="async" />
+  </div>
+) : (
+  <div
+    class:list={['logo-ph logo-ph--initial', className]}
+    style={`${sizeStyle}${bgStyle}`}
+    aria-label={name}
+  >
+    <span>{initial}</span>
+  </div>
+)}
+
+<style>
+  .logo-ph {
+    flex-shrink: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #2A2F33;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .logo-ph--img img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 4px;
+  }
+
+  .logo-ph--initial span {
+    font-family: 'Archivo Black', 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    color: #F0F2F4;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+</style>

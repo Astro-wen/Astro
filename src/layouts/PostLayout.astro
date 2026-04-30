@@ -1,0 +1,74 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import Tag from '@/components/Tag.astro';
+import type { CollectionEntry } from 'astro:content';
+
+interface Props {
+  entry: CollectionEntry<'blog'>;
+  prev?: CollectionEntry<'blog'>;
+  next?: CollectionEntry<'blog'>;
+  readingMinutes?: number;
+}
+
+const { entry, prev, next, readingMinutes } = Astro.props;
+const { title, summary, date, tags, cover } = entry.data;
+
+const dateLabel = new Intl.DateTimeFormat('zh-CN', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+}).format(date);
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+
+<BaseLayout title={title} description={summary} article={true} publishedTime={date} image={cover}>
+  <article class="container-prose py-10 sm:py-16">
+    <nav class="mb-8 text-sm">
+      <a href={`${base}/blog`} class="text-ink-700 hover:text-brand">← 所有文章</a>
+    </nav>
+
+    <header class="mb-10">
+      <h1 class="font-display text-3xl sm:text-4xl font-semibold tracking-tight text-ink-900">
+        {title}
+      </h1>
+      <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-ink-500">
+        <time datetime={date.toISOString()}>{dateLabel}</time>
+        {readingMinutes && <span>· 约 {readingMinutes} 分钟</span>}
+        {tags.length > 0 && (
+          <span class="flex flex-wrap gap-1.5">
+            {tags.map((t: string) => <Tag label={t} />)}
+          </span>
+        )}
+      </div>
+    </header>
+
+    <div class="prose prose-invert max-w-none">
+      <slot />
+    </div>
+
+    {(prev || next) && (
+      <hr class="my-12 border-line" />
+      <nav class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {prev ? (
+          <a
+            href={`${base}/blog/${prev.slug}`}
+            class="group rounded-lg border border-line p-4 hover:border-ink-500 transition-colors"
+          >
+            <div class="text-xs text-ink-500">上一篇</div>
+            <div class="mt-1 font-medium text-ink-900 group-hover:text-brand">{prev.data.title}</div>
+          </a>
+        ) : <span />}
+        {next ? (
+          <a
+            href={`${base}/blog/${next.slug}`}
+            class="group rounded-lg border border-line p-4 sm:text-right hover:border-ink-500 transition-colors"
+          >
+            <div class="text-xs text-ink-500">下一篇</div>
+            <div class="mt-1 font-medium text-ink-900 group-hover:text-brand">{next.data.title}</div>
+          </a>
+        ) : <span />}
+      </nav>
+    )}
+  </article>
+</BaseLayout>

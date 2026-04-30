@@ -1,0 +1,51 @@
+---
+import { SITE } from '@/lib/site';
+
+interface Props {
+  class?: string;
+}
+const { class: className = '' } = Astro.props;
+---
+
+<ul class:list={['flex items-center gap-4 text-ink-700', className]}>
+  {SITE.social.linkedin && (
+    <li>
+      <a
+        href={SITE.social.linkedin}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="LinkedIn"
+        class="hover:text-brand transition-colors"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.063 2.063 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+        </svg>
+      </a>
+    </li>
+  )}
+  {SITE.social.github && (
+    <li>
+      <a
+        href={SITE.social.github}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="GitHub"
+        class="hover:text-brand transition-colors"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.91.58.11.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.56-.29-5.26-1.28-5.26-5.7 0-1.26.45-2.29 1.18-3.09-.12-.29-.51-1.47.11-3.06 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.9-.39.99 0 1.98.13 2.9.39 2.21-1.49 3.18-1.18 3.18-1.18.62 1.59.23 2.77.11 3.06.73.8 1.18 1.83 1.18 3.09 0 4.43-2.71 5.41-5.29 5.69.41.35.78 1.05.78 2.12 0 1.53-.01 2.76-.01 3.14 0 .31.21.68.8.56C20.22 21.39 23.5 17.08 23.5 12 23.5 5.73 18.27.5 12 .5z" />
+        </svg>
+      </a>
+    </li>
+  )}
+  {SITE.social.email && (
+    <li>
+      <a href={SITE.social.email} aria-label="Email" class="hover:text-brand transition-colors">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="3" y="5" width="18" height="14" rx="2" />
+          <path d="m3 7 9 6 9-6" />
+        </svg>
+      </a>
+    </li>
+  )}
+</ul>

@@ -1,0 +1,28 @@
+---
+title: '为什么我选择 Astro 搭建个人站'
+date: 2026-04-25
+summary: '从 Next.js、Hexo、Hugo 对比到 Astro 的最终选择，以及 Content Collections 带来的开发体验。'
+tags: ['astro', 'tech', 'blog']
+draft: false
+---
+
+这是一篇 **MDX** 示例，演示 MDX 与纯 Markdown 的互操作性。
+
+## Astro 的核心优势
+
+1. **默认零 JS**：静态输出，首屏极快。
+2. **Islands 架构**：需要交互时按需引入，不污染全站。
+3. **Content Collections**：Markdown/MDX + Zod schema 类型安全。
+
+## 写作体验
+
+在 `src/content/blog/` 下新建一个 `.md` 或 `.mdx` 文件，填好 frontmatter，就完成了一篇文章的发布准备。
+
+```bash
+pnpm dev
+# 访问 http://localhost:4321/blog
+```
+
+---
+
+后续会用更多文章记录折腾日常。
