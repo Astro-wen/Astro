@@ -6,9 +6,13 @@ import tailwind from '@astrojs/tailwind';
 
 // GitHub Pages：lingangulguli/AstroW-Website
 // 站点地址：https://lingangulguli.github.io/AstroW-Website/
+// 注意：dev 模式下不设 base，避免 http://localhost 根路径 404；
+//       只有 build（部署到 GitHub Pages）时才加 /AstroW-Website 前缀。
+const isBuild = process.argv.includes('build');
+
 export default defineConfig({
   site: 'https://lingangulguli.github.io',
-  base: '/AstroW-Website',
+  base: isBuild ? '/AstroW-Website' : '/',
   trailingSlash: 'ignore',
   integrations: [
     mdx(),
@@ -26,3 +30,4 @@ export default defineConfig({
     },
   },
 });
+

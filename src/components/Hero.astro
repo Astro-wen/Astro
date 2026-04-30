@@ -14,6 +14,16 @@ import { SITE } from '@/lib/site';
 
 <section class="relative container-wide pt-24 sm:pt-32 pb-20 sm:pb-28" id="hero-root">
 
+  {/* 右上角三原色装饰线（不遮挡，只作为海报感角标） */}
+  <div
+    class="hidden md:flex absolute right-6 lg:right-10 top-28 sm:top-32 flex-col items-end gap-2 pointer-events-none select-none"
+    aria-hidden="true"
+  >
+    <span class="block h-[2px] w-24 bg-vhs-cyan"></span>
+    <span class="block h-[2px] w-16 bg-vhs-yellow"></span>
+    <span class="block h-[2px] w-10 bg-vhs-red"></span>
+  </div>
+
   {/* 顶部编号胶条 */}
   <div class="reveal flex items-center gap-3" style="--reveal-delay: 0ms">
     <span class="tape-chip tape-chip--solid">NO.001</span>
@@ -50,13 +60,29 @@ import { SITE } from '@/lib/site';
     </p>
   </div>
 
-  {/* 简短自我介绍 */}
-  <p class="reveal mt-6 max-w-2xl text-ink-700 leading-relaxed text-base sm:text-lg i18n-zh" style="--reveal-delay: 320ms">
-    UCLA 在读，聚焦游戏、AI 原生产品与玩家增长。在 TikTok、Tencent America、Tencent Games 做过产品实习。相信好产品是"把复杂系统变得一目了然"这件事的结果。
-  </p>
-  <p class="reveal mt-6 max-w-2xl text-ink-700 leading-relaxed text-base sm:text-lg i18n-en" style="--reveal-delay: 320ms">
-    Studying at UCLA. Focused on games, AI-native products, and player growth. Previously interned in PM roles at TikTok, Tencent America, and Tencent Games. I believe great products are the result of making complex systems feel obvious.
-  </p>
+  {/* 联系方式 —— 邮箱 + LinkedIn */}
+  <div class="reveal mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm" style="--reveal-delay: 320ms">
+    <a
+      href="mailto:linmengfdm@gmail.com"
+      class="group inline-flex items-center gap-2 text-ink-700 hover:text-brand transition-colors"
+    >
+      <span class="font-mono text-[10px] tracking-[0.25em] text-ink-300 group-hover:text-brand">EMAIL</span>
+      <span class="font-mono text-sm tracking-wide">linmengfdm@gmail.com</span>
+    </a>
+    <span class="hidden sm:inline h-3 w-px bg-line" aria-hidden="true"></span>
+    <a
+      href="https://www.linkedin.com/in/aaron-wen-60505b2a3/"
+      target="_blank"
+      rel="noopener noreferrer"
+      class="group inline-flex items-center gap-2 text-ink-700 hover:text-brand transition-colors"
+    >
+      <span class="font-mono text-[10px] tracking-[0.25em] text-ink-300 group-hover:text-brand">LINKEDIN</span>
+      <span class="font-mono text-sm tracking-wide">aaron-wen</span>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true" class="opacity-60 group-hover:opacity-100">
+        <path d="M7 17 17 7M9 7h8v8"/>
+      </svg>
+    </a>
+  </div>
 
   {/* 快捷索引条 */}
   <div class="reveal mt-14 flex items-center gap-5 text-sm" style="--reveal-delay: 440ms">
