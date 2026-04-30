@@ -5,36 +5,45 @@ import { SITE } from '@/lib/site';
 
 const skills = [
   {
-    group: '产品',
-    groupEn: 'Product',
-    items: [
-      'PRD 撰写', 'Post-Mortems', '竞品分析', '用户研究', 'Roadmapping',
-      'AI-native PM 工作流（Claude Code / Cursor / MCP）',
+    zh: { group: '产品', items: [
+      'PRD 撰写', '复盘（Post-Mortem）', '竞品分析', '用户研究', '路线图规划',
+      'AI 原生产品经理工作流（Claude Code / Cursor / MCP）',
       'Figma · Jira · Linear · Asana · Notion · Miro · Slack',
-    ],
+    ]},
+    en: { group: 'Product', items: [
+      'PRD writing', 'Post-Mortems', 'Competitive analysis', 'User research', 'Roadmapping',
+      'AI-native PM workflow (Claude Code / Cursor / MCP)',
+      'Figma · Jira · Linear · Asana · Notion · Miro · Slack',
+    ]},
   },
   {
-    group: '分析',
-    groupEn: 'Analytics',
-    items: [
+    zh: { group: '分析', items: [
+      'SQL', 'Python（Pandas / Scikit-learn / PyTorch）', 'R',
+      'Tableau', 'Excel', 'A/B 测试', '漏斗分析',
+    ]},
+    en: { group: 'Analytics', items: [
       'SQL', 'Python (Pandas / Scikit-learn / PyTorch)', 'R',
-      'Tableau', 'Excel', 'A/B Testing', '漏斗分析',
-    ],
+      'Tableau', 'Excel', 'A/B Testing', 'Funnel analysis',
+    ]},
   },
   {
-    group: '游戏',
-    groupEn: 'Games',
-    items: [
-      'Mobile Game KPIs (DAU / ARPU / Retention / Conversion)',
-      'Live-Ops Design', 'Event & Offer Design', 'Quest Design',
-      'Game Economy Modeling', 'Player Segmentation',
+    zh: { group: '游戏', items: [
+      '手游 KPI（DAU / ARPU / 留存 / 转化）',
+      '线上运营设计', '活动与礼包设计', '任务系统设计',
+      '游戏经济建模', '玩家分层',
+      '敏捷开发', 'Unity · Godot · UE5',
+    ]},
+    en: { group: 'Games', items: [
+      'Mobile game KPIs (DAU / ARPU / Retention / Conversion)',
+      'Live-Ops design', 'Event & offer design', 'Quest design',
+      'Game economy modeling', 'Player segmentation',
       'Agile', 'Unity · Godot · UE5',
-    ],
+    ]},
   },
 ];
 ---
 
-<BaseLayout title="关于" description={`关于 ${SITE.name}`}>
+<BaseLayout title="关于我" description={`关于 ${SITE.name}`}>
   <section class="container-wide py-16 sm:py-24">
     <SectionHeader
       index="§"
@@ -46,19 +55,18 @@ const skills = [
 
     <div class="grid grid-cols-12 gap-6 lg:gap-10">
       <div class="col-span-12 lg:col-span-8">
+        {/* ============ 中文版 ============ */}
         <div class="reveal prose prose-invert max-w-none i18n-zh" style="--reveal-delay: 80ms">
           <p>
-            大家好，我是 <strong>温思源（Aaron Wen）</strong>，代号 <span class="metric">AstroW</span>。
-            目前在 <strong>UCLA</strong> 读统计与数据科学 + 商业经济学双学位，专注游戏、AI 原生产品与玩家增长。
+            你好，我是<strong>温思源（Aaron Wen）</strong>。就读于<strong>加州大学洛杉矶分校（UCLA）</strong>，专注游戏、AI 原生产品与用户增长。
           </p>
           <p>
-            过去在 <strong>TikTok（Account Center · Infra）</strong>、
-            <strong>Tencent America（IEGG）</strong> 和 <strong>Tencent Games（研发效能部）</strong>
+            过去在 <strong>TikTok（账户中心 · 基础设施）</strong>、
+            <strong>腾讯美洲（IEGG）</strong> 和 <strong>腾讯 互动娱乐事业群（自研体系管理部）</strong>
             做过产品实习，涉及多账号基础设施、AI 能力聚合平台、手游 AI 战斗伙伴、游戏化系统、上线活动策略等方向。
           </p>
           <p>
-            我相信好产品是"<strong>把复杂系统变得一目了然</strong>"这件事的结果——
-            在定义之前先把用户和系统都看懂，然后用最少的概念把事情讲清楚。
+            我相信好产品是"<strong>把复杂系统变得一目了然</strong>"这件事的结果——在定义之前先把用户和系统都看懂，然后用最少的概念把事情讲清楚。
           </p>
           <p>
             想聊聊的话，可以通过
@@ -69,14 +77,14 @@ const skills = [
           </p>
         </div>
 
+        {/* ============ 英文版 ============ */}
         <div class="reveal prose prose-invert max-w-none i18n-en" style="--reveal-delay: 80ms">
           <p>
-            Hi, I'm <strong>Aaron Wen (温思源)</strong>, codename <span class="metric">AstroW</span>.
-            I'm a dual-degree student at <strong>UCLA</strong> in Statistics &amp; Data Science and Business Economics, focused on games, AI-native products, and player growth.
+            Hi, I'm <strong>Aaron Wen</strong>. I'm a student at <strong>University of California, Los Angeles (UCLA)</strong>, focused on games, AI-native products, and user growth.
           </p>
           <p>
-            Previously I interned as a PM at <strong>TikTok (Account Center · Infra)</strong>,
-            <strong>Tencent America (IEGG)</strong>, and <strong>Tencent Games (R&amp;D Efficiency)</strong> — working on multi-account infrastructure, AI capability platforms, mobile-game AI combat companions, gamification, and launch live-ops.
+            Previously I interned as a PM at <strong>TikTok (Account Center · Infrastructure)</strong>,
+            <strong>Tencent America (IEGG)</strong>, and <strong>Tencent IEG (R&amp;D System Management Department)</strong> — working on multi-account infrastructure, AI capability platforms, mobile-game AI combat companions, gamification, and launch live-ops.
           </p>
           <p>
             I believe great products are the result of one thing: <strong>making complex systems feel obvious</strong>. Understand the user and the system before defining anything, then explain it with the fewest concepts possible.
@@ -96,23 +104,20 @@ const skills = [
               <span class="i18n-zh">联系</span>
               <span class="i18n-en">Contact</span>
             </div>
-            <dl class="space-y-2 text-sm">
+            <dl class="space-y-2.5 text-sm">
               <div class="flex items-baseline gap-3">
-                <dt class="font-mono text-xs text-ink-500 w-14 shrink-0">EMAIL</dt>
+                <dt class="text-xs text-ink-500 w-16 shrink-0 font-semibold tracking-wider i18n-zh">邮箱</dt>
+                <dt class="text-xs text-ink-500 w-16 shrink-0 font-semibold tracking-wider i18n-en">EMAIL</dt>
                 <dd class="text-ink-900">
                   <a href={SITE.social.email} class="hover:text-brand transition-colors">linmengfdm@gmail.com</a>
                 </dd>
               </div>
               <div class="flex items-baseline gap-3">
-                <dt class="font-mono text-xs text-ink-500 w-14 shrink-0">LOC</dt>
-                <dd class="text-ink-700">Los Angeles / San Jose</dd>
-              </div>
-              <div class="flex items-baseline gap-3">
-                <dt class="font-mono text-xs text-ink-500 w-14 shrink-0">STATUS</dt>
-                <dd class="text-brand font-bold flex items-center gap-1.5">
-                  <span class="inline-flex h-2 w-2 rounded-full bg-brand"></span>
-                  <span class="i18n-zh">寻找 2026 年实习</span>
-                  <span class="i18n-en">Open to 2026 Intern</span>
+                <dt class="text-xs text-ink-500 w-16 shrink-0 font-semibold tracking-wider i18n-zh">所在地</dt>
+                <dt class="text-xs text-ink-500 w-16 shrink-0 font-semibold tracking-wider i18n-en">LOCATION</dt>
+                <dd class="text-ink-700">
+                  <span class="i18n-zh">美国 洛杉矶 / 圣何塞</span>
+                  <span class="i18n-en">Los Angeles / San Jose, CA</span>
                 </dd>
               </div>
             </dl>
@@ -138,16 +143,27 @@ const skills = [
             style={`--reveal-delay: ${200 + i * 90}ms`}
           >
             <div class="flex items-center gap-2 mb-4">
-              <span class="font-display text-brand text-2xl leading-none">
+              <span class="font-display text-brand text-2xl leading-none tabular-nums">
                 {String(i + 1).padStart(2, '0')}
               </span>
-              <span class="font-sans font-black text-ink-900 i18n-zh">{group.group}</span>
-              <span class="font-sans font-black text-ink-900 i18n-en">{group.groupEn}</span>
+              <span class="font-sans font-black text-ink-900 text-lg i18n-zh">{group.zh.group}</span>
+              <span class="font-sans font-black text-ink-900 text-lg i18n-en">{group.en.group}</span>
             </div>
-            <ul class="space-y-1.5 text-sm text-ink-700">
-              {group.items.map((it) => (
+
+            {/* 中文技能列表 */}
+            <ul class="space-y-1.5 text-sm text-ink-700 i18n-zh">
+              {group.zh.items.map((it) => (
                 <li class="flex items-baseline gap-2">
-                  <span class="text-ink-500 font-mono text-xs">—</span>
+                  <span class="text-ink-500">—</span>
+                  <span>{it}</span>
+                </li>
+              ))}
+            </ul>
+            {/* 英文技能列表 */}
+            <ul class="space-y-1.5 text-sm text-ink-700 i18n-en">
+              {group.en.items.map((it) => (
+                <li class="flex items-baseline gap-2">
+                  <span class="text-ink-500">—</span>
                   <span>{it}</span>
                 </li>
               ))}

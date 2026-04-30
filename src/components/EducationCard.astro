@@ -11,12 +11,15 @@ const { entry, index = 0 } = Astro.props;
 const {
   org, orgShort, orgZh, orgEn, logo, tint, url,
   role, roleEn,
-  start, end, location, current,
+  start, end, location, locationZh, current,
 } = entry.data;
 
-const fmt = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short' });
-const startStr = fmt.format(start).toUpperCase();
-const endStr = end ? fmt.format(end).toUpperCase() : null;
+// 日期：英文用 "SEP 2024" 这种，中文用 "2024 年 9 月"
+const enFmt = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short' });
+const startEn = enFmt.format(start).toUpperCase();
+const endEn = end ? enFmt.format(end).toUpperCase() : null;
+const startZh = `${start.getFullYear()} 年 ${start.getMonth() + 1} 月`;
+const endZh = end ? `${end.getFullYear()} 年 ${end.getMonth() + 1} 月` : null;
 const revealDelay = `${index * 90}ms`;
 
 const displayName = orgShort || org;
@@ -102,20 +105,28 @@ const wrapperProps = url
         {/* 时间 + 地点 */}
         <div class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm text-ink-500">
           <span class="tracking-wide tabular-nums">
-            <span class="text-ink-700">{startStr}</span>
-            <span class="mx-1.5">→</span>
-            <span class={current ? 'text-brand font-semibold' : 'text-ink-700'}>
-              {current ? (
-                <>
-                  <span class="i18n-zh">至今</span>
-                  <span class="i18n-en">PRESENT</span>
-                </>
-              ) : endStr}
+            {/* 中文时间 */}
+            <span class="i18n-zh">
+              <span class="text-ink-700">{startZh}</span>
+              <span class="mx-1.5">→</span>
+              <span class={current ? 'text-brand font-semibold' : 'text-ink-700'}>
+                {current ? '至今' : endZh}
+              </span>
+            </span>
+            {/* 英文时间 */}
+            <span class="i18n-en">
+              <span class="text-ink-700">{startEn}</span>
+              <span class="mx-1.5">→</span>
+              <span class={current ? 'text-brand font-semibold' : 'text-ink-700'}>
+                {current ? 'PRESENT' : endEn}
+              </span>
             </span>
           </span>
-          {location && (
+          {(location || locationZh) && (
             <span class="tracking-wide">
-              <span class="text-accent">◉</span> {location}
+              <span class="text-accent">◉</span>{' '}
+              <span class="i18n-zh">{locationZh ?? location}</span>
+              <span class="i18n-en">{location ?? locationZh}</span>
             </span>
           )}
         </div>
