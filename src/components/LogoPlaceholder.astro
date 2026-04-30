@@ -16,6 +16,14 @@ interface Props {
 
 const { logo, name, tint, size = 48, class: className = '' } = Astro.props;
 
+// 自动为相对路径的 logo 加上 BASE_URL 前缀（GitHub Pages 部署在子路径 /AstroW-Website/ 下）
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const logoSrc = logo
+  ? (logo.startsWith('http') || logo.startsWith(base + '/')
+      ? logo
+      : `${base}${logo.startsWith('/') ? '' : '/'}${logo}`)
+  : undefined;
+
 // 取首字母：忽略 "·" 之类分隔符；优先取 ASCII 字符
 function pickInitial(n: string): string {
   const cleaned = n.replace(/[·\-_/|]/g, ' ').trim();
@@ -49,7 +57,7 @@ const sizeStyle = `width:${size}px;height:${size}px;`;
     class:list={['logo-ph logo-ph--img', className]}
     style={sizeStyle}
   >
-    <img src={logo} alt={name} loading="lazy" decoding="async" />
+    <img src={logoSrc} alt={name} loading="lazy" decoding="async" />
   </div>
 ) : (
   <div

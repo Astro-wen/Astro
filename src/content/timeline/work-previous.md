@@ -4,16 +4,17 @@ org: "Tencent America · IEGG"
 orgShort: "TENCENT"
 orgZh: "腾讯美国 · IEGG"
 orgEn: "Tencent America · IEGG"
+logo: "/logos/tencent.png"
 role: "产品经理实习生"
 roleEn: "Product Manager Intern"
 team: "Interactive Entertainment Group Global"
 teamEn: "Interactive Entertainment Group Global"
 tint: "#0052D9"
 start: 2025-09-01
-end: 2026-03-01
 location: "Los Angeles, CA"
 tags: ["AI Skills Hub", "PUBG Mobile", "LLM + RL", "User Segmentation"]
 featured: true
+current: true
 ---
 
 主导 **AI Skills Hub（skillhub.tencent.com）** 的端到端产品生命周期——一个面向腾讯全球工作室的 AI 能力聚合平台，上线后沉淀 **33,000+** 个 AI skills，显著加速各工作室在制作管线中的 AI 采用。
