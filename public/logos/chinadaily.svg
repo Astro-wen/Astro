@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600" role="img" aria-label="China Daily">
+  <defs>
+    <clipPath id="rounded">
+      <rect x="0" y="0" width="600" height="600" rx="100" ry="100" />
+    </clipPath>
+  </defs>
+  <g clip-path="url(#rounded)">
+    <rect width="600" height="600" fill="#183B6B" />
+    <text x="50%" y="252" text-anchor="middle" fill="#FFFFFF"
+          font-family="'Archivo Black', 'Helvetica Neue', Arial, sans-serif"
+          font-weight="900" font-size="148" letter-spacing="-2">CHINA</text>
+    <text x="50%" y="408" text-anchor="middle" fill="#B9BEC7"
+          font-family="'Archivo Black', 'Helvetica Neue', Arial, sans-serif"
+          font-weight="900" font-size="148" letter-spacing="-2">DAILY</text>
+  </g>
+</svg>

@@ -49,6 +49,18 @@ const timeline = defineCollection({
     featured: z.boolean().default(false),
     current: z.boolean().default(false), // 是否为当前进行中（用于右上角状态徽标）
     defaultOpen: z.boolean().optional(), // 折叠卡片是否默认展开（留空由渲染层决定）
+    // 相关作品/报道链接（如记者经历的已发表文章），在展开区以卡片网格展示
+    articles: z
+      .array(
+        z.object({
+          title: z.string(),
+          titleEn: z.string().optional(),
+          url: z.string().url(),
+          cover: z.string().optional(), // 相对 public/ 的路径，可缺省
+          date: z.string().optional(),  // 如 "2025-01-15"
+        })
+      )
+      .optional(),
   }),
 });
 

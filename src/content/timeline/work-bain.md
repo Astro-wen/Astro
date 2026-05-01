@@ -11,11 +11,12 @@ team: "大中华区办公室 · 混合办公"
 teamEn: "Greater China Office · Hybrid"
 tint: "#CC092F"
 start: 2025-11-01
+end: 2026-05-31
 location: "Shanghai, China"
 locationZh: "中国 上海"
 tags: ["Executive Compensation", "Benchmarking", "F&B", "Consumer Retail"]
 featured: true
-current: true
+current: false
 ---
 
 <div class="i18n-zh">

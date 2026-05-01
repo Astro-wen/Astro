@@ -65,6 +65,11 @@
     font-feature-settings: 'ss01', 'cv11', 'tnum';
     /* 默认（中文模式）：Noto Sans SC 打头，气质严谨 */
     font-family: 'Noto Sans SC', 'Inter', -apple-system, 'Helvetica Neue', Arial, sans-serif;
+    /* Lone Modern · 全局极淡 32px 米色网格（不抢内容） */
+    background-image:
+      repeating-linear-gradient(0deg,  transparent 0 31px, rgba(239, 230, 211, 0.04) 31px 32px),
+      repeating-linear-gradient(90deg, transparent 0 31px, rgba(239, 230, 211, 0.04) 31px 32px);
+    background-attachment: fixed;
   }
 
   /* 英文模式：Inter 打头，平滑现代（类 Arial/黑体气质） */
@@ -74,7 +79,7 @@
 
   ::selection {
     background: rgba(var(--accent-rgb), 0.32);
-    color: #F2F4F5;
+    color: #EFE6D3;
   }
 
   a { @apply transition-colors duration-150; }
@@ -129,7 +134,7 @@
     padding: 0.38rem 0.85rem 0.38rem 0.6rem;
     border-left: calc(var(--1px) * 4) solid var(--accent);
     background: #14171A;
-    color: #E8EDEF;
+    color: #EFE6D3;
     font-family: 'Inter', -apple-system, 'Helvetica Neue', Arial, sans-serif;
     font-weight: 700;
     font-size: 11px;
@@ -174,11 +179,7 @@
      ============================================================ */
   .rgb-split {
     position: relative;
-    color: #F2F4F5;
-    text-shadow:
-      -0.025em 0 0 var(--rgb-cyan),
-       0.025em 0 0 var(--rgb-red),
-       0    0.018em 0 var(--rgb-yellow);
+    color: #EFE6D3;
   }
   @media (prefers-reduced-motion: reduce) {
     .rgb-split { text-shadow: none; }
@@ -402,7 +403,7 @@
     border: none;
     transition: background 150ms, color 150ms;
   }
-  .lang-switch button:hover { color: #E8EDEF; }
+  .lang-switch button:hover { color: #EFE6D3; }
   .lang-switch button.is-active {
     background: var(--accent);
     color: #0B0D0E;
@@ -418,5 +419,11 @@
       animation: none !important;
     }
   }
+
+  /* ============================================================
+     Lone Modern · 打字机尾字红橙高亮
+     参考图（Astro[o] W[红]）：最后一个字符用 var(--accent) 上色
+     ============================================================ */
+  .name-accent { color: var(--accent); }
 
 }

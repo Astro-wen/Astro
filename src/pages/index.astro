@@ -67,7 +67,12 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       />
       <div class="space-y-8 sm:space-y-10">
         {experiences.map((entry, i) => (
-          <ExperienceCard entry={entry} index={i} defaultOpen={i === 0} />
+          <ExperienceCard
+            entry={entry}
+            index={i}
+            number={experiences.length - i}
+            defaultOpen={i === 0}
+          />
         ))}
       </div>
     </section>

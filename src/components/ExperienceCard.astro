@@ -5,15 +5,18 @@ import LogoPlaceholder from './LogoPlaceholder.astro';
 interface Props {
   entry: CollectionEntry<'timeline'>;
   index?: number;
+  /** 展示用的编号（NO.xxx），不设则用 index+1 */
+  number?: number;
   defaultOpen?: boolean;
 }
 
-const { entry, index = 0, defaultOpen = false } = Astro.props;
+const { entry, index = 0, number, defaultOpen = false } = Astro.props;
 const { Content } = await entry.render();
 const {
   org, orgShort, orgZh, orgEn, logo, tint,
   role, roleEn, team, teamEn,
   start, end, location, locationZh, tags, current, kind,
+  articles,
 } = entry.data;
 
 // 日期：英文 "MAR 2026" / 中文 "2026 年 3 月"
@@ -28,6 +31,14 @@ const revealDelay = `${index * 90}ms`;
 
 // 文字 Logo fallback（给 LogoPlaceholder 取首字母用）
 const displayName = orgShort || org;
+
+// 处理 articles 封面图：相对路径加 BASE_URL
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+function resolveCover(src?: string): string | undefined {
+  if (!src) return undefined;
+  if (src.startsWith('http')) return src;
+  return `${base}${src.startsWith('/') ? '' : '/'}${src}`;
+}
 ---
 
 <article
@@ -41,7 +52,7 @@ const displayName = orgShort || org;
   >
     {/* 左上编号胶条（孤星风：border-left 橙条 + 实底） */}
     <div class="absolute -top-px left-6 tape-chip z-10">
-      NO.{String(index + 1).padStart(3, '0')}
+      NO.{String(number ?? index + 1).padStart(3, '0')}
     </div>
 
     {/* 折叠态触发区（整个头部可点） */}
@@ -59,7 +70,7 @@ const displayName = orgShort || org;
           <div class="flex items-start justify-between gap-3 flex-wrap">
             <div class="min-w-0">
               {/* 公司名 —— 中英分离，加大字号醒目 */}
-              <div class="font-display text-xl sm:text-2xl text-ink-900 leading-tight tracking-tight group-hover:text-brand transition-colors">
+              <div class="font-display font-black text-xl sm:text-2xl text-ink-900 leading-tight tracking-tight group-hover:text-brand transition-colors">
                 <span class="i18n-zh">{orgZh ?? org}</span>
                 <span class="i18n-en">{orgEn ?? org}</span>
               </div>
@@ -162,6 +173,65 @@ const displayName = orgShort || org;
             <Content />
           </div>
 
+          {/* 相关报道 / 作品集（China Daily 等） */}
+          {articles && articles.length > 0 && (
+            <div class="mt-6">
+              <div class="mb-3 flex items-center gap-3">
+                <span class="h-0.5 w-6 bg-brand"></span>
+                <span class="section-eyebrow">
+                  <span class="i18n-zh">相关报道</span>
+                  <span class="i18n-en">Selected Coverage</span>
+                </span>
+              </div>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {articles.map((a) => {
+                  const coverUrl = resolveCover(a.cover);
+                  return (
+                    <a
+                      href={a.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="article-card group block border border-line hover:border-brand transition-colors duration-150 bg-paper-edge/40"
+                    >
+                      {coverUrl ? (
+                        <div class="article-cover">
+                          <img src={coverUrl} alt={a.titleEn ?? a.title} loading="lazy" decoding="async" />
+                        </div>
+                      ) : (
+                        <div class="article-cover article-cover--placeholder" aria-hidden="true">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="4" y="5" width="16" height="14" rx="1" />
+                            <path d="M4 9h16" />
+                            <path d="M8 13h5" />
+                            <path d="M8 16h8" />
+                          </svg>
+                        </div>
+                      )}
+                      <div class="article-meta">
+                        {a.date && (
+                          <div class="font-mono text-[10.5px] tracking-[0.18em] text-ink-500 mb-1.5 tabular-nums">
+                            {a.date}
+                          </div>
+                        )}
+                        <div class="text-sm font-medium leading-snug text-ink-900 group-hover:text-brand transition-colors">
+                          <span class="i18n-zh">{a.title}</span>
+                          <span class="i18n-en">{a.titleEn ?? a.title}</span>
+                        </div>
+                        <div class="mt-2 flex items-center gap-1.5 text-[10.5px] tracking-[0.22em] text-ink-500 group-hover:text-brand transition-colors">
+                          <span class="i18n-zh">阅读原文</span>
+                          <span class="i18n-en">READ ARTICLE</span>
+                          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
+                            <path d="M7 17 17 7M9 7h8v8"/>
+                          </svg>
+                        </div>
+                      </div>
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           {/* Tags */}
           {tags.length > 0 && (
             <div class="mt-5 flex flex-wrap gap-1.5">
@@ -219,7 +289,7 @@ const displayName = orgShort || org;
   }
 
   .experience-body :global(strong) {
-    color: #F0F2F4;
+    color: #EFE6D3;
     font-weight: 700;
   }
 
@@ -232,5 +302,45 @@ const displayName = orgShort || org;
 
   .experience-body :global(a:hover) {
     border-bottom-color: #FF5A3C;
+  }
+
+  /* ==================================================================
+     .article-card —— 展开区的相关报道卡
+     ================================================================== */
+  .article-card {
+    display: block;
+    text-decoration: none;
+  }
+  .article-cover {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background: #0B0D0E;
+    border-bottom: 1px solid #1F2326;
+    position: relative;
+  }
+  .article-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 280ms var(--ease-out-expo);
+  }
+  .article-card:hover .article-cover img {
+    transform: scale(1.04);
+  }
+  .article-cover--placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #3F464B;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        transparent 0 6px,
+        rgba(255, 255, 255, 0.015) 6px 7px
+      ),
+      #0B0D0E;
+  }
+  .article-meta {
+    padding: 0.75rem 0.9rem 0.95rem;
   }
 </style>
