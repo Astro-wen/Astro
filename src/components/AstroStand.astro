@@ -1,0 +1,143 @@
+---
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const frames = Array.from(
+  { length: 10 },
+  (_, index) => `${base}/media/astro-stand/frame-${String(index + 1).padStart(2, '0')}.png`,
+);
+---
+
+<aside class="astro-stand-widget" aria-hidden="true" data-frames={frames.join('|')}>
+  <span class="astro-stand-shadow"></span>
+  <img
+    class="astro-stand-frame"
+    src={frames[0]}
+    width="320"
+    height="320"
+    alt=""
+    decoding="async"
+    loading="eager"
+  />
+</aside>
+
+<script is:inline>
+  (function () {
+    var root = document.querySelector('.astro-stand-widget[data-frames]');
+    if (!root) return;
+
+    var reduced = false;
+    try {
+      reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    } catch (e) {}
+    if (reduced) return;
+
+    var image = root.querySelector('.astro-stand-frame');
+    var frames = (root.getAttribute('data-frames') || '').split('|').filter(Boolean);
+    if (!image || frames.length < 2) return;
+
+    frames.slice(1).forEach(function (src) {
+      var preload = new Image();
+      preload.src = src;
+    });
+
+    var frame = 0;
+    var last = 0;
+    var raf = 0;
+    var interval = 245;
+
+    function tick(now) {
+      if (!last) last = now;
+      if (now - last >= interval) {
+        frame = (frame + 1) % frames.length;
+        image.src = frames[frame];
+        last = now;
+      }
+      raf = window.requestAnimationFrame(tick);
+    }
+
+    function start() {
+      if (!raf) {
+        last = 0;
+        raf = window.requestAnimationFrame(tick);
+      }
+    }
+
+    function stop() {
+      if (raf) {
+        window.cancelAnimationFrame(raf);
+        raf = 0;
+      }
+    }
+
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) stop();
+      else start();
+    });
+
+    start();
+  })();
+</script>
+
+<style>
+  .astro-stand-widget {
+    position: fixed;
+    right: max(14px, env(safe-area-inset-right));
+    bottom: max(12px, env(safe-area-inset-bottom));
+    z-index: 50;
+    width: clamp(82px, 9.5vw, 132px);
+    aspect-ratio: 1;
+    pointer-events: none;
+    contain: layout paint;
+    isolation: isolate;
+    transform: translateZ(0);
+  }
+
+  .astro-stand-frame {
+    position: relative;
+    z-index: 1;
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.34));
+    transform-origin: 50% 100%;
+    animation: astroStandIdle 3.8s var(--ease-out-quart, cubic-bezier(0.25, 1, 0.5, 1)) infinite;
+    will-change: transform;
+  }
+
+  .astro-stand-shadow {
+    position: absolute;
+    left: 22%;
+    right: 20%;
+    bottom: 5%;
+    height: 9%;
+    border-radius: 999px;
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.34), transparent 68%);
+    filter: blur(3px);
+    opacity: 0.74;
+    transform: translateY(5px);
+  }
+
+  @keyframes astroStandIdle {
+    0%, 100% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+      transform: translate3d(0, -2px, 0) scale(1.012);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .astro-stand-widget {
+      right: 8px;
+      bottom: 8px;
+      width: 76px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .astro-stand-frame {
+      animation: none;
+      will-change: auto;
+    }
+  }
+</style>

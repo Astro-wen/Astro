@@ -4,6 +4,7 @@ import SEO from '@/components/SEO.astro';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
 import IntroSplash from '@/components/IntroSplash.astro';
+import AstroStand from '@/components/AstroStand.astro';
 import { SITE } from '@/lib/site';
 
 interface Props {
@@ -44,7 +45,8 @@ const { title, description, image, article, publishedTime, bodyClass = '' } = As
     <style is:inline>
       html[data-intro="playing"] body > header,
       html[data-intro="playing"] body > main,
-      html[data-intro="playing"] body > footer {
+      html[data-intro="playing"] body > footer,
+      html[data-intro="playing"] body > .astro-stand-widget {
         visibility: hidden;
       }
     </style>
@@ -70,6 +72,7 @@ const { title, description, image, article, publishedTime, bodyClass = '' } = As
       <slot />
     </main>
     <Footer />
+    <AstroStand />
 
     {/* 折叠卡片全局交互：点击 .card-trigger 切换父 .card-expandable 的 data-expanded */}
     <script is:inline>
