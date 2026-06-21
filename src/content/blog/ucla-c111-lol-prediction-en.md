@@ -7,7 +7,7 @@ cover: '/media/lol-report/figure4_model_comparison.png'
 draft: false
 ---
 
-> **Language**: This is the English version of the full report. [中文版请点此 →](/Astro/blog/ucla-c111-lol-prediction-zh)
+> **Language**: This is the English version of the full report. [中文版请点此 →](/blog/ucla-c111-lol-prediction-zh)
 >
 > **Links**: [Project Website](https://astro-wen.github.io/UCLA_C111_LoL/) · [GitHub](https://github.com/Astro-wen/UCLA_C111_LoL) · [Dataset (Kaggle)](https://www.kaggle.com/datasets/bobbyscience/league-of-legends-diamond-ranked-games-10-min) · [Code (Colab)](https://colab.research.google.com/drive/1M3lTclYuREo6cQWqkfEM9ozNS7ymSdts?usp=sharing)
 

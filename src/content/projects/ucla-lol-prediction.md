@@ -60,8 +60,8 @@ Logistic Regression 系数和 Random Forest 重要性评分一致表明：**金�
 
 ## 相关链接
 
-- 📊 [完整报告（中文）](/Astro/blog/ucla-c111-lol-prediction-zh) — 含全部代码、图表与分析
-- 📊 [Full Report (English)](/Astro/blog/ucla-c111-lol-prediction-en) — Complete report with code and figures
+- 📊 [完整报告（中文）](/blog/ucla-c111-lol-prediction-zh) — 含全部代码、图表与分析
+- 📊 [Full Report (English)](/blog/ucla-c111-lol-prediction-en) — Complete report with code and figures
 - 🌐 [项目官网](https://astro-wen.github.io/UCLA_C111_LoL/) — 在线报告
 - 💻 [GitHub 仓库](https://github.com/Astro-wen/UCLA_C111_LoL) — 源代码
 - 📦 [Kaggle 数据集](https://www.kaggle.com/datasets/bobbyscience/league-of-legends-diamond-ranked-games-10-min)

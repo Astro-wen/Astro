@@ -4,15 +4,12 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tailwind from '@astrojs/tailwind';
 
-// GitHub Pages：astro-wen/Astro
-// 站点地址：https://astro-wen.github.io/Astro/
-// 注意：dev 模式下不设 base，避免 http://localhost 根路径 404；
-//       只有 build（部署到 GitHub Pages）时才加 /Astro 前缀。
-const isBuild = process.argv.includes('build');
+// GitHub Pages：astro-wen.github.io（用户站点，仓库需重命名为该名字）
+// 站点地址：https://astro-wen.github.io/
 
 export default defineConfig({
   site: 'https://astro-wen.github.io',
-  base: isBuild ? '/Astro' : '/',
+  base: '/',
   trailingSlash: 'ignore',
   integrations: [
     mdx(),

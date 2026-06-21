@@ -7,7 +7,7 @@ export const SITE = {
   nameAlias: 'AstroW',
   role: '产品经理',
   roleEn: 'Product Manager',
-  url: 'https://astro-wen.github.io/Astro',
+  url: 'https://astro-wen.github.io',
   description: 'UCLA 在读产品经理，聚焦游戏产品、AI 原生应用与数据驱动增长，具备 TikTok、腾讯游戏等产品实践经历。',
   author: 'Aaron Wen',
   location: 'Los Angeles / San Jose',
