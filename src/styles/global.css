@@ -99,6 +99,9 @@
   .container-prose { @apply mx-auto w-full max-w-3xl px-4 sm:px-6; }
   .container-wide  { @apply mx-auto w-full max-w-5xl px-4 sm:px-6; }
 
+  .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+
   /* ============================================================
      入场动画
      ============================================================ */
@@ -402,6 +405,9 @@
     cursor: pointer;
     border: none;
     transition: background 150ms, color 150ms;
+  }
+  @media (max-width: 639px) {
+    .lang-switch button { padding: 4px 6px; }
   }
   .lang-switch button:hover { color: #EFE6D3; }
   .lang-switch button.is-active {

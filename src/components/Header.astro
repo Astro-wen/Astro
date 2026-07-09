@@ -35,24 +35,24 @@ const nav = [
 </script>
 
 <header class="border-b border-line bg-paper/85 backdrop-blur-md sticky top-0 z-40">
-  <div class="container-wide flex h-14 items-center justify-between gap-4">
+  <div class="container-wide flex h-14 items-center justify-between gap-2 sm:gap-4">
     {/* Logo */}
     <a
       href={withBase('/')}
-      class="group flex items-center gap-2 font-display font-bold tracking-tight text-ink-900 hover:text-brand transition-colors"
+      class="group flex items-center gap-1 sm:gap-2 font-display font-bold tracking-tight text-ink-900 hover:text-brand transition-colors shrink-0"
     >
-      <span class="font-mono text-brand text-sm opacity-60 group-hover:opacity-100 transition-opacity">[</span>
+      <span class="hidden sm:inline font-mono text-brand text-sm opacity-60 group-hover:opacity-100 transition-opacity">[</span>
       <span class="text-sm sm:text-base">{SITE.name}</span>
-      <span class="font-mono text-brand text-sm opacity-60 group-hover:opacity-100 transition-opacity">]</span>
+      <span class="hidden sm:inline font-mono text-brand text-sm opacity-60 group-hover:opacity-100 transition-opacity">]</span>
     </a>
 
-    <div class="flex items-center gap-3 sm:gap-4">
-      <nav class="flex items-center gap-0.5 sm:gap-1 text-sm">
+    <div class="flex items-center gap-1 sm:gap-4 overflow-x-auto no-scrollbar min-w-0 -mx-1 px-1">
+      <nav class="flex items-center gap-0 sm:gap-1 text-sm shrink-0">
         {nav.map((item) => (
           <a
             href={withBase(item.href)}
             class:list={[
-              'px-2.5 sm:px-3 py-1.5 rounded-sm text-sm font-medium tracking-wide transition-colors',
+              'px-1.5 sm:px-3 py-1.5 rounded-sm text-sm font-medium tracking-wide transition-colors whitespace-nowrap',
               isActive(item.href)
                 ? 'text-brand'
                 : 'text-ink-900 hover:text-brand',
@@ -65,7 +65,7 @@ const nav = [
       </nav>
 
       {/* 语言切换 */}
-      <div class="lang-switch" role="group" aria-label="Language switch">
+      <div class="lang-switch shrink-0" role="group" aria-label="Language switch">
         <button type="button" data-lang-set="zh" aria-label="切换到中文">中</button>
         <button type="button" data-lang-set="en" aria-label="Switch to English">EN</button>
       </div>
