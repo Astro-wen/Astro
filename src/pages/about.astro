@@ -3,6 +3,20 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import SectionHeader from '@/components/SectionHeader.astro';
 import { SITE } from '@/lib/site';
 
+const wiki = {
+  gintama: { zh: 'https://zh.wikipedia.org/wiki/银魂', en: 'https://en.wikipedia.org/wiki/Gintama' },
+  jojo: { zh: 'https://zh.wikipedia.org/wiki/JoJo的奇妙冒险', en: "https://en.wikipedia.org/wiki/JoJo's_Bizarre_Adventure" },
+  diamondUnbreakable: { zh: 'https://zh.wikipedia.org/wiki/不灭钻石', en: 'https://en.wikipedia.org/wiki/Diamond_Is_Unbreakable' },
+  minecraft: { zh: 'https://zh.wikipedia.org/wiki/我的世界', en: 'https://en.wikipedia.org/wiki/Minecraft' },
+  mhw: { zh: 'https://zh.wikipedia.org/wiki/怪物猎人_世界', en: 'https://en.wikipedia.org/wiki/Monster_Hunter:_World' },
+  terraria: { zh: 'https://zh.wikipedia.org/wiki/泰拉瑞亚', en: 'https://en.wikipedia.org/wiki/Terraria' },
+  arknights: { zh: 'https://zh.wikipedia.org/wiki/明日方舟', en: 'https://en.wikipedia.org/wiki/Arknights' },
+  fgo: { zh: 'https://zh.wikipedia.org/wiki/Fate/Grand_Order', en: 'https://en.wikipedia.org/wiki/Fate/Grand_Order' },
+  sylveon: { zh: 'https://zh.wikipedia.org/wiki/仙子伊布', en: 'https://en.wikipedia.org/wiki/Sylveon' },
+  gengar: { zh: 'https://zh.wikipedia.org/wiki/耿鬼', en: 'https://en.wikipedia.org/wiki/Gengar' },
+  dragonite: { zh: 'https://zh.wikipedia.org/wiki/快龙', en: 'https://en.wikipedia.org/wiki/Dragonite' },
+};
+
 const skills = [
   {
     zh: { group: '产品', items: [
@@ -40,6 +54,16 @@ const skills = [
       'Agile', 'Unity · Godot · UE5',
     ]},
   },
+  {
+    zh: { group: '技术', items: [
+      'C++', '数据结构与算法', 'Python', 'R',
+      'PyTorch · Scikit-learn', 'Git', 'HTML/CSS',
+    ]},
+    en: { group: 'Technical', items: [
+      'C++', 'Data Structures & Algorithms', 'Python', 'R',
+      'PyTorch · Scikit-learn', 'Git', 'HTML/CSS',
+    ]},
+  },
 ];
 ---
 
@@ -58,41 +82,112 @@ const skills = [
         {/* ============ 中文版 ============ */}
         <div class="reveal prose prose-invert max-w-none i18n-zh" style="--reveal-delay: 80ms">
           <p>
-            你好，我是<strong>温思源（Aaron Wen）</strong>，就读于<strong>加州大学洛杉矶分校（UCLA）</strong>。我聚焦游戏产品、AI 原生应用与数据驱动增长，具备 TikTok、腾讯游戏等产品实践经历。
+            你好，我是<strong>温思源（Aaron Wen）</strong>，来自北京东城，就读于<strong>加州大学洛杉矶分校（UCLA）</strong>。我聚焦游戏产品、AI 原生应用与数据驱动增长，具备 TikTok、腾讯游戏等产品实践经历。
+          </p>
+          <p class="text-ink-700">
+            驱动我做产品的，是两个挺朴素的问题：游戏为什么能让人愿意一直留下来，AI 产品要怎样才能真正被用起来。
           </p>
           <p>
             过去在 <strong>TikTok（账户中心 · 基础设施）</strong>、
             <strong>腾讯美洲（IEGG）</strong> 和 <strong>腾讯 互动娱乐事业群（自研体系管理部）</strong>
-            做过产品实习，涉及多账号基础设施、AI 能力聚合平台、手游 AI 战斗伙伴、游戏化系统、上线活动策略等方向。
+            做过产品实习，也在 <strong>贝恩</strong> 与 <strong>世嘉</strong> 参与过消费零售与游戏市场方向的战略分析项目，涉及多账号基础设施、AI 能力聚合平台、手游 AI 战斗伙伴、游戏化系统、上线活动策略、高管薪酬对标、GaaS 竞品研究等方向。
           </p>
           <p>
             我相信好产品是"<strong>把复杂系统变得一目了然</strong>"这件事的结果——在定义之前先把用户和系统都看懂，然后用最少的概念把事情讲清楚。
           </p>
+          <p class="text-ink-700">
+            好了，首页和上面这些，应该已经让你看够了"班味"十足的内容。剩下的，是更私人的部分：
+          </p>
+          <p>
+            我的爱好是 ACGN。最喜欢的动漫是
+            <a href={wiki.gintama.zh} target="_blank" rel="noopener noreferrer">《银魂》</a>
+            和
+            <a href={wiki.jojo.zh} target="_blank" rel="noopener noreferrer">《JOJO 的奇妙冒险》</a>
+            ——尤其是
+            <a href={wiki.diamondUnbreakable.zh} target="_blank" rel="noopener noreferrer">《不灭钻石》</a>
+            那一部；最喜欢的游戏是
+            <a href={wiki.minecraft.zh} target="_blank" rel="noopener noreferrer">《我的世界》</a>、
+            <a href={wiki.mhw.zh} target="_blank" rel="noopener noreferrer">《怪物猎人：世界》</a>
+            和
+            <a href={wiki.terraria.zh} target="_blank" rel="noopener noreferrer">《泰拉瑞亚》</a>
+            ，也喜欢
+            <a href={wiki.arknights.zh} target="_blank" rel="noopener noreferrer">《明日方舟》</a>
+            和
+            <a href={wiki.fgo.zh} target="_blank" rel="noopener noreferrer">《命运-冠位指定》</a>
+            。最喜欢的宝可梦是
+            <a href={wiki.sylveon.zh} target="_blank" rel="noopener noreferrer">仙子伊布</a>、
+            <a href={wiki.gengar.zh} target="_blank" rel="noopener noreferrer">耿鬼</a>
+            和
+            <a href={wiki.dragonite.zh} target="_blank" rel="noopener noreferrer">快龙</a>
+            。
+          </p>
+          <p>
+            我也很喜欢健身，最自豪的数字是卧推 <strong>135kg（约 298 lb）</strong>。
+          </p>
+          <p class="text-ink-700">
+            这些大概就是工作之外，真正能让我兴奋起来的东西。
+          </p>
           <p>
             想聊聊的话，可以通过
             <a href={SITE.social.email}>邮件</a>
-            或
+            、
             <a href={SITE.social.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
-            联系我。
+            或微信（Miletlover_2026zwhy）联系我。
           </p>
         </div>
 
         {/* ============ 英文版 ============ */}
         <div class="reveal prose prose-invert max-w-none i18n-en" style="--reveal-delay: 80ms">
           <p>
-            Hi, I'm <strong>Aaron Wen</strong>, a student at <strong>University of California, Los Angeles (UCLA)</strong>. I focus on game products, AI-native applications, and data-driven growth, with product experience across TikTok and Tencent Games.
+            Hi, I'm <strong>Aaron Wen</strong>, originally from Dongcheng, Beijing, and a student at <strong>University of California, Los Angeles (UCLA)</strong>. I focus on game products, AI-native applications, and data-driven growth, with product experience across TikTok and Tencent Games.
+          </p>
+          <p class="text-ink-700">
+            What actually drives my product work comes down to two plain questions: why do games make people want to stick around, and what does it actually take for an AI product to get used.
           </p>
           <p>
             Previously I interned as a PM at <strong>TikTok (Account Center · Infrastructure)</strong>,
-            <strong>Tencent America (IEGG)</strong>, and <strong>Tencent IEG (R&amp;D System Management Department)</strong> — working on multi-account infrastructure, AI capability platforms, mobile-game AI combat companions, gamification, and launch live-ops.
+            <strong>Tencent America (IEGG)</strong>, and <strong>Tencent IEG (R&amp;D System Management Department)</strong>, and contributed to strategy projects in consumer retail and gaming at <strong>Bain</strong> and <strong>Sega</strong> — spanning multi-account infrastructure, AI capability platforms, mobile-game AI combat companions, gamification, launch live-ops, executive compensation benchmarking, and GaaS competitive research.
           </p>
           <p>
             I believe great products are the result of one thing: <strong>making complex systems feel obvious</strong>. Understand the user and the system before defining anything, then explain it with the fewest concepts possible.
           </p>
+          <p class="text-ink-700">
+            Okay — between the homepage and everything above, you've probably had enough of the "corporate" version of me. Here's the rest:
+          </p>
+          <p>
+            I'm an ACGN kid at heart. My favorite anime are
+            <a href={wiki.gintama.en} target="_blank" rel="noopener noreferrer">Gintama</a>
+            and
+            <a href={wiki.jojo.en} target="_blank" rel="noopener noreferrer">JoJo's Bizarre Adventure</a>
+            — especially
+            <a href={wiki.diamondUnbreakable.en} target="_blank" rel="noopener noreferrer">Diamond Is Unbreakable</a>
+            . My favorite games are
+            <a href={wiki.minecraft.en} target="_blank" rel="noopener noreferrer">Minecraft</a>,
+            <a href={wiki.mhw.en} target="_blank" rel="noopener noreferrer">Monster Hunter: World</a>,
+            and
+            <a href={wiki.terraria.en} target="_blank" rel="noopener noreferrer">Terraria</a>
+            , and I'm also into
+            <a href={wiki.arknights.en} target="_blank" rel="noopener noreferrer">Arknights</a>
+            and
+            <a href={wiki.fgo.en} target="_blank" rel="noopener noreferrer">Fate/Grand Order</a>
+            . My favorite Pokémon are
+            <a href={wiki.sylveon.en} target="_blank" rel="noopener noreferrer">Sylveon</a>,
+            <a href={wiki.gengar.en} target="_blank" rel="noopener noreferrer">Gengar</a>,
+            and
+            <a href={wiki.dragonite.en} target="_blank" rel="noopener noreferrer">Dragonite</a>
+            .
+          </p>
+          <p>
+            I'm also into lifting — happy to brag that my bench press sits at <strong>135kg (~298 lb)</strong>.
+          </p>
+          <p class="text-ink-700">
+            That's roughly what actually gets me excited outside of work.
+          </p>
           <p>
             Want to chat? Reach me by
-            <a href={SITE.social.email}>email</a> or
-            <a href={SITE.social.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>.
+            <a href={SITE.social.email}>email</a>,
+            <a href={SITE.social.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>,
+            or WeChat (Miletlover_2026zwhy).
           </p>
         </div>
       </div>
@@ -111,6 +206,11 @@ const skills = [
                 <dd class="text-ink-900">
                   <a href={SITE.social.email} class="hover:text-brand transition-colors">linmengfdm@gmail.com</a>
                 </dd>
+              </div>
+              <div class="flex items-baseline gap-3">
+                <dt class="text-xs text-ink-500 w-16 shrink-0 font-semibold tracking-wider i18n-zh">微信</dt>
+                <dt class="text-xs text-ink-500 w-16 shrink-0 font-semibold tracking-wider i18n-en">WECHAT</dt>
+                <dd class="text-ink-900">Miletlover_2026zwhy</dd>
               </div>
               <div class="flex items-baseline gap-3">
                 <dt class="text-xs text-ink-500 w-16 shrink-0 font-semibold tracking-wider i18n-zh">所在地</dt>
@@ -135,7 +235,7 @@ const skills = [
         delay={120}
       />
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
         {skills.map((group, i) => (
           <div
             class="reveal border border-line bg-paper-card p-5 sm:p-6
