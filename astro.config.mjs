@@ -4,12 +4,13 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tailwind from '@astrojs/tailwind';
 
-// GitHub Pages：astro-wen.github.io（用户站点，仓库需重命名为该名字）
-// 站点地址：https://astro-wen.github.io/
+// GitHub Pages：项目站点，仓库名 Astro
+// 站点地址：https://astro-wen.github.io/Astro/
+// 注意：base 必须与仓库名一致，否则线上 CSS/图片会 404，页面变成无样式白板
 
 export default defineConfig({
   site: 'https://astro-wen.github.io',
-  base: '/',
+  base: '/Astro/',
   trailingSlash: 'ignore',
   integrations: [
     mdx(),
