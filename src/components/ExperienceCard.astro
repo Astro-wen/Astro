@@ -15,7 +15,7 @@ const { Content } = await entry.render();
 const {
   org, orgShort, orgZh, orgEn, logo, tint,
   role, roleEn, team, teamEn,
-  start, end, location, locationZh, tags, current, kind,
+  start, end, location, locationZh, tags, current, kind, highlight, highlightEn,
   articles,
 } = entry.data;
 
@@ -136,6 +136,12 @@ function resolveCover(src?: string): string | undefined {
                 <span class="text-accent">◉</span>{' '}
                 <span class="i18n-zh">{locationZh ?? location}</span>
                 <span class="i18n-en">{location ?? locationZh}</span>
+              </span>
+            )}
+            {highlight && (
+              <span class="tracking-wide font-semibold text-brand">
+                <span class="i18n-zh">{highlight}</span>
+                <span class="i18n-en">{highlightEn ?? highlight}</span>
               </span>
             )}
           </div>

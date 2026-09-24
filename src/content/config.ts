@@ -45,6 +45,8 @@ const timeline = defineCollection({
     end: z.coerce.date().optional(), // 为空表示至今
     location: z.string().optional(), // 英文地点（fallback / 英文模式）
     locationZh: z.string().optional(),// 中文地点（如 "美国 洛杉矶"）
+    highlight: z.string().optional(),   // 卡片头部的高亮信息（如绩效评级），中文
+    highlightEn: z.string().optional(), // 英文高亮信息
     tags: z.array(z.string()).default([]),
     featured: z.boolean().default(false),
     current: z.boolean().default(false), // 是否为当前进行中（用于右上角状态徽标）

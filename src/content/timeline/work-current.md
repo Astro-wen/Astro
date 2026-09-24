@@ -14,6 +14,8 @@ start: 2026-06-01
 end: 2026-09-18
 location: "San Jose, CA"
 locationZh: "美国 圣何塞"
+highlight: "绩效评估 E+（远超预期）"
+highlightEn: "Performance Evaluation: E+ (Significantly Exceeds Expectations)"
 tags: ["Manual Annotation", "Privacy Filtering", "AI Evaluation", "NL Search", "LangGraph · ReAct"]
 featured: true
 current: false
