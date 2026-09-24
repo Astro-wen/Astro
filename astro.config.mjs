@@ -4,12 +4,13 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tailwind from '@astrojs/tailwind';
 
-// GitHub Pages：自定义域名，站点在根路径提供服务
-// 站点地址：https://aaron.xn--0iv.gay/ （即 aaron.是.gay）
-// 注意：site 必须写 Punycode；public/CNAME 必须存在，Actions 部署不会自动生成它
+// GitHub Pages：项目站点，仓库名 Astro
+// 站点地址：https://astro-wen.github.io/Astro/
+// 注意：base 必须与仓库名一致，否则线上 CSS/图片会 404，页面变成无样式白板
 
 export default defineConfig({
-  site: 'https://aaron.xn--0iv.gay',
+  site: 'https://astro-wen.github.io',
+  base: '/Astro/',
   trailingSlash: 'ignore',
   integrations: [
     mdx(),
