@@ -19,50 +19,20 @@ const wiki = {
 
 const skills = [
   {
-    zh: { group: '产品', items: [
-      'PRD 撰写', '复盘（Post-Mortem）', '竞品分析', '用户研究', '路线图规划',
-      'AI 原生产品经理工作流（Claude Code / Cursor / MCP）',
-      'Figma · Jira · Linear · Asana · Notion · Miro · Slack',
-    ]},
-    en: { group: 'Product', items: [
-      'PRD writing', 'Post-Mortems', 'Competitive analysis', 'User research', 'Roadmapping',
-      'AI-native PM workflow (Claude Code / Cursor / MCP)',
-      'Figma · Jira · Linear · Asana · Notion · Miro · Slack',
-    ]},
+    zh: { group: '产品方法', items: ['用户研究', '实验设计', '产品策略', '路线图规划', '需求定义', 'KPI 设计'] },
+    en: { group: 'Product Methods', items: ['User Research', 'Experiments', 'Product Strategy', 'Roadmapping', 'Requirements', 'KPI Design'] },
   },
   {
-    zh: { group: '分析', items: [
-      'SQL', 'Python（Pandas / Scikit-learn / PyTorch）', 'R',
-      'Tableau', 'Excel', 'A/B 测试', '漏斗分析',
-    ]},
-    en: { group: 'Analytics', items: [
-      'SQL', 'Python (Pandas / Scikit-learn / PyTorch)', 'R',
-      'Tableau', 'Excel', 'A/B Testing', 'Funnel analysis',
-    ]},
+    zh: { group: '数据分析', items: ['A/B 测试', '漏斗与留存分析', '统计建模', 'SQL', 'Python', 'R'] },
+    en: { group: 'Analytics & Data', items: ['A/B Testing', 'Funnel & Cohort Analysis', 'Statistical Modeling', 'SQL', 'Python', 'R'] },
   },
   {
-    zh: { group: '游戏', items: [
-      '手游 KPI（DAU / ARPU / 留存 / 转化）',
-      '线上运营设计', '活动与礼包设计', '任务系统设计',
-      '游戏经济建模', '玩家分层',
-      '敏捷开发', 'Unity · Godot · UE5',
-    ]},
-    en: { group: 'Games', items: [
-      'Mobile game KPIs (DAU / ARPU / Retention / Conversion)',
-      'Live-Ops design', 'Event & offer design', 'Quest design',
-      'Game economy modeling', 'Player segmentation',
-      'Agile', 'Unity · Godot · UE5',
-    ]},
+    zh: { group: '工程与 AI', items: ['React', 'TypeScript', 'REST API', 'AI 辅助原型开发', 'LLM 评估', '语义检索', 'RAG'] },
+    en: { group: 'Engineering & AI', items: ['React', 'TypeScript', 'REST APIs', 'AI-assisted Prototyping', 'LLM Evaluation', 'Semantic Search', 'RAG'] },
   },
   {
-    zh: { group: '技术', items: [
-      'C++', '数据结构与算法', 'Python', 'R',
-      'PyTorch · Scikit-learn', 'Git', 'HTML/CSS',
-    ]},
-    en: { group: 'Technical', items: [
-      'C++', 'Data Structures & Algorithms', 'Python', 'R',
-      'PyTorch · Scikit-learn', 'Git', 'HTML/CSS',
-    ]},
+    zh: { group: '工具', items: ['Figma', 'Jira', 'Tableau', 'Power BI', 'Excel', 'Git', 'Claude Code', 'Cursor'] },
+    en: { group: 'Tools', items: ['Figma', 'Jira', 'Tableau', 'Power BI', 'Excel', 'Git', 'Claude Code', 'Cursor'] },
   },
 ];
 ---
@@ -82,15 +52,15 @@ const skills = [
         {/* ============ 中文版 ============ */}
         <div class="reveal prose prose-invert max-w-none i18n-zh" style="--reveal-delay: 80ms">
           <p>
-            你好，我是<strong>温思源（Aaron Wen）</strong>，来自北京东城，就读于<strong>加州大学洛杉矶分校（UCLA）</strong>。我聚焦游戏产品、AI 原生应用与数据驱动增长，具备 TikTok、腾讯游戏等产品实践经历。
+            你好，我是<strong>温思源（Aaron Wen）</strong>，来自北京东城，就读于<strong>加州大学洛杉矶分校（UCLA）</strong>。我聚焦 AI 原生产品、游戏与数据驱动增长，在 TikTok 和腾讯做过 AI 产品实习，目前在创业做 AI 录音笔与配套 SaaS。
           </p>
           <p class="text-ink-700">
             驱动我做产品的，是两个挺朴素的问题：游戏为什么能让人愿意一直留下来，AI 产品要怎样才能真正被用起来。
           </p>
           <p>
-            过去在 <strong>TikTok（产品基础设施 · 客服平台）</strong>、
-            <strong>腾讯美洲（IEGG）</strong> 和 <strong>腾讯 互动娱乐事业群（自研体系管理部）</strong>
-            做过产品实习，也在 <strong>贝恩</strong> 与 <strong>世嘉</strong> 参与过消费零售与游戏市场方向的战略分析项目，涉及智能客服 AI 评估体系、AI 能力聚合平台、手游 AI 战斗伙伴、游戏化系统、上线活动策略、高管薪酬对标、GaaS 竞品研究等方向。
+            过去在 <strong>TikTok（产品基础设施 · 客服平台）</strong> 和
+            <strong>腾讯 互动娱乐事业群（自研体系管理部）</strong> 做 AI 产品实习，现在是
+            <strong>Notique AI</strong> 的联合创始人兼产品负责人；也在 <strong>贝恩</strong> 与 <strong>世嘉</strong> 参与过消费零售与游戏市场方向的战略分析项目。做过的方向包括客服 AI 标注与评估、隐私过滤、AI 知识平台与技能社区、游戏化增长、AI 硬件与 SaaS、高管薪酬对标、GaaS 竞品研究。
           </p>
           <p>
             我相信好产品是"<strong>把复杂系统变得一目了然</strong>"这件事的结果——在定义之前先把用户和系统都看懂，然后用最少的概念把事情讲清楚。
@@ -139,14 +109,15 @@ const skills = [
         {/* ============ 英文版 ============ */}
         <div class="reveal prose prose-invert max-w-none i18n-en" style="--reveal-delay: 80ms">
           <p>
-            Hi, I'm <strong>Aaron Wen</strong>, originally from Dongcheng, Beijing, and a student at <strong>University of California, Los Angeles (UCLA)</strong>. I focus on game products, AI-native applications, and data-driven growth, with product experience across TikTok and Tencent Games.
+            Hi, I'm <strong>Aaron Wen</strong>, originally from Dongcheng, Beijing, and a student at <strong>University of California, Los Angeles (UCLA)</strong>. I focus on AI-native products, games, and data-driven growth, with AI PM internships at TikTok and Tencent, and I am currently building an AI recording pen and SaaS as a startup co-founder.
           </p>
           <p class="text-ink-700">
             What actually drives my product work comes down to two plain questions: why do games make people want to stick around, and what does it actually take for an AI product to get used.
           </p>
           <p>
-            Previously I interned as a PM at <strong>TikTok (Product Infrastructure · Customer Service Platform)</strong>,
-            <strong>Tencent America (IEGG)</strong>, and <strong>Tencent IEG (R&amp;D System Management Department)</strong>, and contributed to strategy projects in consumer retail and gaming at <strong>Bain</strong> and <strong>Sega</strong> — spanning AI-driven customer service evaluation systems, AI capability platforms, mobile-game AI combat companions, gamification, launch live-ops, executive compensation benchmarking, and GaaS competitive research.
+            I interned as an AI PM at <strong>TikTok (Product Infrastructure · Customer Service Platform)</strong> and
+            <strong>Tencent Interactive Entertainment (R&amp;D Systems Management)</strong>, and I'm now Co-Founder &amp; Head of Product at
+            <strong>Notique AI</strong>. I also contributed to strategy projects in consumer retail and gaming at <strong>Bain</strong> and <strong>Sega</strong>. The work spans customer-service AI annotation and evaluation, privacy filtering, AI knowledge platforms and skill communities, gamified growth, AI hardware and SaaS, executive compensation benchmarking, and GaaS competitive research.
           </p>
           <p>
             I believe great products are the result of one thing: <strong>making complex systems feel obvious</strong>. Understand the user and the system before defining anything, then explain it with the fewest concepts possible.
