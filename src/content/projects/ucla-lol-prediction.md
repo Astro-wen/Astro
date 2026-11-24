@@ -1,6 +1,7 @@
 ---
 name: 'LoL Match Prediction'
 summary: '基于早期对局数据的英雄联盟胜负预测：使用 6 种机器学习模型分析 9,879 场钻石段位比赛，以 72% 准确率预测 10 分钟后胜负走向。'
+summaryEn: "Predicting League of Legends outcomes from early-game data: six machine-learning models on 9,879 Diamond-tier matches, 72% accuracy at the 10-minute mark."
 stack: ['Python', 'scikit-learn', 'Pandas', 'Logistic Regression', 'Random Forest', 'Gradient Boosting', 'SVM', 'Matplotlib', 'Seaborn']
 url: 'https://astro-wen.github.io/UCLA_C111_LoL/'
 repo: 'https://github.com/Astro-wen/UCLA_C111_LoL'

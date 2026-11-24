@@ -1,0 +1,49 @@
+---
+import T from '@/components/T.astro';
+
+/** Cards —— 一组短卡片：一个标题、一句话，可选一个小标签。用来代替成段的文字。 */
+interface Card {
+  zh: string;
+  en: string;
+  bodyZh: string;
+  bodyEn: string;
+  tagZh?: string;
+  tagEn?: string;
+  tone?: 'cut' | 'default';
+}
+interface Props { cards: Card[] }
+const { cards } = Astro.props;
+---
+<ul class="cd" role="list">
+  {cards.map((c) => (
+    <li class:list={['cd-card', c.tone === 'cut' && 'cd-card--cut']}>
+      {c.tagZh && <span class="cd-tag"><T zh={c.tagZh} en={c.tagEn ?? c.tagZh} /></span>}
+      <span class="cd-title"><T zh={c.zh} en={c.en} /></span>
+      <span class="cd-body"><T zh={c.bodyZh} en={c.bodyEn} /></span>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .cd {
+    list-style: none;
+    margin: 1.25rem 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+    gap: 0.75rem;
+  }
+  .cd-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 0.95rem 1rem 1.05rem;
+    background: #141719;
+    border: 1px solid #2A2F33;
+    border-top: 2px solid #FF5A3C;
+  }
+  .cd-card--cut { border-top-color: #626A70; border-style: dashed; border-top-style: solid; }
+  .cd-tag { font-size: 10.5px; letter-spacing: 0.15em; text-transform: uppercase; color: #9AA3A9; }
+  .cd-title { color: #EFE6D3; font-weight: 700; font-size: 1rem; line-height: 1.35; }
+  .cd-body { color: #C9CDD0; font-size: 0.88rem; line-height: 1.6; }
+</style>

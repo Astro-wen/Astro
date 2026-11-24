@@ -10,62 +10,69 @@ function withBase(href: string) {
 }
 
 function isActive(href: string) {
-  if (href === '/') return pathname === withBase('/') || pathname === '/';
-  return pathname.startsWith(withBase(href));
+  return pathname.replace(/\/$/, '').startsWith(withBase(href));
 }
 
-// 双语导航
+// 双语导航：作品在最前，招聘方先看到做过什么
 const nav = [
-  { zh: '经历', en: 'Experience', href: '/' },
-  { zh: '关于我', en: 'About',    href: '/about' },
-  { zh: '项目', en: 'Work',       href: '/projects' },
+  { zh: '作品', en: 'Work',       href: '/work' },
+  { zh: '经历', en: 'Experience', href: '/experience' },
   { zh: '文章', en: 'Writing',    href: '/blog' },
+  { zh: '关于', en: 'About',      href: '/about' },
 ];
 ---
 
-{/* 预初始化语言：避免 hydration 前闪烁 */}
+{/* 预初始化语言：手动选过就用选择，否则跟随系统语言（中文 → 中文，其余 → 英文） */}
 <script is:inline>
   (function () {
-    try {
-      var lang = localStorage.getItem('site-lang') || 'zh';
-      if (lang !== 'en' && lang !== 'zh') lang = 'zh';
-      document.documentElement.setAttribute('data-lang', lang);
-    } catch (e) {}
+    var lang;
+    try { lang = localStorage.getItem('site-lang-choice'); } catch (e) {}
+    if (lang !== 'en' && lang !== 'zh') {
+      var sys = (navigator.languages && navigator.languages[0]) || navigator.language || '';
+      lang = /^zh\b/i.test(sys) ? 'zh' : 'en';
+    }
+    document.documentElement.setAttribute('data-lang', lang);
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
   })();
 </script>
 
-<header class="border-b border-line bg-paper/85 backdrop-blur-md sticky top-0 z-40">
-  <div class="container-wide flex h-14 items-center justify-between gap-2 sm:gap-4">
-    {/* Logo */}
-    <a
-      href={withBase('/')}
-      class="group flex items-center gap-1 sm:gap-2 font-display font-bold tracking-tight text-ink-900 hover:text-brand transition-colors shrink-0"
-    >
-      <span class="hidden sm:inline font-mono text-brand text-sm opacity-60 group-hover:opacity-100 transition-opacity">[</span>
-      <span class="text-sm sm:text-base">{SITE.name}</span>
-      <span class="hidden sm:inline font-mono text-brand text-sm opacity-60 group-hover:opacity-100 transition-opacity">]</span>
+<header class="site-header">
+  <div class="header-inner container-wide">
+    <a href={withBase('/')} class="site-logo">
+      <span class="site-logo-bracket" aria-hidden="true">[</span>
+      <span>{SITE.name}</span>
+      <span class="site-logo-bracket" aria-hidden="true">]</span>
     </a>
 
-    <div class="flex items-center gap-1 sm:gap-4 overflow-x-auto no-scrollbar min-w-0 -mx-1 px-1">
-      <nav class="flex items-center gap-0 sm:gap-1 text-sm shrink-0">
-        {nav.map((item) => (
-          <a
-            href={withBase(item.href)}
-            class:list={[
-              'px-1.5 sm:px-3 py-1.5 rounded-sm text-sm font-medium tracking-wide transition-colors whitespace-nowrap',
-              isActive(item.href)
-                ? 'text-brand'
-                : 'text-ink-900 hover:text-brand',
-            ]}
-          >
-            <span class="i18n-zh">{item.zh}</span>
-            <span class="i18n-en">{item.en}</span>
-          </a>
-        ))}
+    <div class="header-end">
+      {/* 同一棵导航树：放得下就横排，放不下收进原生 popover */}
+      <nav class="site-nav" aria-label="Primary">
+        <button
+          class="menu-button"
+          type="button"
+          popovertarget="site-menu"
+          popovertargetaction="toggle"
+          aria-controls="site-menu"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16" />
+          </svg>
+          <span><span class="i18n-zh">菜单</span><span class="i18n-en">Menu</span></span>
+        </button>
+        <ul id="site-menu" class="site-menu" popover="auto">
+          {nav.map((item) => (
+            <li>
+              <a href={withBase(item.href)} aria-current={isActive(item.href) ? 'page' : undefined}>
+                <span class="i18n-zh">{item.zh}</span>
+                <span class="i18n-en">{item.en}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
       </nav>
 
       {/* 语言切换 */}
-      <div class="lang-switch shrink-0" role="group" aria-label="Language switch">
+      <div class="lang-switch" role="group" aria-label="Language">
         <button type="button" data-lang-set="zh" aria-label="切换到中文">中</button>
         <button type="button" data-lang-set="en" aria-label="Switch to English">EN</button>
       </div>
@@ -73,25 +80,205 @@ const nav = [
   </div>
 </header>
 
+<script>
+  // 旧浏览器没有 popover 时才加载 polyfill
+  if (!Object.hasOwn(HTMLElement.prototype, 'popover')) {
+    import('@oddbird/popover-polyfill');
+  }
+
+  const header = document.querySelector<HTMLElement>('.site-header');
+  const inner = header?.querySelector<HTMLElement>('.header-inner');
+  const menu = header?.querySelector<HTMLElement>('.site-menu');
+
+  if (header && inner && menu) {
+    let lastWidth = 0;
+
+    // 没有写死的断点：整行放得下就横排（is-wide），放不下就收起
+    const sync = () => {
+      const collapsed = !header.classList.contains('is-wide');
+      const width = header.clientWidth;
+      // 收起状态下只有变宽了才重新量，避免每次变窄都来回切换
+      if (collapsed && width <= lastWidth) return;
+      lastWidth = width;
+
+      const wasOpen = menu.matches(':is(:popover-open, .\\:popover-open)');
+      header.classList.add('is-measuring', 'is-wide');
+      menu.removeAttribute('popover');
+      const wide = inner.scrollWidth <= inner.clientWidth;
+      header.classList.toggle('is-wide', wide);
+      if (!wide) {
+        menu.setAttribute('popover', 'auto');
+        if (wasOpen) menu.showPopover();
+      }
+      requestAnimationFrame(() => header.classList.remove('is-measuring'));
+    };
+
+    const observer = new ResizeObserver(sync);
+    observer.observe(header);
+    observer.observe(menu);
+    // 切换语言会改变链接宽度，重新量一次
+    new MutationObserver(() => { lastWidth = 0; sync(); })
+      .observe(document.documentElement, { attributes: true, attributeFilter: ['data-lang'] });
+    sync();
+  }
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    border-bottom: 1px solid #2A2F33;
+    background: rgb(11 13 14 / 0.85);
+    backdrop-filter: blur(12px);
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    block-size: 3.5rem;
+  }
+  /* 让整行的自然宽度可以被量出来 */
+  .header-inner > *,
+  .header-end > * { flex-shrink: 0; white-space: nowrap; }
+  .header-end { display: flex; align-items: center; gap: 0.75rem; }
+  .site-header.is-measuring * { transition: none !important; }
+
+  .site-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-block-size: 32px;
+    font-family: 'Archivo Black', 'Inter', sans-serif;
+    font-size: 1rem;
+    color: #EFE6D3;
+  }
+  .site-logo:hover { color: #FF5A3C; }
+  .site-logo-bracket { color: #FF5A3C; opacity: 0.7; font-size: 0.875rem; }
+
+  .menu-button {
+    anchor-name: --menu-button;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-block-size: 36px;
+    padding-inline: 0.7rem;
+    border: 1px solid #2A2F33;
+    background: transparent;
+    color: #EFE6D3;
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .menu-button:hover { border-color: #FF5A3C; color: #FF5A3C; }
+
+  /* 收起状态：导航列表是一个 popover，挂在菜单按钮下面 */
+  .site-menu {
+    list-style: none;
+    position: fixed;
+    inset: auto;
+    inset-block-start: 4rem;
+    inset-block-start: anchor(--menu-button bottom);
+    inset-inline-end: 1rem;
+    inline-size: min(80dvw, 16rem);
+    max-inline-size: calc(100dvw - 2rem);
+    block-size: fit-content;
+    max-block-size: calc(100dvh - 6rem);
+    margin: 0;
+    margin-block-start: 0.5rem;
+    padding: 0.4rem;
+    overflow: auto;
+    border: 1px solid #2A2F33;
+    background: #141719;
+    color: #EFE6D3;
+  }
+  @supports not selector(:popover-open) {
+    .site-menu[popover]:not(.\:popover-open) { display: none; }
+  }
+  .site-menu a {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-block-size: 44px;
+    padding-inline: 0.9rem;
+    color: #EFE6D3;
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+  .site-menu a:hover { color: #FF5A3C; }
+  .site-menu a:focus-visible,
+  .menu-button:focus-visible,
+  .site-logo:focus-visible { outline: 3px solid #EFE6D3; outline-offset: 2px; }
+
+  /* 当前页：颜色之外再加一条线 */
+  .site-menu a[aria-current='page'] { color: #FF5A3C; }
+  .site-menu a[aria-current='page']::after {
+    content: '';
+    position: absolute;
+    inset-block: 0.6rem;
+    inset-inline-start: 0;
+    border-inline-start: 3px solid #FF5A3C;
+  }
+
+  /* 放得下：同一个列表横排在页头里 */
+  .site-header.is-wide .menu-button { display: none; }
+  .site-header.is-wide .site-menu {
+    position: static;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    inline-size: auto;
+    max-inline-size: none;
+    block-size: auto;
+    max-block-size: none;
+    overflow: visible;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  .site-header.is-wide .site-menu::backdrop { display: none; }
+  .site-header.is-wide .site-menu a { min-block-size: 36px; padding-inline: 0.75rem; font-size: 0.875rem; }
+  .site-header.is-wide .site-menu a[aria-current='page']::after {
+    inset-block: auto 0.2rem;
+    inset-inline: 0.75rem;
+    border-inline-start: 0;
+    border-block-end: 2px solid #FF5A3C;
+  }
+
+  @media (forced-colors: active) {
+    .site-menu a[aria-current='page']::after { border-color: Highlight; }
+  }
+</style>
+
 <script is:inline>
   // 语言切换逻辑
   (function () {
-    function applyLang(lang) {
+    function applyLang(lang, remember) {
       document.documentElement.setAttribute('data-lang', lang);
-      try { localStorage.setItem('site-lang', lang); } catch (e) {}
+      document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+      // 只有手动切换才记住，否则每次都跟随系统语言
+      if (remember) {
+        try { localStorage.setItem('site-lang-choice', lang); } catch (e) {}
+      }
       document.querySelectorAll('.lang-switch button').forEach(function (b) {
-        b.classList.toggle('is-active', b.getAttribute('data-lang-set') === lang);
+        var active = b.getAttribute('data-lang-set') === lang;
+        b.classList.toggle('is-active', active);
+        b.setAttribute('aria-pressed', active ? 'true' : 'false');
       });
     }
 
     // 初始态同步按钮激活样式
-    var current = document.documentElement.getAttribute('data-lang') || 'zh';
-    applyLang(current);
+    applyLang(document.documentElement.getAttribute('data-lang') || 'en', false);
 
     document.querySelectorAll('.lang-switch button').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var lang = btn.getAttribute('data-lang-set');
-        if (lang) applyLang(lang);
+        if (lang) applyLang(lang, true);
       });
     });
   })();

@@ -1,0 +1,22 @@
+---
+import T from '@/components/T.astro';
+
+/** PageHeader —— 内页顶部：一个 h1 和一句说明。 */
+interface Props {
+  zh: string;
+  en: string;
+  leadZh?: string;
+  leadEn?: string;
+}
+const { zh, en, leadZh, leadEn } = Astro.props;
+---
+<header class="mb-10 sm:mb-12">
+  <h1 class="display-lg text-3xl sm:text-5xl text-ink-900 leading-tight"><T zh={zh} en={en} /></h1>
+  {leadZh && <p class="mt-4 text-ink-700 text-base sm:text-lg max-w-2xl"><T zh={leadZh} en={leadEn ?? leadZh} /></p>}
+  <div class="mt-6 flex items-center" aria-hidden="true">
+    <span class="h-px flex-1 bg-line"></span>
+    <span class="w-1.5 h-1.5 bg-vhs-cyan"></span>
+    <span class="w-1.5 h-1.5 bg-vhs-yellow"></span>
+    <span class="w-1.5 h-1.5 bg-vhs-red"></span>
+  </div>
+</header>

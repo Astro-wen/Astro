@@ -1,0 +1,203 @@
+---
+/**
+ * 截图画廊 —— 图在前，每张图配一句话。
+ * 点图放大（原生 <dialog>）。
+ */
+import { Image, getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import T from '@/components/T.astro';
+
+interface Shot {
+  src: ImageMetadata;
+  /** 一句话说明，第一人称 */
+  zh: string;
+  en: string;
+  altZh: string;
+  altEn: string;
+  /** 占满整行 */
+  wide?: boolean;
+}
+interface Props {
+  id: string;
+  shots: Shot[];
+  /** 首张图是否是页面首屏大图（提前加载） */
+  eager?: boolean;
+}
+const { id, shots, eager = false } = Astro.props;
+
+const full = await Promise.all(
+  shots.map((s) => getImage({ src: s.src, width: Math.min(s.src.width, 2400), format: 'webp', quality: 82 }))
+);
+---
+<ul class="shots" role="list" data-shots={id}>
+  {shots.map((s, i) => (
+    <li class:list={['shot', { 'shot-wide': s.wide }]}>
+      <figure>
+        <button
+          type="button"
+          class="shot-btn"
+          data-full={full[i].src}
+          data-w={full[i].attributes.width}
+          data-h={full[i].attributes.height}
+        >
+          <Image
+            src={s.src}
+            alt={s.altEn}
+            widths={[640, 960, 1440]}
+            sizes={s.wide ? '(min-width: 1100px) 1040px, 100vw' : '(min-width: 800px) 520px, 100vw'}
+            format="webp"
+            quality={80}
+            loading={eager && i === 0 ? 'eager' : 'lazy'}
+            fetchpriority={eager && i === 0 ? 'high' : undefined}
+            decoding="async"
+          />
+          <span class="visually-hidden"><T zh="放大查看" en="Enlarge" /></span>
+        </button>
+        <figcaption>
+          <span class="shot-mark" aria-hidden="true">✦</span>
+          <T zh={s.zh} en={s.en} />
+        </figcaption>
+      </figure>
+    </li>
+  ))}
+</ul>
+
+<dialog class="shot-dialog" id={`${id}-dialog`} closedby="any" aria-label="Screenshot">
+  <img alt="" />
+  <p class="shot-dialog-cap"></p>
+  <button type="button" class="shot-close">
+    <T zh="关闭" en="Close" />
+  </button>
+</dialog>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-shots]').forEach((list) => {
+    const dialog = document.getElementById(`${list.dataset.shots}-dialog`) as HTMLDialogElement | null;
+    if (!dialog) return;
+    const img = dialog.querySelector('img')!;
+    const cap = dialog.querySelector('.shot-dialog-cap')!;
+
+    list.querySelectorAll<HTMLButtonElement>('.shot-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const thumb = btn.querySelector('img');
+        img.src = btn.dataset.full!;
+        img.width = Number(btn.dataset.w);
+        img.height = Number(btn.dataset.h);
+        img.alt = thumb?.alt ?? '';
+        cap.innerHTML = btn.closest('figure')?.querySelector('figcaption')?.innerHTML ?? '';
+        dialog.showModal();
+      });
+    });
+
+    dialog.querySelector('.shot-close')?.addEventListener('click', () => dialog.close());
+
+    // 不支持 closedby 的浏览器：点背景关闭
+    if (!('closedBy' in HTMLDialogElement.prototype)) {
+      dialog.addEventListener('click', (event) => {
+        if (event.target !== dialog) return;
+        const r = dialog.getBoundingClientRect();
+        const inside =
+          r.top <= event.clientY && event.clientY <= r.top + r.height &&
+          r.left <= event.clientX && event.clientX <= r.left + r.width;
+        if (!inside) dialog.close();
+      });
+    }
+  });
+</script>
+
+<style>
+  .shots {
+    list-style: none;
+    margin: 2rem 0 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+    gap: 2.25rem 2rem;
+    align-items: start;
+  }
+  .shot-wide { grid-column: 1 / -1; }
+  /* 双列时错开半步，避免排成表格 */
+  @media (min-width: 46rem) {
+    .shot:not(.shot-wide):nth-child(even) { margin-top: 3rem; }
+  }
+  .shot figure { margin: 0; }
+  .shot-btn {
+    display: block;
+    inline-size: 100%;
+    padding: 0;
+    border: 1px solid #2A2F33;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #F3F4F6;
+    cursor: zoom-in;
+    transition: border-color 150ms, transform 200ms;
+  }
+  .shot-btn:hover { border-color: #FF5A3C; }
+  .shot-btn:focus-visible { outline: 3px solid #EFE6D3; outline-offset: 3px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .shot-btn:hover { transform: translateY(-3px); }
+  }
+  .shot-btn :global(img) { display: block; inline-size: 100%; block-size: auto; }
+  .shot figcaption {
+    margin-top: 0.75rem;
+    display: flex;
+    gap: 0.5rem;
+    color: #C9CDD0;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    max-width: 46ch;
+  }
+  .shot-mark { color: #FF5A3C; flex: none; }
+  .visually-hidden {
+    position: absolute;
+    inline-size: 1px;
+    block-size: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .shot-dialog {
+    inline-size: min(96vw, 1400px);
+    max-block-size: 94vh;
+    padding: 0.75rem;
+    border: 1px solid #2A2F33;
+    border-radius: 12px;
+    background: #141719;
+    color: #EFE6D3;
+  }
+  .shot-dialog:modal { overscroll-behavior: contain; }
+  .shot-dialog::backdrop {
+    background: rgba(8, 10, 11, 0.82);
+    overflow: hidden;
+    overscroll-behavior: contain;
+  }
+  .shot-dialog img {
+    display: block;
+    margin-inline: auto;
+    max-inline-size: 100%;
+    inline-size: auto;
+    block-size: auto;
+    max-block-size: calc(94vh - 9rem);
+    border-radius: 6px;
+  }
+  .shot-dialog-cap {
+    margin: 0.75rem 0.25rem 0;
+    display: flex;
+    gap: 0.5rem;
+    color: #C9CDD0;
+    font-size: 0.92rem;
+  }
+  .shot-dialog-cap :global(.shot-mark) { color: #FF5A3C; }
+  .shot-close {
+    margin: 0.75rem 0.25rem 0.25rem;
+    min-block-size: 40px;
+    padding: 0 1rem;
+    border: 1px solid #2A2F33;
+    background: transparent;
+    color: #EFE6D3;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .shot-close:hover { border-color: #FF5A3C; color: #FF5A3C; }
+</style>

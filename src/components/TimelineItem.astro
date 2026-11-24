@@ -8,7 +8,7 @@ interface Props {
 const { entry } = Astro.props;
 const { kind, org, role, start, end, location, tags } = entry.data;
 
-const fmt = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short' });
+const fmt = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', timeZone: 'UTC' });
 const range = `${fmt.format(start)} — ${end ? fmt.format(end) : 'Present'}`;
 const isPresent = !end;
 ---

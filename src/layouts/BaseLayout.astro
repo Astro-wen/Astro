@@ -14,8 +14,10 @@ interface Props {
   article?: boolean;
   publishedTime?: Date;
   bodyClass?: string;
+  /** 右下角的小人只在首页出现，内页不遮挡正文 */
+  mascot?: boolean;
 }
-const { title, description, image, article, publishedTime, bodyClass = '' } = Astro.props;
+const { title, description, image, article, publishedTime, bodyClass = '', mascot = false } = Astro.props;
 ---
 
 <!doctype html>
@@ -72,7 +74,7 @@ const { title, description, image, article, publishedTime, bodyClass = '' } = As
       <slot />
     </main>
     <Footer />
-    <AstroStand />
+    {mascot && <AstroStand />}
 
     {/* 折叠卡片全局交互：点击 .card-trigger 切换父 .card-expandable 的 data-expanded */}
     <script is:inline>

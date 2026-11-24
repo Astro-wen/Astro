@@ -41,16 +41,11 @@ const resumeHref = `${base}/Aaron-Wen-Resume.pdf`;
     </span>
   </h1>
 
-  {/* 身份 + 年限 */}
-  <div class="reveal mt-10 flex flex-wrap items-baseline gap-x-4 gap-y-2" style="--reveal-delay: 240ms">
+  {/* 身份 */}
+  <div class="reveal mt-10" style="--reveal-delay: 240ms">
     <p class="display-lg text-xl sm:text-2xl text-ink-900">
       <span class="i18n-zh">产品经理</span>
       <span class="i18n-en">Product Manager</span>
-    </p>
-    <span class="hidden sm:inline h-4 w-px bg-line" aria-hidden="true"></span>
-    <p class="text-sm sm:text-base text-ink-700">
-      <span class="i18n-zh"><span data-exp-years>2</span> 年互联网产品经验</span>
-      <span class="i18n-en"><span data-exp-years>2</span> years in internet products</span>
     </p>
   </div>
 
@@ -126,23 +121,6 @@ const resumeHref = `${base}/Aaron-Wen-Resume.pdf`;
     />
   </svg>
 </template>
-
-<script is:inline>
-  // ============================================================
-  // Experience years · 按入行时间（2024-07-01）自动四舍五入
-  // ============================================================
-  (function () {
-    var start = new Date(2024, 6, 1); // 2024-07-01（月份是 0 索引）
-    var now = new Date();
-    var months =
-      (now.getFullYear() - start.getFullYear()) * 12 +
-      (now.getMonth() - start.getMonth());
-    var years = Math.max(1, Math.round(months / 12));
-    document.querySelectorAll('[data-exp-years]').forEach(function (el) {
-      el.textContent = String(years);
-    });
-  })();
-</script>
 
 <script is:inline>
   // ============================================================

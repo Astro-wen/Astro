@@ -1,0 +1,176 @@
+---
+/**
+ * "看完房，结论已经有了" —— 整屏的滚动场景。
+ * 开始：照片和文件散落在整个画面里。
+ * 往下滑：它们飞到右边，按"哪一句结论用到了它"排成三行；
+ *         左边三句结论被推上来放大，逐句点亮，同一行的材料跟着亮，中间连一条线。
+ * 这样不用文字也能看出：每句结论都是从那几样零散的材料里来的。
+ * 不支持滚动驱动动画或关闭动效时，直接显示排好的最终状态。
+ */
+import { Image } from 'astro:assets';
+import T from '@/components/T.astro';
+import site1 from '@/assets/work/notique/site-1.jpg';
+import site2 from '@/assets/work/notique/site-2.jpg';
+import site3 from '@/assets/work/notique/site-3.jpg';
+
+// mx / my：散落时相对最终位置的偏移（vw / svh）；r：旋转；s：散落时的放大倍数；d：飞回的先后
+const rows = [
+  {
+    zh: '三套里，只有 Maple St 那套在学区内。', en: 'Of the three, only Maple St is in the school zone.',
+    src: [
+      { img: site1, mx: -70, my: -4, r: -7, s: 2.0, d: 0 },
+      { k: 'mp3', mx: -40, my: 18, r: 11, s: 1.5, d: 3 },
+      { k: 'pdf', mx: -12, my: 30, r: -6, s: 1.5, d: 6 },
+    ],
+  },
+  {
+    zh: '卖家能接受 30 天交割。', en: 'The seller can do a 30-day close.',
+    src: [
+      { img: site2, mx: -30, my: -20, r: 6, s: 2.0, d: 1 },
+      { k: 'mp3', mx: -68, my: 24, r: -8, s: 1.5, d: 4 },
+      { k: 'ppt', mx: -56, my: -22, r: -12, s: 1.5, d: 7 },
+    ],
+  },
+  {
+    zh: '周五前，找贷款专员 Sarah 跟一下。', en: 'Catch up with Sarah, the loan officer, by Friday.',
+    src: [
+      { img: site3, mx: -46, my: -6, r: 4, s: 2.0, d: 2 },
+      { k: 'mp3', mx: 1, my: -50, r: 13, s: 1.5, d: 5 },
+      { k: 'jpg', mx: -82, my: -30, r: 9, s: 1.5, d: 8 },
+    ],
+  },
+];
+---
+<section class="ss" aria-labelledby="ss-h">
+  <div class="ss-sticky">
+    <header class="ss-head">
+      <h2 id="ss-h"><T zh="看完房，结论已经有了。" en="By the time you leave, the takeaways are ready." /></h2>
+      <p><T zh="照片、录音、资料一起丢进来，它会连着之前聊过的一起看。" en="Drop in the photos, recordings and files. It reads them alongside everything said before." /></p>
+    </header>
+
+    <ol class="ss-rows">
+      {rows.map((row, i) => (
+        <li class={`ss-row ss-row-${i + 1}`}>
+          <p class="ss-text"><span class="ss-n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span><T zh={row.zh} en={row.en} /></p>
+          <span class="ss-link" aria-hidden="true"></span>
+          <span class="ss-src" aria-hidden="true">
+            {row.src.map((s) => (
+              <span class:list={['ss-it', s.img ? 'ss-ph' : 'ss-file']} style={`--mx:${s.mx}vw;--my:${s.my}svh;--r:${s.r}deg;--s:${s.s};--d:${s.d}`}>
+                {s.img
+                  ? <Image src={s.img} alt="" widths={[360, 720]} sizes="(min-width: 900px) 300px, 34vw" format="webp" quality={80} loading="lazy" />
+                  : <i class={`ss-fi ss-${s.k}`}>{s.k!.toUpperCase()}</i>}
+              </span>
+            ))}
+          </span>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .ss {
+    --ink: #1D1D1F; --mute: #6E6E73; --blue: #3D5BF0;
+    background: #FFFFFF;
+    color: var(--ink);
+    padding: 5rem max(1.25rem, 4vw);
+    overflow: clip;
+    /* 窄屏上材料最终落在左边，散落的方向要反过来，才不会飞出屏幕 */
+    --dir: -0.8;
+  }
+  @media (min-width: 60rem) { .ss { --dir: 1; } }
+  .ss-head { text-align: center; }
+  .ss-head h2 { margin: 0; font-size: clamp(2rem, 5.6vw, 4rem); font-weight: 800; line-height: 1.08; letter-spacing: -0.03em; text-wrap: balance; }
+  .ss-head p { margin: 0.9rem auto 0; color: var(--mute); font-size: clamp(1rem, 2vw, 1.25rem); max-inline-size: 34em; }
+
+  /* ---------- 最终状态（也是静态版）：一行 = 一句结论 + 一条线 + 它的三样出处 ---------- */
+  .ss-rows { list-style: none; margin: 3rem auto 0; padding: 0; max-inline-size: 92rem; display: grid; gap: clamp(1.5rem, 4svh, 3rem); }
+  .ss-row { display: grid; gap: 0.9rem; align-items: center; }
+  @media (min-width: 60rem) {
+    .ss-row { grid-template-columns: minmax(0, 1.55fr) clamp(2rem, 6vw, 6rem) auto; gap: 1.5rem; }
+  }
+  .ss-text {
+    margin: 0;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.5em;
+    align-items: baseline;
+    font-size: clamp(1.6rem, 3vw, 2.8rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.16;
+    text-wrap: pretty;
+  }
+  .ss-n { font-size: 0.34em; font-weight: 700; letter-spacing: 0.02em; color: var(--blue); font-variant-numeric: tabular-nums; }
+  .ss-link { display: none; block-size: 3px; border-radius: 2px; background: linear-gradient(90deg, rgba(61, 91, 240, 0.08), var(--blue)); transform-origin: right; }
+  @media (min-width: 60rem) { .ss-link { display: block; } }
+  .ss-src { display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 0.9rem); }
+  .ss-it { display: grid; place-items: center; border-radius: 12px; background: #F1F2F5; box-shadow: 0 8px 22px rgba(20, 22, 30, 0.14); flex: none; }
+  .ss-ph { inline-size: clamp(5.5rem, 9.5vw, 9.5rem); aspect-ratio: 3 / 2; overflow: hidden; }
+  .ss-ph :global(img) { display: block; inline-size: 100%; block-size: 100%; object-fit: cover; }
+  .ss-file { inline-size: clamp(3.6rem, 6.3vw, 6.3rem); aspect-ratio: 1; }
+  .ss-fi {
+    position: relative;
+    display: grid;
+    place-items: end center;
+    inline-size: 46%;
+    aspect-ratio: 4 / 5;
+    padding-bottom: 9%;
+    border-radius: 12%;
+    background: var(--fi);
+    color: #FFFFFF;
+    font-style: normal;
+    font-weight: 800;
+    font-size: clamp(0.45rem, 0.9vw, 0.8rem);
+    letter-spacing: 0.04em;
+    line-height: 1;
+    clip-path: polygon(0 0, 68% 0, 100% 24%, 100% 100%, 0 100%);
+  }
+  .ss-fi::before { content: ''; position: absolute; inset: 0 0 auto auto; inline-size: 32%; block-size: 24%; background: rgba(255, 255, 255, 0.45); }
+  .ss-mp3 { --fi: #3D5BF0; } .ss-pdf { --fi: #E5484D; } .ss-ppt { --fi: #F0883E; } .ss-jpg { --fi: #12A594; }
+
+  /* ---------- 滚动版 ---------- */
+  @supports ((animation-timeline: scroll()) and (animation-range: 0% 100%)) {
+    @media (prefers-reduced-motion: no-preference) {
+      .ss { block-size: 460vh; padding-block: 0; view-timeline: --ss block; }
+      .ss-sticky { position: sticky; inset-block-start: 0; block-size: 100svh; display: grid; grid-template-rows: auto minmax(0, 1fr); padding-block: 5rem 1.5rem; }
+      .ss-rows { inline-size: 100%; margin-block: 0; align-content: center; }
+
+      .ss-head { animation: ss-head linear both; animation-timeline: --ss; animation-range: contain 26% contain 40%; }
+
+      /* 材料：从散落的位置飞回自己那一行，落位后先变淡，等自己那一句被点亮再恢复 */
+      .ss-it {
+        animation: ss-fly linear both, ss-dim linear both, ss-undim linear forwards;
+        animation-timeline: --ss, --ss, --ss;
+      }
+      .ss-row-1 .ss-it { animation-range: contain calc(6% + var(--d) * 2.4%) contain calc(30% + var(--d) * 2.4%), contain 32% contain 46%, contain 48% contain 58%; }
+      .ss-row-2 .ss-it { animation-range: contain calc(6% + var(--d) * 2.4%) contain calc(30% + var(--d) * 2.4%), contain 32% contain 46%, contain 63% contain 73%; }
+      .ss-row-3 .ss-it { animation-range: contain calc(6% + var(--d) * 2.4%) contain calc(30% + var(--d) * 2.4%), contain 32% contain 46%, contain 78% contain 88%; }
+
+      /* 结论：从下方推上来、放大，然后逐句点亮 */
+      .ss-text { transform-origin: left center; animation: ss-rise linear both, ss-lit linear forwards; animation-timeline: --ss, --ss; }
+      .ss-row-1 .ss-text { animation-range: contain 26% contain 46%, contain 48% contain 58%; }
+      .ss-row-2 .ss-text { animation-range: contain 29% contain 49%, contain 63% contain 73%; }
+      .ss-row-3 .ss-text { animation-range: contain 32% contain 52%, contain 78% contain 88%; }
+
+      /* 点亮某一句时，连到它那几样材料的线画出来 */
+      .ss-link { animation: ss-draw linear both; animation-timeline: --ss; }
+      .ss-row-1 .ss-link { animation-range: contain 48% contain 58%; }
+      .ss-row-2 .ss-link { animation-range: contain 63% contain 73%; }
+      .ss-row-3 .ss-link { animation-range: contain 78% contain 88%; }
+
+      .ss-head { animation: ss-head linear both; animation-timeline: --ss; animation-range: contain 26% contain 40%; }
+    }
+  }
+  @keyframes ss-fly {
+    from { translate: calc(var(--mx) * var(--dir, 1)) var(--my); rotate: var(--r); scale: var(--s); }
+    to { translate: 0 0; rotate: 0deg; scale: 1; }
+  }
+  /* 飞回之后先变淡，等自己那一句被点亮 */
+  @keyframes ss-dim { from { opacity: 1; filter: none; } to { opacity: 0.32; filter: grayscale(1); } }
+  @keyframes ss-undim { from { opacity: 0.32; filter: grayscale(1); } to { opacity: 1; filter: none; } }
+  @keyframes ss-head { to { opacity: 0.22; scale: 0.94; } }
+  @keyframes ss-rise { from { translate: 0 42svh; scale: 0.4; opacity: 0; } 40% { opacity: 0.16; } to { translate: 0 0; scale: 1; opacity: 0.16; } }
+  @keyframes ss-lit { from { opacity: 0.16; } to { opacity: 1; } }
+  @keyframes ss-draw { from { scale: 0 1; } to { scale: 1 1; } }
+</style>

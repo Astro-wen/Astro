@@ -16,15 +16,15 @@ const {
   org, orgShort, orgZh, orgEn, logo, tint,
   role, roleEn, team, teamEn,
   start, end, location, locationZh, tags, current, kind, highlight, highlightEn,
-  articles,
+  articles, caseStudy,
 } = entry.data;
 
 // 日期：英文 "MAR 2026" / 中文 "2026 年 3 月"
-const enFmt = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short' });
+const enFmt = new Intl.DateTimeFormat('en-US', { year: 'numeric', month: 'short', timeZone: 'UTC' });
 const startEn = enFmt.format(start).toUpperCase();
 const endEn = end ? enFmt.format(end).toUpperCase() : null;
-const startZh = `${start.getFullYear()} 年 ${start.getMonth() + 1} 月`;
-const endZh = end ? `${end.getFullYear()} 年 ${end.getMonth() + 1} 月` : null;
+const startZh = `${start.getUTCFullYear()} 年 ${start.getUTCMonth() + 1} 月`;
+const endZh = end ? `${end.getUTCFullYear()} 年 ${end.getUTCMonth() + 1} 月` : null;
 
 // 入场延迟
 const revealDelay = `${index * 90}ms`;
@@ -105,7 +105,7 @@ function resolveCover(src?: string): string | undefined {
                     <span class="i18n-en">CURRENT</span>
                   </>
                 ) : (
-                  <span>{end ? end.getFullYear() : start.getFullYear()}</span>
+                  <span>{end ? end.getUTCFullYear() : start.getUTCFullYear()}</span>
                 )}
               </span>
             </div>
@@ -178,6 +178,14 @@ function resolveCover(src?: string): string | undefined {
           <div class="experience-body max-w-none">
             <Content />
           </div>
+
+          {caseStudy && (
+            <a href={`${base}/work/${caseStudy}`} class="case-cta">
+              <span class="i18n-zh">查看完整案例</span>
+              <span class="i18n-en">Read the case study</span>
+              <span aria-hidden="true">→</span>
+            </a>
+          )}
 
           {/* 相关报道 / 作品集（China Daily 等） */}
           {articles && articles.length > 0 && (
@@ -259,6 +267,20 @@ function resolveCover(src?: string): string | undefined {
   /* ==================================================================
      .experience-body —— Markdown 段落自动编号（深色主题）
      ================================================================== */
+  .case-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.25rem;
+    min-block-size: 40px;
+    padding: 0 1rem;
+    border: 1px solid #FF5A3C;
+    color: #FF5A3C;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .case-cta:hover { background: #FF5A3C; color: #0B0D0E; }
+
   .experience-body {
     counter-reset: contribution;
   }

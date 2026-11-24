@@ -1,0 +1,400 @@
+---
+import T from '@/components/T.astro';
+
+/**
+ * VerifyDemo —— Notique 2.0 核对页的简化重绘，全部是合成数据。
+ * 机制与真实产品一致：
+ *   1. 每条 AI 起草的事实必须引用逐字稿里真实存在的行，否则在服务端被丢弃；
+ *   2. 助理（VA）逐条通过或拒绝；
+ *   3. 只有通过的事实会出现在经纪人看到的客户档案里。
+ * 逐字稿与事实保留英文原样：产品只面向美国市场。
+ */
+const lines = [
+  { who: 'Agent', text: "Thanks for coming in. What budget are you comfortable with?" },
+  { who: 'Maya', text: 'We were at 850, but after talking to the lender we can stretch to 900.' },
+  { who: 'Maya', text: 'Three bedrooms minimum. Daniel works from home, so he needs an office.' },
+  { who: 'Daniel', text: "And I'd really like to stay in the Culver City school district." },
+  { who: 'Agent', text: 'Got it. When does your lease end?' },
+  { who: 'Maya', text: 'End of March. We could go month to month if we had to.' },
+  { who: 'Daniel', text: "My mom might help with the down payment, but she hasn't decided." },
+  { who: 'Agent', text: "I'll send you a few listings by Friday." },
+];
+
+const facts = [
+  { id: 'f1', section: 'Budget changes', text: 'Budget raised from $850K to $900K after talking to the lender.', cites: [1], conf: 0.92 },
+  { id: 'f2', section: 'Decisions', text: 'Pre-approved by the lender for $900K.', cites: [1], conf: 0.6 },
+  { id: 'f3', section: 'Needs changes', text: 'At least three bedrooms, plus a home office for Daniel.', cites: [2], conf: 0.9 },
+  { id: 'f4', section: 'Needs changes', text: 'Wants to stay in the Culver City school district.', cites: [3], conf: 0.88 },
+  { id: 'f5', section: 'Open questions', text: "Will Daniel's mother contribute to the down payment? Not decided yet.", cites: [6], conf: 0.55 },
+  { id: 'f6', section: 'Next steps', text: 'Agent to send listings by Friday.', cites: [7], conf: 0.93 },
+];
+
+const dropped = { text: 'Must close before the lease ends on March 31.', cite: 12 };
+---
+
+<div class="vd" data-verify-demo>
+  <div class="vd-bar">
+    <span class="vd-brand"><span class="vd-logo" aria-hidden="true">N</span> Notique</span>
+    <span class="vd-crumb">Queue / Buyer consult · Maya &amp; Daniel R.</span>
+    <span class="vd-tag"><T zh="合成数据" en="Synthetic data" /></span>
+  </div>
+
+  <div class="vd-grid">
+    <section class="vd-pane" aria-labelledby="vd-h-transcript">
+      <h3 id="vd-h-transcript" class="vd-h"><T zh="逐字稿" en="Transcript" /></h3>
+      <ol class="vd-lines" role="list" lang="en">
+        {lines.map((l, i) => (
+          <li class="vd-line" data-line={i}>
+            <span class="vd-idx">{i}</span>
+            <span class="vd-text"><strong>{l.who}:</strong> {l.text}</span>
+            <span class="vd-cited" hidden><T zh="被引用" en="Cited" /></span>
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    <section class="vd-pane" aria-labelledby="vd-h-facts">
+      <h3 id="vd-h-facts" class="vd-h">
+        <T zh="AI 起草的事实" en="AI-drafted facts" />
+        <span class="vd-count" data-count>0 / {facts.length}</span>
+      </h3>
+      <p class="vd-hint">
+        <T
+          zh="点一条事实，逐字稿里会标出它引用的原话。再决定通过还是拒绝。"
+          en="Select a fact to see the lines it cites, then approve or decline it."
+        />
+      </p>
+      <ul class="vd-facts" role="list">
+        {facts.map((f) => (
+          <li class="vd-fact" data-fact={f.id} data-cites={f.cites.join(',')} data-verdict="pending">
+            <button type="button" class="vd-fact-btn" aria-pressed="false" lang="en">
+              <span class="vd-section">{f.section}</span>
+              <span class="vd-statement">{f.text}</span>
+              <span class="vd-meta">
+                Line {f.cites.join(', ')} · confidence {f.conf.toFixed(2)}
+              </span>
+            </button>
+            <div class="vd-actions">
+              <span class="vd-verdict" data-verdict-label>
+                <T zh="待核对" en="Pending" />
+              </span>
+              <button type="button" class="vd-act vd-act--ok" data-act="approved">
+                <T zh="通过" en="Approve" /><span class="visually-hidden" lang="en">: {f.text}</span>
+              </button>
+              <button type="button" class="vd-act" data-act="declined">
+                <T zh="拒绝" en="Decline" /><span class="visually-hidden" lang="en">: {f.text}</span>
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      <div class="vd-dropped">
+        <p class="vd-dropped-h"><T zh="已被服务端丢弃，助理看不到" en="Dropped on the server, never shown to the assistant" /></p>
+        <p class="vd-dropped-text" lang="en"><s>{dropped.text}</s></p>
+        <p class="vd-dropped-why">
+          <T
+            zh={`引用了第 ${dropped.cite} 行，但逐字稿只有第 0 到 ${lines.length - 1} 行。`}
+            en={`It cites line ${dropped.cite}, but the transcript only has lines 0 to ${lines.length - 1}.`}
+          />
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <section class="vd-agent" aria-labelledby="vd-h-agent">
+    <h3 id="vd-h-agent" class="vd-h"><T zh="经纪人看到的客户档案" en="What the agent sees" /></h3>
+    <p class="vd-empty" data-empty>
+      <T zh="还没有通过的事实。未核对的内容不会出现在这里。" en="Nothing approved yet. Unverified facts never appear here." />
+    </p>
+    <ul class="vd-agent-list" role="list" lang="en">
+      {facts.map((f) => (
+        <li data-agent-fact={f.id} hidden>
+          <span class="vd-section">{f.section}</span>
+          <span>{f.text}</span>
+        </li>
+      ))}
+    </ul>
+    <div class="vd-foot">
+      <p class="vd-status" role="status" data-status></p>
+      <button type="button" class="vd-reset" data-reset><T zh="重置" en="Reset" /></button>
+    </div>
+  </section>
+</div>
+
+<script>
+  const MSG = {
+    approved: { zh: '已通过，经纪人现在能看到这条。', en: 'Approved. The agent can now see this fact.' },
+    declined: { zh: '已拒绝，这条不会进入客户档案。', en: 'Declined. This fact stays out of the client profile.' },
+    reset: { zh: '已重置。', en: 'Reset.' },
+  };
+  const LABEL = {
+    pending: { zh: '待核对', en: 'Pending' },
+    approved: { zh: '已通过', en: 'Approved' },
+    declined: { zh: '已拒绝', en: 'Declined' },
+  };
+  const lang = () => (document.documentElement.getAttribute('data-lang') === 'en' ? 'en' : 'zh');
+
+  document.querySelectorAll<HTMLElement>('[data-verify-demo]').forEach((root) => {
+    const facts = Array.from(root.querySelectorAll<HTMLElement>('[data-fact]'));
+    const lines = Array.from(root.querySelectorAll<HTMLElement>('[data-line]'));
+    const count = root.querySelector<HTMLElement>('[data-count]')!;
+    const empty = root.querySelector<HTMLElement>('[data-empty]')!;
+    const status = root.querySelector<HTMLElement>('[data-status]')!;
+
+    function select(fact: HTMLElement | null) {
+      const cites = fact ? (fact.dataset.cites ?? '').split(',') : [];
+      facts.forEach((f) => {
+        const on = f === fact;
+        f.classList.toggle('is-selected', on);
+        f.querySelector('.vd-fact-btn')!.setAttribute('aria-pressed', String(on));
+      });
+      lines.forEach((l) => {
+        const on = cites.includes(l.dataset.line ?? '');
+        l.classList.toggle('is-cited', on);
+        l.querySelector<HTMLElement>('.vd-cited')!.hidden = !on;
+      });
+    }
+
+    function setVerdict(fact: HTMLElement, verdict: 'pending' | 'approved' | 'declined') {
+      fact.dataset.verdict = verdict;
+      const label = fact.querySelector<HTMLElement>('[data-verdict-label]')!;
+      label.querySelector('.i18n-zh')!.textContent = LABEL[verdict].zh;
+      label.querySelector('.i18n-en')!.textContent = LABEL[verdict].en;
+      const row = root.querySelector<HTMLElement>(`[data-agent-fact="${fact.dataset.fact}"]`)!;
+      row.hidden = verdict !== 'approved';
+      const reviewed = facts.filter((f) => f.dataset.verdict !== 'pending').length;
+      const approved = facts.filter((f) => f.dataset.verdict === 'approved').length;
+      count.textContent = `${reviewed} / ${facts.length}`;
+      empty.hidden = approved > 0;
+    }
+
+    facts.forEach((fact) => {
+      fact.querySelector('.vd-fact-btn')!.addEventListener('click', () => {
+        select(fact.classList.contains('is-selected') ? null : fact);
+      });
+      fact.querySelectorAll<HTMLElement>('[data-act]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const verdict = btn.dataset.act as 'approved' | 'declined';
+          select(fact);
+          setVerdict(fact, verdict);
+          status.textContent = MSG[verdict][lang()];
+        });
+      });
+    });
+
+    root.querySelector('[data-reset]')!.addEventListener('click', () => {
+      facts.forEach((f) => setVerdict(f, 'pending'));
+      select(null);
+      status.textContent = MSG.reset[lang()];
+    });
+  });
+</script>
+
+<style>
+  /* 真实产品是浅色界面，这里保留浅色，让它读起来是“一块产品屏幕”而不是站点的一部分。 */
+  .vd {
+    --vd-ink: #111418;
+    --vd-sub: #5B6470;
+    --vd-line: #DDE1E6;
+    --vd-bg: #F4F5F7;
+    --vd-card: #FFFFFF;
+    --vd-hi: #FFF2C2;
+    --vd-ok: #0B6B3A;
+    --vd-no: #A12A1C;
+    margin-top: 1.5rem;
+    color: var(--vd-ink);
+    color-scheme: light;
+    background: var(--vd-bg);
+    border: 1px solid #2A2F33;
+    font-family: 'Inter', -apple-system, 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  .vd :global(.visually-hidden:where(:not(:focus-within, :active))) {
+    position: absolute !important;
+    clip-path: inset(50%) !important;
+    overflow: hidden !important;
+    width: 1px !important;
+    height: 1px !important;
+    margin: -1px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    white-space: nowrap !important;
+  }
+  .vd p { line-height: 1.5; }
+  /* 案例正文给 strong / h3 配了深色主题的浅色字，这里改回继承 */
+  .vd :global(strong) { color: inherit; font-weight: 700; }
+  .vd-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    padding: 0.6rem 0.9rem;
+    background: var(--vd-card);
+    border-bottom: 1px solid var(--vd-line);
+  }
+  .vd-brand { display: inline-flex; align-items: center; gap: 0.45rem; font-weight: 700; }
+  .vd-logo {
+    display: inline-grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    background: var(--vd-ink);
+    color: #fff;
+    font-size: 11px;
+  }
+  .vd-crumb { color: var(--vd-sub); flex: 1; min-width: 12ch; }
+  .vd-tag {
+    padding: 0.1rem 0.5rem;
+    border: 1px solid var(--vd-line);
+    border-radius: 999px;
+    color: var(--vd-sub);
+    font-size: 0.75rem;
+  }
+
+  .vd-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: 0.75rem;
+    padding: 0.75rem;
+  }
+  .vd-pane,
+  .vd-agent {
+    background: var(--vd-card);
+    border: 1px solid var(--vd-line);
+    border-radius: 8px;
+    padding: 0.9rem;
+  }
+  .vd-agent { margin: 0 0.75rem 0.75rem; }
+  .vd .vd-h {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin: 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--vd-sub);
+  }
+  .vd-count { font-variant-numeric: tabular-nums; }
+  .vd .vd-hint { margin: 0.4rem 0 0; color: var(--vd-sub); font-size: 0.8rem; }
+
+  .vd-lines,
+  .vd-facts,
+  .vd-agent-list { list-style: none; margin: 0.6rem 0 0; padding: 0; }
+  .vd-line {
+    display: grid;
+    grid-template-columns: 1.5rem 1fr auto;
+    gap: 0.5rem;
+    align-items: start;
+    padding: 0.4rem 0.5rem;
+    border-left: 3px solid transparent;
+    border-radius: 4px;
+  }
+  .vd-idx { color: var(--vd-sub); font-variant-numeric: tabular-nums; text-align: right; }
+  .vd-line.is-cited { background: var(--vd-hi); border-left-color: #B7791F; }
+  .vd-cited {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #7A4A00;
+    white-space: nowrap;
+  }
+
+  .vd-fact {
+    border: 1px solid var(--vd-line);
+    border-radius: 8px;
+    overflow: clip;
+  }
+  .vd-fact + .vd-fact { margin-top: 0.5rem; }
+  .vd-fact.is-selected { border-color: var(--vd-ink); box-shadow: inset 3px 0 0 var(--vd-ink); }
+  .vd-fact[data-verdict='approved'] { background: #F1FAF4; }
+  .vd-fact[data-verdict='declined'] .vd-statement { text-decoration: line-through; color: var(--vd-sub); }
+  .vd-fact-btn {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    width: 100%;
+    padding: 0.6rem 0.7rem 0.4rem;
+    text-align: left;
+    background: none;
+    border: 0;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+  }
+  .vd-section {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--vd-sub);
+  }
+  .vd-statement { font-weight: 600; }
+  .vd-meta { color: var(--vd-sub); font-size: 0.75rem; font-variant-numeric: tabular-nums; }
+  .vd-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0 0.7rem 0.6rem;
+  }
+  .vd-verdict { flex: 1; font-size: 0.75rem; font-weight: 700; color: var(--vd-sub); }
+  .vd-fact[data-verdict='approved'] .vd-verdict { color: var(--vd-ok); }
+  .vd-fact[data-verdict='declined'] .vd-verdict { color: var(--vd-no); }
+  .vd-act,
+  .vd-reset {
+    min-block-size: 32px;
+    padding: 0 0.75rem;
+    border: 1px solid var(--vd-line);
+    border-radius: 6px;
+    background: var(--vd-card);
+    color: var(--vd-ink);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .vd-act--ok { background: var(--vd-ink); border-color: var(--vd-ink); color: #fff; }
+  .vd-act:hover,
+  .vd-reset:hover { border-color: var(--vd-ink); }
+  .vd :is(button):focus-visible {
+    outline: 3px solid #1D4ED8;
+    outline-offset: 2px;
+  }
+  @media (pointer: coarse) {
+    .vd-act,
+    .vd-reset { min-block-size: 44px; }
+  }
+
+  .vd-dropped {
+    margin-top: 0.75rem;
+    padding: 0.6rem 0.7rem;
+    border: 1px dashed #B9C0C8;
+    border-radius: 8px;
+    color: var(--vd-sub);
+  }
+  .vd .vd-dropped p { margin: 0; color: var(--vd-sub); max-width: none; }
+  .vd-dropped-h { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
+  .vd-dropped-text { margin-top: 0.25rem !important; }
+  .vd-dropped-why { margin-top: 0.15rem !important; font-size: 0.78rem; }
+
+  .vd .vd-empty { margin: 0.6rem 0 0; color: var(--vd-sub); }
+  .vd-agent-list li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    padding: 0.5rem 0;
+    border-top: 1px solid var(--vd-line);
+  }
+  .vd-agent-list li[hidden] { display: none; }
+  .vd-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+  }
+  .vd .vd-status { margin: 0; color: var(--vd-sub); font-size: 0.8rem; min-height: 1.2em; }
+</style>

@@ -19,10 +19,10 @@ export const SITE = {
     email: 'mailto:linmengfdm@gmail.com',
   },
   nav: [
-    { label: '经历', href: '/' },
-    { label: '关于', href: '/about' },
-    { label: '项目', href: '/projects' },
+    { label: '作品', href: '/work' },
+    { label: '经历', href: '/experience' },
     { label: '文章', href: '/blog' },
+    { label: '关于', href: '/about' },
   ],
 } as const;
 

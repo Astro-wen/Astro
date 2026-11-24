@@ -1,120 +1,122 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Hero from '@/components/Hero.astro';
-import ExperienceCard from '@/components/ExperienceCard.astro';
-import EducationCard from '@/components/EducationCard.astro';
 import SectionHeader from '@/components/SectionHeader.astro';
+import CaseCard from '@/components/CaseCard.astro';
+import LogoPlaceholder from '@/components/LogoPlaceholder.astro';
 import PostCard from '@/components/PostCard.astro';
-import ProjectCard from '@/components/ProjectCard.astro';
+import T from '@/components/T.astro';
 import { getCollection } from 'astro:content';
 import { SITE } from '@/lib/site';
+import { CASES } from '@/lib/cases';
+import { sortExperience, formatRange } from '@/lib/timeline';
 
-// ============ 数据加载 ============
-const allTimeline = await getCollection('timeline');
-const education = allTimeline
-  .filter((t) => t.data.kind === 'education')
-  .sort((a, b) => b.data.start.getTime() - a.data.start.getTime());
-
-const experiences = allTimeline
-  .filter((t) => t.data.kind === 'work')
-  .sort((a, b) => {
-    const aEnd = a.data.end ?? new Date(8640000000000000);
-    const bEnd = b.data.end ?? new Date(8640000000000000);
-    return bEnd.getTime() - aEnd.getTime() || b.data.start.getTime() - a.data.start.getTime();
-  });
+const all = await getCollection('timeline');
+const experiences = sortExperience(all.filter((t) => t.data.kind === 'work'));
+const education = all.filter((t) => t.data.kind === 'education');
+// 首页只列最近几段，完整内容在 /experience
+const recent = experiences.slice(0, 5);
 
 const posts = (await getCollection('blog', ({ data }) => !data.draft))
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 3);
 
-const featuredProjects = (await getCollection('projects'))
-  .filter((p) => p.data.featured)
-  .sort((a, b) => a.data.order - b.data.order);
-const fallbackProjects = (await getCollection('projects'))
-  .sort((a, b) => a.data.order - b.data.order)
-  .slice(0, 3);
-const projects = featuredProjects.length > 0 ? featuredProjects : fallbackProjects;
-
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 ---
 
-<BaseLayout title={SITE.name} description={SITE.description}>
+<BaseLayout title={SITE.name} description={SITE.description} mascot>
   <Hero />
 
-  {/* ============ 教育 ============ */}
-  {education.length > 0 && (
-    <section id="education" class="container-wide py-16 sm:py-20 scroll-mt-20">
-      <SectionHeader
-        index="01"
-        title="教育背景"
-        tag="Education"
-        subtitle="当下正在接受的系统化训练。"
-        subtitleEn="The systematic training I'm currently receiving."
-      />
-      <div class="space-y-6">
-        {education.map((entry, i) => <EducationCard entry={entry} index={i} />)}
-      </div>
-    </section>
-  )}
+  {/* ============ 作品 ============ */}
+  <section id="work" class="container-wide py-12 sm:py-16 scroll-mt-20">
+    <SectionHeader index="01" title="作品" tag="Work" />
+    <ul class="grid grid-cols-1 md:grid-cols-2 gap-5" role="list">
+      {CASES.map((c) => <li><CaseCard item={c} /></li>)}
+    </ul>
+    <p class="mt-6 text-right">
+      <a href={`${base}/work`} class="home-more"><T zh="全部作品" en="All work" /> <span aria-hidden="true">→</span></a>
+    </p>
+  </section>
 
-  {/* ============ 经历 ============ */}
-  {experiences.length > 0 && (
-    <section id="experience" class="container-wide py-16 sm:py-20 scroll-mt-20">
-      <SectionHeader
-        index="02"
-        title="实习经历"
-        tag="Experience"
-      />
-      <div class="space-y-8 sm:space-y-10">
-        {experiences.map((entry, i) => (
-          <ExperienceCard
-            entry={entry}
-            index={i}
-            number={experiences.length - i}
-            defaultOpen={i === 0}
-          />
-        ))}
-      </div>
-    </section>
-  )}
-
-  {/* ============ 精选项目 ============ */}
-  {projects.length > 0 && (
-    <section id="work" class="container-wide py-16 sm:py-20 scroll-mt-20">
-      <SectionHeader
-        index="03"
-        title="精选项目"
-        tag="Selected Work"
-      />
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {projects.map((p, i) => <ProjectCard project={p} index={i} />)}
-      </div>
-      <div class="mt-6 text-right">
-        <a href={`${base}/projects`} class="font-mono text-xs tracking-[0.2em] text-ink-700 hover:text-brand transition-colors">
-          <span class="i18n-zh">查看全部 →</span>
-          <span class="i18n-en">View all →</span>
-        </a>
-      </div>
-    </section>
-  )}
+  {/* ============ 经历（精简） ============ */}
+  <section id="experience" class="container-wide py-12 sm:py-16 scroll-mt-20">
+    <SectionHeader index="02" title="经历" tag="Experience" />
+    <ul class="xp" role="list">
+      {recent.map((e) => (
+        <li class="xp-row">
+          <LogoPlaceholder logo={e.data.logo} name={e.data.orgShort || e.data.org} tint={e.data.tint} size={40} />
+          <span class="xp-main">
+            <span class="xp-org"><T zh={e.data.orgZh ?? e.data.org} en={e.data.orgEn ?? e.data.org} /></span>
+            <span class="xp-role"><T zh={e.data.role} en={e.data.roleEn ?? e.data.role} /></span>
+          </span>
+          <span class="xp-date">
+            <T zh={formatRange(e.data.start, e.data.end, 'zh')} en={formatRange(e.data.start, e.data.end, 'en')} />
+          </span>
+        </li>
+      ))}
+      {education.map((e) => (
+        <li class="xp-row">
+          <LogoPlaceholder logo={e.data.logo} name={e.data.orgShort || e.data.org} tint={e.data.tint} size={40} />
+          <span class="xp-main">
+            <span class="xp-org"><T zh={e.data.orgZh ?? e.data.org} en={e.data.orgEn ?? e.data.org} /></span>
+            <span class="xp-role"><T zh={e.data.role} en={e.data.roleEn ?? e.data.role} /></span>
+          </span>
+          <span class="xp-date">
+            <T zh={formatRange(e.data.start, e.data.end, 'zh')} en={formatRange(e.data.start, e.data.end, 'en')} />
+          </span>
+        </li>
+      ))}
+    </ul>
+    <p class="mt-6 text-right">
+      <a href={`${base}/experience`} class="home-more">
+        <T zh={`完整经历（共 ${experiences.length} 段）`} en={`Full experience (${experiences.length} roles)`} /> <span aria-hidden="true">→</span>
+      </a>
+    </p>
+  </section>
 
   {/* ============ 文章 ============ */}
   {posts.length > 0 && (
-    <section id="writing" class="container-wide py-16 sm:py-20 scroll-mt-20">
-      <SectionHeader
-        index="04"
-        title="想法与笔记"
-        tag="Writing"
-      />
+    <section id="writing" class="container-wide py-12 sm:py-16 scroll-mt-20">
+      <SectionHeader index="03" title="文章" tag="Writing" />
       <div>
         {posts.map((post) => <PostCard post={post} />)}
       </div>
-      <div class="mt-6 text-right">
-        <a href={`${base}/blog`} class="font-mono text-xs tracking-[0.2em] text-ink-700 hover:text-brand transition-colors">
-          <span class="i18n-zh">全部文章 →</span>
-          <span class="i18n-en">All posts →</span>
-        </a>
-      </div>
+      <p class="mt-6 text-right">
+        <a href={`${base}/blog`} class="home-more"><T zh="全部文章" en="All posts" /> <span aria-hidden="true">→</span></a>
+      </p>
     </section>
   )}
 </BaseLayout>
+
+<style>
+  .home-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-block-size: 32px;
+    color: #C9CDD0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    border-bottom: 1px solid #626A70;
+  }
+  .home-more:hover { color: #FF5A3C; border-bottom-color: #FF5A3C; }
+
+  .xp { list-style: none; margin: 0; padding: 0; border-top: 1px solid #2A2F33; }
+  .xp-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.9rem 1rem;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid #2A2F33;
+  }
+  .xp-main { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
+  .xp-org { color: #EFE6D3; font-weight: 700; font-size: 1rem; line-height: 1.35; }
+  .xp-role { color: #9AA3A9; font-size: 0.88rem; line-height: 1.45; }
+  .xp-date { color: #9AA3A9; font-size: 0.85rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  @media (max-width: 520px) {
+    .xp-row { grid-template-columns: auto 1fr; }
+    .xp-date { grid-column: 2; }
+  }
+</style>

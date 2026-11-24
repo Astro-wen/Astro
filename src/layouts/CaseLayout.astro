@@ -1,0 +1,194 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import T from '@/components/T.astro';
+
+interface Bi { zh: string; en: string }
+interface Metric { value: string; zh: string; en: string }
+interface LinkItem { href: string; zh: string; en: string; noteZh?: string; noteEn?: string }
+interface Props {
+  /** <title> 用，前置页面主题 */
+  pageTitle: string;
+  description: string;
+  kicker: Bi;
+  title: Bi;
+  summary: Bi;
+  facts: { label: Bi; value: Bi }[];
+  metrics?: Metric[];
+  links?: LinkItem[];
+  /** 页面底部的说明，例如脱敏声明 */
+  disclosure?: Bi;
+}
+const { pageTitle, description, kicker, title, summary, facts, metrics = [], links = [], disclosure } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<BaseLayout title={pageTitle} description={description}>
+  <article class="container-wide py-12 sm:py-16">
+    <nav aria-label="Breadcrumb" class="text-sm">
+      <a href={`${base}/work`} class="case-back">
+        <span aria-hidden="true">←</span> <T zh="全部作品" en="All work" />
+      </a>
+    </nav>
+
+    <header class="mt-6">
+      <p class="section-eyebrow"><T zh={kicker.zh} en={kicker.en} /></p>
+      <h1 class="mt-3 display-lg text-3xl sm:text-5xl text-ink-900 leading-tight">
+        <T zh={title.zh} en={title.en} />
+      </h1>
+      <p class="mt-5 text-base sm:text-lg text-ink-900/90 max-w-3xl">
+        <T zh={summary.zh} en={summary.en} />
+      </p>
+
+      <slot name="hero" />
+
+      <dl class="case-facts">
+        {facts.map((f) => (
+          <div>
+            <dt><T zh={f.label.zh} en={f.label.en} /></dt>
+            <dd><T zh={f.value.zh} en={f.value.en} /></dd>
+          </div>
+        ))}
+      </dl>
+
+      {metrics.length > 0 && (
+        <ul class="case-metrics" role="list">
+          {metrics.map((m) => (
+            <li>
+              <span class="case-metric-value">{m.value}</span>
+              <span class="case-metric-label"><T zh={m.zh} en={m.en} /></span>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {links.length > 0 && (
+        <ul class="case-links" role="list">
+          {links.map((l) => (
+            <li>
+              <a href={l.href} target="_blank" rel="noopener noreferrer" class="case-link">
+                <T zh={l.zh} en={l.en} /> <span aria-hidden="true">↗</span>
+              </a>
+              {l.noteZh && <span class="case-link-note"><T zh={l.noteZh} en={l.noteEn ?? l.noteZh} /></span>}
+            </li>
+          ))}
+        </ul>
+      )}
+    </header>
+
+    <slot />
+
+    {disclosure && (
+      <footer class="case-disclosure">
+        <p><T zh={disclosure.zh} en={disclosure.en} /></p>
+      </footer>
+    )}
+  </article>
+</BaseLayout>
+
+<style>
+  .case-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-block-size: 24px;
+    color: #9AA3A9;
+  }
+  .case-back:hover { color: #FF5A3C; }
+
+  .case-facts {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1rem 2rem;
+    padding: 1.1rem 0;
+    border-top: 1px solid #2A2F33;
+    border-bottom: 1px solid #2A2F33;
+  }
+  .case-facts dt {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #8A949B;
+  }
+  .case-facts dd { margin: 0.3rem 0 0; color: #EFE6D3; font-size: 0.95rem; line-height: 1.5; }
+
+  .case-metrics {
+    margin: 1.75rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1.25rem 2rem;
+  }
+  .case-metrics li { display: flex; flex-direction: column; gap: 0.3rem; }
+  .case-metric-value {
+    font-family: 'Archivo Black', 'Inter', sans-serif;
+    font-size: clamp(1.6rem, 4vw, 2.25rem);
+    line-height: 1;
+    color: #FF5A3C;
+    font-variant-numeric: tabular-nums;
+  }
+  .case-metric-label { color: #9AA3A9; font-size: 0.85rem; line-height: 1.5; }
+
+  .case-links {
+    margin: 1.75rem 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.5rem;
+  }
+  .case-links li { display: flex; flex-direction: column; gap: 0.25rem; }
+  .case-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-block-size: 40px;
+    padding: 0 0.9rem;
+    border: 1px solid #2A2F33;
+    background: #141719;
+    color: #EFE6D3;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .case-link:hover { border-color: #FF5A3C; color: #FF5A3C; }
+  .case-link-note { color: #9AA3A9; font-size: 0.78rem; }
+
+  .case-disclosure {
+    margin-top: 4rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #2A2F33;
+    color: #9AA3A9;
+    font-size: 0.85rem;
+    max-width: 68ch;
+  }
+
+  :global(.case-table-wrap) { margin-top: 1.25rem; overflow-x: auto; }
+  :global(.case-table) { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  :global(.case-table caption) {
+    caption-side: top;
+    text-align: left;
+    padding-bottom: 0.6rem;
+    color: #9AA3A9;
+    font-size: 0.82rem;
+  }
+  :global(.case-table th),
+  :global(.case-table td) {
+    text-align: left;
+    vertical-align: top;
+    padding: 0.6rem 0.9rem 0.6rem 0;
+    border-bottom: 1px solid #1F2326;
+    line-height: 1.55;
+  }
+  :global(.case-table thead th) {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #8A949B;
+    font-weight: 600;
+    border-bottom-color: #2A2F33;
+  }
+  :global(.case-table tbody th) { color: #EFE6D3; font-weight: 600; white-space: nowrap; }
+  :global(.case-table td) { color: #C9CDD0; }
+  :global(.case-table .num) { color: #FF5A3C; font-variant-numeric: tabular-nums; font-weight: 600; white-space: nowrap; }
+</style>
