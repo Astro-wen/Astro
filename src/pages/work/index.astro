@@ -28,7 +28,7 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
       {CASES.map((c) => <li><CaseCard item={c} /></li>)}
     </ul>
 
-    <h2 class="mt-14 section-eyebrow" id="analysis"><T zh="数据分析" en="Analysis" /></h2>
+    <h2 class="mt-14 section-eyebrow scroll-mt-24" id="analysis"><T zh="数据分析" en="Analysis" /></h2>
     <ul class="an" role="list">
       {ANALYSES.map((x) => (
         <li class="an-row">
