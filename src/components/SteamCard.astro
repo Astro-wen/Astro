@@ -1,0 +1,155 @@
+---
+/**
+ * SteamCard —— 关于页侧栏里的 Steam 卡片。数据在构建时取（见 lib/steam.ts），
+ * 取不到就整个不渲染。游戏图用的是 Steam 商店的官方横幅图。
+ */
+import T from './T.astro';
+import { getSteam } from '@/lib/steam';
+
+const steam = await getSteam();
+---
+
+{steam && (
+  <div class="st border border-line bg-paper-card p-5">
+    <div class="section-eyebrow mb-3">Steam</div>
+
+    <a class="st-who" href={steam.url} target="_blank" rel="noopener noreferrer">
+      <img src={steam.avatar} alt="" width="40" height="40" loading="lazy" decoding="async" />
+      <span class="st-name"><T zh="我的 Steam 主页" en="My Steam profile" /></span>
+      <span class="st-go" aria-hidden="true">↗</span>
+    </a>
+
+    {steam.games.length > 0 && (
+      <>
+        <p class="st-cap">
+          {steam.mode === 'recent'
+            ? <T zh="最近在玩" en="Recently played" />
+            : <T zh="玩得最多" en="Most played" />}
+        </p>
+        <ul class="st-list" role="list">
+          {steam.games.map((g) => (
+            <li>
+              <a href={`https://store.steampowered.com/app/${g.appid}/`} target="_blank" rel="noopener noreferrer">
+                <img
+                  src={g.header}
+                  data-fallback={g.icon}
+                  alt=""
+                  width="460"
+                  height="215"
+                  loading="lazy"
+                  decoding="async"
+                />
+                <span class="st-game">{g.name}</span>
+                <span class="st-hours">
+                  {steam.mode === 'recent' && g.recentHours > 0
+                    ? <T zh={`近两周 ${g.recentHours} 小时`} en={`${g.recentHours} h in the last two weeks`} />
+                    : <T zh={`共 ${g.hours} 小时`} en={`${g.hours} h played`} />}
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </>
+    )}
+  </div>
+)}
+
+<script>
+  // 个别新游戏没有 header.jpg，换成接口给的小图标；图标也没有就隐藏图片
+  document.querySelectorAll<HTMLImageElement>('.st-list img').forEach((img) => {
+    const swap = () => {
+      const fb = img.dataset.fallback;
+      if (fb && img.src !== fb) {
+        img.classList.add('is-icon');
+        img.src = fb;
+      } else {
+        img.hidden = true;
+      }
+    };
+    img.addEventListener('error', swap);
+    if (img.complete && img.naturalWidth === 0) swap();
+  });
+</script>
+
+<style>
+  .st-who {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: theme('colors.ink.900');
+  }
+  .st-who img {
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+    border: 1px solid theme('colors.line');
+  }
+  .st-name {
+    font-weight: 700;
+    min-inline-size: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .st-go {
+    margin-inline-start: auto;
+    color: theme('colors.ink.500');
+    transition: color 150ms, translate 150ms;
+  }
+  .st-who:hover .st-go,
+  .st-who:focus-visible .st-go {
+    color: theme('colors.brand.DEFAULT');
+    translate: 2px -2px;
+  }
+  .st-cap {
+    margin-block: 1.25rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: theme('colors.ink.500');
+  }
+  .st-list {
+    display: grid;
+    gap: 0.875rem;
+  }
+  .st-list a {
+    display: grid;
+    grid-template-columns: 7rem 1fr;
+    column-gap: 0.75rem;
+    align-items: center;
+  }
+  .st-list img {
+    grid-row: span 2;
+    inline-size: 100%;
+    block-size: auto;
+    aspect-ratio: 460 / 215;
+    object-fit: cover;
+    border: 1px solid theme('colors.line');
+    transition: border-color 150ms;
+  }
+  .st-list img.is-icon {
+    object-fit: contain;
+    padding: 0.5rem;
+  }
+  .st-list a:hover img,
+  .st-list a:focus-visible img {
+    border-color: theme('colors.brand.DEFAULT');
+  }
+  .st-game {
+    align-self: end;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: theme('colors.ink.900');
+  }
+  .st-hours {
+    align-self: start;
+    font-size: 0.75rem;
+    color: theme('colors.ink.500');
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .st-go,
+    .st-list img {
+      transition: none;
+    }
+  }
+</style>

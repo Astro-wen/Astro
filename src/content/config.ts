@@ -73,6 +73,8 @@ const pages = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string().optional(),
+    // 首页“关于”块用的一句话；不填就取正文第一段
+    lead: z.string().optional(),
   }),
 });
 

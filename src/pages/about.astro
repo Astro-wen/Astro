@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SectionHeader from '@/components/SectionHeader.astro';
+import SteamCard from '@/components/SteamCard.astro';
 import { SITE } from '@/lib/site';
 import { getEntry } from 'astro:content';
 
@@ -11,20 +12,20 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 
 const skills = [
   {
-    zh: { group: '产品方法', items: ['用户研究', '实验设计', '产品策略', '路线图规划', '需求定义', 'KPI 设计'] },
-    en: { group: 'Product Methods', items: ['User Research', 'Experiments', 'Product Strategy', 'Roadmapping', 'Requirements', 'KPI Design'] },
+    zh: { group: '数据分析', items: ['A/B 测试', '实验设计', '双重差分', '漏斗与留存分析', '回归与聚类', '蒙特卡洛模拟'] },
+    en: { group: 'Analytics', items: ['A/B Testing', 'Experimental Design', 'Difference-in-Differences', 'Funnel & Cohort Analysis', 'Regression & Clustering', 'Monte Carlo Simulation'] },
   },
   {
-    zh: { group: '数据分析', items: ['A/B 测试', '漏斗与留存分析', '统计建模', 'SQL', 'Python', 'R'] },
-    en: { group: 'Analytics & Data', items: ['A/B Testing', 'Funnel & Cohort Analysis', 'Statistical Modeling', 'SQL', 'Python', 'R'] },
+    zh: { group: '语言与数据工具', items: ['SQL（MySQL、PostgreSQL、Hive、Presto）', 'Python（Pandas、NumPy、scikit-learn）', 'R', 'Spark', 'Tableau', 'Power BI'] },
+    en: { group: 'Languages & Data Tools', items: ['SQL (MySQL, PostgreSQL, Hive, Presto)', 'Python (Pandas, NumPy, scikit-learn)', 'R', 'Spark', 'Tableau', 'Power BI'] },
   },
   {
-    zh: { group: '工程与 AI', items: ['React', 'TypeScript', 'REST API', 'AI 辅助原型开发', 'LLM 评估', '语义检索', 'RAG'] },
-    en: { group: 'Engineering & AI', items: ['React', 'TypeScript', 'REST APIs', 'AI-assisted Prototyping', 'LLM Evaluation', 'Semantic Search', 'RAG'] },
+    zh: { group: '产品方法', items: ['用户研究', '产品策略', '路线图规划', '需求定义', 'KPI 设计'] },
+    en: { group: 'Product Methods', items: ['User Research', 'Product Strategy', 'Roadmapping', 'Requirements', 'KPI Design'] },
   },
   {
-    zh: { group: '工具', items: ['Figma', 'Jira', 'Tableau', 'Power BI', 'Excel', 'Git', 'Claude Code', 'Cursor'] },
-    en: { group: 'Tools', items: ['Figma', 'Jira', 'Tableau', 'Power BI', 'Excel', 'Git', 'Claude Code', 'Cursor'] },
+    zh: { group: '工程与 AI', items: ['React', 'TypeScript', 'LangGraph', 'LLM 评估', 'RAG', 'Git', 'Claude Code'] },
+    en: { group: 'Engineering & AI', items: ['React', 'TypeScript', 'LangGraph', 'LLM Evaluation', 'RAG', 'Git', 'Claude Code'] },
   },
 ];
 ---
@@ -34,8 +35,8 @@ const skills = [
     <SectionHeader
       as="h1"
       index="§"
-      title="温思源 Aaron Wen"
-      tag="About"
+      title="关于我"
+      tag="About me"
       subtitle="产品经理，数据工程师 / 分析师"
       subtitleEn="Product Manager, Data Engineer / Analyst"
     />
@@ -48,12 +49,6 @@ const skills = [
         <div class="reveal prose prose-invert max-w-none i18n-en about-prose" lang="en" style="--reveal-delay: 80ms">
           <AboutEn />
         </div>
-        <p class="mt-8 text-xs text-ink-500">
-          <a href={`${base}/admin/index.html#/collections/pages`} rel="nofollow" class="hover:text-brand transition-colors underline underline-offset-4">
-            <span class="i18n-zh">编辑这段文字</span>
-            <span class="i18n-en">Edit this text</span>
-          </a>
-        </p>
       </div>
 
       <aside class="col-span-12 lg:col-span-4">
@@ -65,26 +60,42 @@ const skills = [
             </div>
             <dl class="space-y-2.5 text-sm">
               <div class="flex items-baseline gap-3">
-                <dt class="text-xs text-ink-500 w-16 shrink-0 font-semibold tracking-wider i18n-zh">邮箱</dt>
-                <dt class="text-xs text-ink-500 w-16 shrink-0 font-semibold tracking-wider i18n-en">EMAIL</dt>
+                <dt class="text-xs text-ink-500 w-20 shrink-0 font-semibold tracking-wider i18n-zh">邮箱</dt>
+                <dt class="text-xs text-ink-500 w-20 shrink-0 font-semibold tracking-wider i18n-en">EMAIL</dt>
                 <dd class="text-ink-900">
                   <a href={SITE.social.email} class="hover:text-brand transition-colors">linmengfdm@gmail.com</a>
                 </dd>
               </div>
               <div class="flex items-baseline gap-3">
-                <dt class="text-xs text-ink-500 w-16 shrink-0 font-semibold tracking-wider">LINKEDIN</dt>
+                <dt class="text-xs text-ink-500 w-20 shrink-0 font-semibold tracking-wider">LINKEDIN</dt>
                 <dd class="text-ink-900">
                   <a href={SITE.social.linkedin} target="_blank" rel="noopener noreferrer" class="hover:text-brand transition-colors">aaron-wen</a>
                 </dd>
               </div>
               <div class="flex items-baseline gap-3">
-                <dt class="text-xs text-ink-500 w-16 shrink-0 font-semibold tracking-wider i18n-zh">微信</dt>
-                <dt class="text-xs text-ink-500 w-16 shrink-0 font-semibold tracking-wider i18n-en">WECHAT</dt>
+                <dt class="text-xs text-ink-500 w-20 shrink-0 font-semibold tracking-wider">INSTAGRAM</dt>
+                <dd class="text-ink-900">
+                  <a href={SITE.social.instagram} target="_blank" rel="noopener noreferrer" class="hover:text-brand transition-colors">linmengfdm</a>
+                </dd>
+              </div>
+              {SITE.social.steam && (
+                <div class="flex items-baseline gap-3">
+                  <dt class="text-xs text-ink-500 w-20 shrink-0 font-semibold tracking-wider">STEAM</dt>
+                  <dd class="text-ink-900">
+                    <a href={SITE.social.steam} target="_blank" rel="noopener noreferrer" class="hover:text-brand transition-colors">
+                      <span class="i18n-zh">个人主页</span><span class="i18n-en">Profile</span>
+                    </a>
+                  </dd>
+                </div>
+              )}
+              <div class="flex items-baseline gap-3">
+                <dt class="text-xs text-ink-500 w-20 shrink-0 font-semibold tracking-wider i18n-zh">微信</dt>
+                <dt class="text-xs text-ink-500 w-20 shrink-0 font-semibold tracking-wider i18n-en">WECHAT</dt>
                 <dd class="text-ink-900">Miletlover_2026zwhy</dd>
               </div>
               <div class="flex items-baseline gap-3">
-                <dt class="text-xs text-ink-500 w-16 shrink-0 font-semibold tracking-wider i18n-zh">所在地</dt>
-                <dt class="text-xs text-ink-500 w-16 shrink-0 font-semibold tracking-wider i18n-en">LOCATION</dt>
+                <dt class="text-xs text-ink-500 w-20 shrink-0 font-semibold tracking-wider i18n-zh">所在地</dt>
+                <dt class="text-xs text-ink-500 w-20 shrink-0 font-semibold tracking-wider i18n-en">LOCATION</dt>
                 <dd class="text-ink-700">
                   <span class="i18n-zh">美国 洛杉矶</span>
                   <span class="i18n-en">Los Angeles, CA</span>
@@ -92,6 +103,7 @@ const skills = [
               </div>
             </dl>
           </div>
+          <SteamCard />
         </div>
       </aside>
     </div>
@@ -144,3 +156,32 @@ const skills = [
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  // 系统开了“减少动态效果”时，把动图换成同名的静止图
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    document.querySelectorAll<HTMLImageElement>('.about-prose img[src$=".gif"]').forEach((img) => {
+      img.src = img.src.replace(/\.gif$/, '.png');
+    });
+  }
+</script>
+
+<style>
+  /* 正文里的贴纸：跟着文字走的小图，不撑开行距太多 */
+  .about-prose :global(img) {
+    display: inline-block;
+    block-size: 2.25em;
+    inline-size: auto;
+    margin: -0.5em 0 -0.35em 0.3em;
+    vertical-align: middle;
+    border-radius: 0.35em;
+  }
+  .about-prose :global(p:first-child img) {
+    block-size: 3em;
+    margin-block: -0.75em;
+  }
+  .about-prose :global(p:last-child img) {
+    block-size: 3.25em;
+    margin: 0;
+  }
+</style>

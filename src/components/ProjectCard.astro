@@ -1,6 +1,5 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import Tag from './Tag.astro';
 
 interface Props {
   project: CollectionEntry<'projects'>;
@@ -48,9 +47,4 @@ const barColor = vhsColors[index % 3];
     <span class="i18n-zh" lang="zh-CN">{summary}</span>
     <span class="i18n-en" lang="en">{summaryEn ?? summary}</span>
   </p>
-  {stack.length > 0 && (
-    <div class="mt-4 flex flex-wrap gap-1.5">
-      {stack.map((s) => <Tag label={s} />)}
-    </div>
-  )}
 </article>

@@ -3,20 +3,24 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import PageHeader from '@/components/PageHeader.astro';
 import CaseCard from '@/components/CaseCard.astro';
 import ProjectCard from '@/components/ProjectCard.astro';
+import SideCard from '@/components/SideCard.astro';
 import T from '@/components/T.astro';
 import { CASES } from '@/lib/cases';
+import { SIDES } from '@/lib/sides';
+import { ANALYSES } from '@/lib/analyses';
 import { getCollection } from 'astro:content';
 
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 ---
 
-<BaseLayout title="作品 Work" description="做过的产品与个人项目">
+<BaseLayout title="项目 Projects" description="做过的产品与个人项目">
   <section class="container-wide py-12 sm:py-16">
     <PageHeader
-      zh="作品"
-      en="Work"
-      leadZh="三个做过的产品，以及几个自己动手做的项目。"
-      leadEn="Three products I worked on, plus a few things I built on my own."
+      zh="项目"
+      en="Projects"
+      leadZh="做过的产品、做过的分析，以及自己动手做的东西。"
+      leadEn="Products I worked on, analyses I ran, and things I built on my own."
     />
 
     <h2 class="section-eyebrow"><T zh="产品" en="Products" /></h2>
@@ -24,9 +28,49 @@ const projects = (await getCollection('projects')).sort((a, b) => a.data.order -
       {CASES.map((c) => <li><CaseCard item={c} /></li>)}
     </ul>
 
-    <h2 class="mt-14 section-eyebrow"><T zh="个人项目" en="Side projects" /></h2>
-    <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+    <h2 class="mt-14 section-eyebrow" id="analysis"><T zh="数据分析" en="Analysis" /></h2>
+    <ul class="an" role="list">
+      {ANALYSES.map((x) => (
+        <li class="an-row">
+          <div class="an-head">
+            <p class="an-org"><T zh={x.org.zh} en={x.org.en} /></p>
+            <h3 class="an-title"><T zh={x.title.zh} en={x.title.en} /></h3>
+            {x.to
+              ? <a class="an-link" href={`${base}${x.to}`}><T zh="看这段经历" en="See the experience" /> →</a>
+              : <a class="an-link" href={x.href} target="_blank" rel="noopener noreferrer"><T zh="看完整报告" en="Read the full report" /> ↗</a>}
+          </div>
+          <dl class="an-body">
+            <div><dt><T zh="问题" en="Question" /></dt><dd><T zh={x.q.zh} en={x.q.en} /></dd></div>
+            <div><dt><T zh="方法" en="Method" /></dt><dd><T zh={x.how.zh} en={x.how.en} /></dd></div>
+            <div><dt><T zh="结果" en="Result" /></dt><dd><T zh={x.out.zh} en={x.out.en} /></dd></div>
+          </dl>
+        </li>
+      ))}
+    </ul>
+
+    <h2 class="mt-14 section-eyebrow"><T zh="更多" en="More" /></h2>
+    <ul class="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" role="list">
+      {SIDES.map((x) => <li><SideCard item={x} /></li>)}
+    </ul>
+
+    <div class="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
       {projects.map((p, i) => <ProjectCard project={p} index={i} />)}
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .an { list-style: none; margin: 1rem 0 0; padding: 0; border-block-start: 1px solid #2A2F33; }
+  .an-row { display: grid; gap: 1rem 2.5rem; padding-block: 1.6rem; border-block-end: 1px solid #2A2F33; }
+  @media (min-width: 56rem) { .an-row { grid-template-columns: minmax(0, 1fr) minmax(0, 1.7fr); } }
+  .an-head { display: grid; gap: 0.5rem; align-content: start; justify-items: start; }
+  .an-org { margin: 0; color: #FF5A3C; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; }
+  .an-title { margin: 0; color: #EFE6D3; font-size: clamp(1.15rem, 2vw, 1.4rem); font-weight: 900; line-height: 1.3; }
+  .an-link { display: inline-flex; align-items: center; min-block-size: 24px; color: #9AA3A9; font-size: 0.88rem; font-weight: 600; }
+  .an-link:hover { color: #FF5A3C; }
+  .an-link:focus-visible { outline: 3px solid #EFE6D3; outline-offset: 2px; }
+  .an-body { margin: 0; display: grid; gap: 0.7rem; }
+  .an-body div { display: grid; grid-template-columns: 4.5em minmax(0, 1fr); gap: 0.75rem; }
+  .an-body dt { color: #8A949B; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.06em; padding-block-start: 0.2em; }
+  .an-body dd { margin: 0; color: #C9CDD0; line-height: 1.7; }
+</style>

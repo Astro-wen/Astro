@@ -1,0 +1,144 @@
+---
+/**
+ * SideCard —— 个人项目卡片。上面是真实画面（录屏 / 截图 / 游戏角色动画），下面是一段话和去处。
+ * 整张卡片可点，去项目最合适的落点；有单独仓库地址时另给一个 GitHub 链接。
+ */
+import { Image } from 'astro:assets';
+import T from '@/components/T.astro';
+import type { SIDES } from '@/lib/sides';
+
+interface Props {
+  item: (typeof SIDES)[number];
+  heading?: 'h3' | 'h4';
+}
+const { item, heading: Heading = 'h3' } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const sprites = [
+  { file: 'gym-bench_press_2f.png', n: 2, w: 96, h: 72 },
+  { file: 'gym-dumbbell_curl_2f.png', n: 2, w: 48, h: 96 },
+  { file: 'gym-treadmill_4f.png', n: 4, w: 72, h: 96 },
+  { file: 'gym-punching_bag_2f.png', n: 2, w: 72, h: 96 },
+];
+---
+<article class="sd">
+  <div class="sd-vis" data-kind={item.kind}>
+    {item.kind === 'video' && (
+      <video muted loop playsinline preload="none" poster={item.poster.src} width="720" height="636" aria-label={item.alt.en} data-autoplay>
+        <source src={`${base}${item.video}`} type="video/mp4" />
+      </video>
+    )}
+    {item.kind === 'image' && (
+      <Image src={item.image} alt={item.alt.en} widths={[480, 900]} sizes="(min-width: 62rem) 30vw, 92vw" format="webp" quality={86} loading="lazy" />
+    )}
+    {item.kind === 'sprites' && (
+      <div class="sd-sprites" role="img" aria-label={item.alt.en}>
+        {sprites.map((s) => (
+          <span
+            class={`sp sp-${s.n}`}
+            style={`--w:${s.w}; --h:${s.h}; background-image:url(${base}/media/side/${s.file});`}
+          ></span>
+        ))}
+      </div>
+    )}
+  </div>
+  <div class="sd-body">
+    <Heading class="sd-name">
+      <a class="sd-link" href={item.href} target="_blank" rel="noopener noreferrer">{item.name}</a>
+    </Heading>
+    <p class="sd-sum"><T zh={item.summary.zh} en={item.summary.en} /></p>
+    <p class="sd-foot">
+      <span class="sd-cta" aria-hidden="true"><T zh={item.cta.zh} en={item.cta.en} /> ↗</span>
+      {item.repo && (
+        <a class="sd-repo" href={item.repo} target="_blank" rel="noopener noreferrer">GitHub</a>
+      )}
+    </p>
+  </div>
+</article>
+
+<script>
+  // 录屏只在进入视口、且系统没有要求减少动态效果时播放
+  const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const videos = document.querySelectorAll<HTMLVideoElement>('video[data-autoplay]');
+  if (still) {
+    videos.forEach((v) => (v.controls = true));
+  } else if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        const v = e.target as HTMLVideoElement;
+        if (e.isIntersecting) v.play().catch(() => {});
+        else v.pause();
+      }
+    }, { threshold: 0.35 });
+    videos.forEach((v) => io.observe(v));
+  }
+</script>
+
+<style>
+  .sd {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    block-size: 100%;
+    background: #141719;
+    border: 1px solid #2A2F33;
+    transition: border-color 150ms;
+  }
+  .sd:hover { border-color: #FF5A3C; }
+  .sd:focus-within { outline: 3px solid #EFE6D3; outline-offset: 2px; }
+
+  .sd-vis {
+    aspect-ratio: 16 / 11;
+    overflow: hidden;
+    background: #0E1012;
+    border-block-end: 1px solid #2A2F33;
+  }
+  .sd-vis :global(img),
+  .sd-vis video {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    object-position: top center;
+  }
+
+  /* 游戏角色的逐帧动画：原图是横排的帧，按帧数分步平移 */
+  .sd-sprites {
+    block-size: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 3cqw;
+    padding-block-end: 14%;
+    background: linear-gradient(#1B2024 0 78%, #262C31 78% 100%);
+  }
+  .sp {
+    /* 四个动作原图合计 288 像素宽，按卡片宽度等比放大 */
+    --u: 0.27cqw;
+    flex: none;
+    inline-size: calc(var(--w) * var(--u));
+    block-size: calc(var(--h) * var(--u));
+    background-repeat: no-repeat;
+    background-size: auto 100%;
+    image-rendering: pixelated;
+  }
+  .sd-vis { container-type: inline-size; }
+  @media (prefers-reduced-motion: no-preference) {
+    .sp-2 { animation: sp-2 0.9s steps(2) infinite; }
+    .sp-4 { animation: sp-4 0.6s steps(4) infinite; }
+  }
+  @keyframes sp-2 { to { background-position-x: calc(var(--w) * var(--u) * -2); } }
+  @keyframes sp-4 { to { background-position-x: calc(var(--w) * var(--u) * -4); } }
+
+  .sd-body { display: flex; flex-direction: column; flex: 1; padding: 1.25rem 1.35rem 1.2rem; }
+  .sd-body :global(p) { margin: 0; }
+  .sd-name { margin: 0; font-weight: 900; font-size: clamp(1.15rem, 2vw, 1.4rem); line-height: 1.25; color: #EFE6D3; }
+  .sd-link::after { content: ''; position: absolute; inset: 0; }
+  .sd-link:focus-visible { outline: none; }
+  .sd-sum { margin-block-start: 0.6rem !important; flex: 1; color: #C9CDD0; font-size: 0.95rem; line-height: 1.7; }
+  .sd-foot { margin-block-start: 1.1rem !important; display: flex; align-items: center; gap: 1.25rem; font-weight: 600; font-size: 0.88rem; }
+  .sd-cta { color: #EFE6D3; }
+  .sd:hover .sd-cta { color: #FF5A3C; }
+  .sd-repo { position: relative; z-index: 1; color: #9AA3A9; text-decoration: underline; text-underline-offset: 4px; min-block-size: 24px; display: inline-flex; align-items: center; }
+  .sd-repo:hover { color: #FF5A3C; }
+  @media (prefers-reduced-motion: reduce) { .sd { transition: none; } }
+</style>

@@ -1,21 +1,11 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PostCard from '@/components/PostCard.astro';
-import Tag from '@/components/Tag.astro';
 import { getCollection } from 'astro:content';
 
 const allPosts = (await getCollection('blog', ({ data }) => !data.draft)).sort(
   (a, b) => b.data.date.getTime() - a.data.date.getTime(),
 );
-
-// 统计 tag 频次
-const tagCounts = new Map<string, number>();
-for (const post of allPosts) {
-  for (const t of post.data.tags) {
-    tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1);
-  }
-}
-const tags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
 ---
 
 <BaseLayout title="文章 Writing" description="文章列表">
@@ -23,14 +13,6 @@ const tags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
     <h1 class="display-lg text-3xl sm:text-5xl text-ink-900 leading-tight">
       <span class="i18n-zh">文章</span><span class="i18n-en">Writing</span>
     </h1>
-
-    {tags.length > 0 && (
-      <div class="mt-6 flex flex-wrap gap-1.5">
-        {tags.map(([t, count]) => (
-          <Tag label={`${t} ${count}`} />
-        ))}
-      </div>
-    )}
 
     <div class="mt-8">
       {allPosts.length === 0 ? (

@@ -1,5 +1,6 @@
 import notiqueCover from '@/assets/work/notique/gen-plug.jpg';
 import aiyoCover from '@/assets/work/aiyo/home.jpg';
+import evalCover from '@/assets/work/eval/task.png';
 
 /**
  * 产品案例的卡片数据 —— 首页和作品页共用。
@@ -18,7 +19,7 @@ export const CASES = [
     },
     stats: [
       { value: '~400', zh: '录音笔售出', en: 'recorders sold' },
-      { value: '~200', zh: '人在 Pilot', en: 'people in the pilot' },
+      { value: '150+', zh: '位经纪人在 Pilot', en: 'agents in the pilot' },
     ],
   },
   {
@@ -45,6 +46,18 @@ export const CASES = [
     summary: {
       zh: '我主导的自迭代系统，已在 TikTok 客服上线。它自己找根因，自己验证修复。',
       en: 'The self-improving system I led, live in TikTok’s customer service. It finds root causes and validates its own fixes.',
+    },
+    stats: [],
+  },
+  {
+    slug: 'eval',
+    image: evalCover,
+    imageAlt: 'The evaluation platform: reviewer accuracy and a list of scored conversations',
+    tag: { zh: '', en: '' },
+    title: { zh: 'Human Annotation Platform：给 AI 打分的人，用的平台', en: 'Human Annotation Platform: where people score the AI' },
+    summary: {
+      zh: 'TikTok 客服 AI 的人工评估平台。我从访谈做到全球上线，前端自己写，替掉了近 100 名评审员用的表格。',
+      en: 'The human evaluation platform for TikTok’s customer-service AI. I took it from interviews to global rollout, wrote the frontend, and replaced the spreadsheets nearly 100 reviewers were using.',
     },
     stats: [],
   },
