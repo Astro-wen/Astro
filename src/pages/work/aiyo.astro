@@ -75,7 +75,7 @@ const groups = [
 <BaseLayout title="AIYO" description="AIYO：我在腾讯游戏发起并上线的内部 AI 平台，按岗位组织内容。">
   <article class="ay">
     <header class="ay-head container-wide">
-      <a href={`${base}/work`} class="ay-back"><span aria-hidden="true">←</span> <T zh="全部作品" en="All work" /></a>
+      <a href={`${base}/work`} class="ay-back"><span aria-hidden="true">←</span> <T zh="全部项目" en="All projects" /></a>
       <h1 class="ay-h1">AIYO</h1>
       <p class="ay-sub">
         <T
@@ -83,11 +83,6 @@ const groups = [
           en="Tencent Games’ internal AI platform. I initiated it and took it to launch. 27,000 daily active users."
         />
       </p>
-      <nav class="ay-nav" aria-label="Modules">
-        <ul role="list">
-          {groups.map((g) => <li><a href={`#${g.id}`}><T zh={g.zh} en={g.en} /><span class="ay-count" aria-hidden="true">{g.frames.length}</span></a></li>)}
-        </ul>
-      </nav>
     </header>
 
     {groups.map((g) => (
@@ -119,16 +114,6 @@ const groups = [
   .ay-back:hover { color: #FF5A3C; }
   .ay-h1 { margin: 1.5rem 0 0; font-size: clamp(3rem, 10vw, 7rem); font-weight: 800; line-height: 1; letter-spacing: -0.04em; color: #EFE6D3; }
   .ay-sub { margin: 1rem 0 0; max-inline-size: 34em; color: #C9CDD0; font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.6; }
-  .ay-nav ul { list-style: none; margin: 2rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
-  .ay-nav a {
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    min-block-size: 40px; padding: 0 1rem;
-    border: 1px solid #2A2F33; border-radius: 999px;
-    color: #EFE6D3; font-weight: 600; font-size: 0.95rem;
-  }
-  .ay-nav a:hover { border-color: #FF5A3C; color: #FF5A3C; }
-  .ay-nav a:focus-visible { outline: 3px solid #EFE6D3; outline-offset: 2px; }
-  .ay-count { color: #8A949B; font-size: 0.8rem; font-variant-numeric: tabular-nums; }
 
   .ay-sec { margin: 4.5rem auto 0; padding-inline: max(1.25rem, 4vw); max-inline-size: 100rem; scroll-margin-top: 5rem; }
   .ay-h2 { margin: 0 0 1rem; font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 800; letter-spacing: -0.025em; color: #EFE6D3; }

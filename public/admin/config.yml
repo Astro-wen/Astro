@@ -21,12 +21,14 @@ collections:
         file: src/content/pages/about-zh.md
         fields:
           - { name: title, label: 备注名, widget: string }
+          - { name: lead, label: 首页用的一句话, widget: text, required: false }
           - { name: body, label: 正文, widget: markdown }
       - name: about-en
         label: 关于我 English
         file: src/content/pages/about-en.md
         fields:
           - { name: title, label: 备注名, widget: string }
+          - { name: lead, label: 首页用的一句话, widget: text, required: false }
           - { name: body, label: 正文, widget: markdown }
 
   - name: blog

@@ -17,6 +17,9 @@ export const SITE = {
     x: '',
     linkedin: 'https://www.linkedin.com/in/aaron-wen-60505b2a3/',
     email: 'mailto:linmengfdm@gmail.com',
+    instagram: 'https://www.instagram.com/linmengfdm/',
+    // Steam 个人主页地址，填上后页脚和关于页会自动出现
+    steam: 'https://steamcommunity.com/profiles/76561199047942941/',
   },
   nav: [
     { label: '作品', href: '/work' },

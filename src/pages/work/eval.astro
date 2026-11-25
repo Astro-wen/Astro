@@ -1,0 +1,138 @@
+---
+/**
+ * 人工评估平台 —— TikTok 客服 AI 的人工打分平台。
+ * 已脱敏：截图来自本地跑的演示版本，用的是样例数据；
+ * 内部系统名、公司邮箱和同事姓名都已替换，评分细则那一屏没有放。
+ */
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import T from '@/components/T.astro';
+import home from '@/assets/work/eval/home.png';
+import assign from '@/assets/work/eval/assign.png';
+import sampling from '@/assets/work/eval/sampling.png';
+import task from '@/assets/work/eval/task.png';
+import expanded from '@/assets/work/eval/task-expanded.png';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const shots = [
+  {
+    img: home,
+    alt: 'The task list: each row shows cases, assignment, completion, QC progress and scores by channel',
+    hZh: '任务列表', hEn: 'Task list',
+    zh: '一批对话是一个任务，分配、进度、质检和各渠道平均分都在一行里。',
+    en: 'One batch of conversations is one task, with assignment, progress, QC and channel averages in a single row.',
+  },
+  {
+    img: assign,
+    alt: 'The batch assign dialog: choose single or back-to-back review, then set how many cases each reviewer gets',
+    hZh: '批量分配', hEn: 'Batch assign',
+    zh: '选单人评或两人背靠背评，再按人填数量分出去。',
+    en: 'Pick single or back-to-back review, then set a number per reviewer.',
+  },
+  {
+    img: sampling,
+    alt: 'The sampling dialog: scope, percentage or absolute number, and who does the check',
+    hZh: '质检抽样', hEn: 'QC sampling',
+    zh: '按百分比或数量抽一部分来复核，可以只抽某个人。',
+    en: 'Sample by percentage or count for a second check, across everyone or one reviewer.',
+  },
+  {
+    img: task,
+    alt: 'A task detail page: per-reviewer accuracy at the top, then one row per conversation with its scores and reviewers',
+    hZh: '任务详情', hEn: 'Task detail',
+    zh: '上面是每位评审员对比质检的准确率，下面是每通对话的得分和经手人。',
+    en: 'Reviewer accuracy against QC at the top, then each conversation’s scores and who handled it.',
+  },
+  {
+    img: expanded,
+    alt: 'Conversation rows expanded to show each reviewer’s own score next to the QC result',
+    hZh: '逐条对比', hEn: 'Row by row',
+    zh: '展开一通对话，各人打的分和质检结论并排，分歧一眼可见。',
+    en: 'Expand a conversation to see each reviewer’s score beside the QC result.',
+  },
+];
+---
+<BaseLayout title="Human Annotation Platform" description="人工评估平台：给客服 AI 的自动评测提供可信的人工基准。">
+  <article class="ev">
+    <header class="container-wide">
+      <a href={`${base}/work`} class="ev-back"><span aria-hidden="true">←</span> <T zh="全部项目" en="All projects" /></a>
+      <h1 class="ev-h1">Human Annotation Platform</h1>
+      <p class="ev-sub">
+        <T
+          zh="TikTok 客服 AI 的人工评估平台，评审员在这里给对话打分。我从访谈做到全球上线，前端自己写。"
+          en="The human evaluation platform for TikTok’s customer-service AI, where reviewers score conversations. I took it from interviews to global rollout and wrote the frontend."
+        />
+      </p>
+    </header>
+
+    <section class="ev-sec" aria-labelledby="ev-look-h">
+      <h2 id="ev-look-h" class="ev-h2"><T zh="它长什么样" en="What it looks like" /></h2>
+      <p class="ev-note">
+        <T
+          zh="下面的截图经过高强度脱敏：数据和指标都是虚拟的，界面布局也和内部版本不一样，只用来展示我做了什么。"
+          en="The screenshots below are heavily de-identified: the data and metrics are made up, and the layout differs from the internal version. They are here only to show what I built."
+        />
+      </p>
+      <ul class="ev-shots" role="list">
+        {shots.map((s, i) => (
+          <li class={i === 0 ? 'is-wide' : ''}>
+            <figure>
+              <div class="ev-frame">
+                <Image src={s.img} alt={s.alt} widths={[720, 1200, 1800]} sizes={i === 0 ? '(min-width: 90rem) 80rem, 92vw' : '(min-width: 60rem) 44vw, 92vw'} format="webp" quality={86} loading={i === 0 ? 'eager' : 'lazy'} />
+              </div>
+              <figcaption>
+                <strong><T zh={s.hZh} en={s.hEn} /></strong>
+                <span><T zh={s.zh} en={s.en} /></span>
+              </figcaption>
+            </figure>
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="ev-sec" aria-labelledby="ev-me-h">
+      <h2 id="ev-me-h" class="ev-h2"><T zh="我做了什么" en="What I did" /></h2>
+      <ul class="ev-list" role="list">
+        <li>
+          <strong><T zh="从访谈做到上线" en="From interviews to rollout" /></strong>
+          <span><T zh="先找运营人员聊现在怎么打分、卡在哪，再定方案，做到全球上线。" en="Talked to operators about how they scored and where it hurt, set the design, and took it to global rollout." /></span>
+        </li>
+        <li>
+          <strong><T zh="前端自己写" en="Wrote the frontend" /></strong>
+          <span><T zh="React 和 TypeScript。需求是我提的，页面也是我做的。" en="React and TypeScript. I wrote the requirements and built the pages." /></span>
+        </li>
+        <li>
+          <strong><T zh="替掉了表格" en="Replaced the spreadsheets" /></strong>
+          <span><T zh="四个团队近 100 名评审员原来在表格里打分。换到平台后，每人每小时从不到 70 通涨到 250 至 300 通。" en="Nearly 100 reviewers across four teams used spreadsheets. On the platform, each went from under 70 conversations an hour to 250–300." /></span>
+        </li>
+      </ul>
+    </section>
+
+  </article>
+</BaseLayout>
+
+<style>
+  .ev { padding-block: 3rem 5rem; }
+  .ev-back { display: inline-flex; align-items: center; gap: 0.4rem; min-block-size: 32px; color: #9AA3A9; font-size: 0.9rem; }
+  .ev-back:hover { color: #FF5A3C; }
+  .ev-h1 { margin: 1.5rem 0 0; font-size: clamp(2.4rem, 7.2vw, 5.6rem); font-weight: 800; line-height: 1.02; letter-spacing: -0.04em; color: #EFE6D3; }
+  .ev-sub { margin: 1rem 0 0; max-inline-size: 36em; color: #C9CDD0; font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.6; }
+  .ev-sec { margin: 4.5rem auto 0; padding-inline: max(1.25rem, 4vw); max-inline-size: 88rem; }
+  .ev-h2 { margin: 0 0 1.5rem; font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 800; letter-spacing: -0.025em; color: #EFE6D3; }
+
+  .ev-note { margin: -0.5rem 0 1.75rem; padding: 0.9rem 1.1rem; max-inline-size: 46rem; border-inline-start: 3px solid #FF5A3C; background: #141719; color: #C9CDD0; line-height: 1.7; }
+  .ev-shots { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(2rem, 4vw, 3.5rem) clamp(1.25rem, 2.5vw, 2rem); grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr)); }
+  .ev-shots .is-wide { grid-column: 1 / -1; }
+  .ev-shots figure { margin: 0; display: grid; gap: 1rem; }
+  .ev-frame { overflow: hidden; border: 1px solid #2A2F33; border-radius: clamp(10px, 1.4vw, 18px); background: #F4F6F8; box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45); }
+  .ev-frame :global(img) { display: block; inline-size: 100%; block-size: auto; }
+  .ev-shots figcaption { display: grid; gap: 0.35rem; max-inline-size: 46rem; color: #C9CDD0; line-height: 1.7; }
+  .ev-shots figcaption strong { color: #EFE6D3; font-size: 1.1rem; font-weight: 800; }
+
+  .ev-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); }
+  .ev-list li { display: grid; gap: 0.5rem; align-content: start; padding: 1.25rem 1.4rem; border: 1px solid #2A2F33; border-radius: 16px; background: #141719; }
+  .ev-list strong { color: #EFE6D3; font-size: 1.15rem; font-weight: 800; line-height: 1.3; }
+  .ev-list span { color: #C9CDD0; line-height: 1.65; }
+  .ev-foot { margin-top: 5rem; padding-top: 1.5rem; border-top: 1px solid #2A2F33; color: #9AA3A9; font-size: 0.92rem; line-height: 1.7; }
+  .ev-foot p { margin: 0; max-inline-size: 46rem; }
+</style>

@@ -1,6 +1,5 @@
 ---
 import BaseLayout from './BaseLayout.astro';
-import Tag from '@/components/Tag.astro';
 import type { CollectionEntry } from 'astro:content';
 
 interface Props {
@@ -35,11 +34,6 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, '');
       <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-ink-500">
         <time datetime={date.toISOString()}>{dateLabel}</time>
         {readingMinutes && <span>约 {readingMinutes} 分钟</span>}
-        {tags.length > 0 && (
-          <span class="flex flex-wrap gap-1.5">
-            {tags.map((t: string) => <Tag label={t} />)}
-          </span>
-        )}
       </div>
     </header>
 

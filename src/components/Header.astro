@@ -33,6 +33,7 @@ const nav = [
     }
     document.documentElement.setAttribute('data-lang', lang);
     document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+    document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
   })();
 </script>
 
@@ -260,6 +261,7 @@ const nav = [
   (function () {
     function applyLang(lang, remember) {
       document.documentElement.setAttribute('data-lang', lang);
+      document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
       document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
       // 只有手动切换才记住，否则每次都跟随系统语言
       if (remember) {

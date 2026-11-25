@@ -3,6 +3,10 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  # 每天重新构建一次，让关于页的 Steam“最近在玩”保持更新
+  # 16:00 UTC，约为洛杉矶早上 8 到 9 点
+  schedule:
+    - cron: '0 16 * * *'
   workflow_dispatch:
 
 permissions:
@@ -40,6 +44,9 @@ jobs:
 
       - name: Build with Astro
         run: pnpm build
+        env:
+          # 关于页的 Steam 卡片在构建时读取；没配这个 secret 时卡片不显示
+          STEAM_API_KEY: ${{ secrets.STEAM_API_KEY }}
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
