@@ -4,11 +4,12 @@ import evalCover from '@/assets/work/eval/task.png';
 
 /**
  * 产品案例的卡片数据 —— 首页和作品页共用。
- * slug 对应 src/pages/work/<slug>.astro。
+ * slug 对应 src/pages/work/<slug>.astro。logo 是卡片右下角的白色公司标志。
  */
 export const CASES = [
   {
     slug: 'notique',
+    logo: { src: '/logos/notique-wordmark.svg', name: 'Notique AI' },
     image: notiqueCover,
     imageAlt: 'The Notique pen plugged into a phone',
     tag: { zh: '自己的产品，可交互', en: 'My own product, Interactive' },
@@ -24,6 +25,7 @@ export const CASES = [
   },
   {
     slug: 'aiyo',
+    logo: { src: '/logos/wordmarks/tencent.svg', name: 'Tencent' },
     image: aiyoCover,
     imageAlt: 'AIYO home screen',
     tag: { zh: '腾讯游戏，可点击', en: 'Tencent Games, click-through' },
@@ -39,6 +41,7 @@ export const CASES = [
   },
   {
     slug: 'orbit',
+    logo: { src: '/logos/wordmarks/tiktok.svg', name: 'TikTok' },
     image: null,
     imageAlt: '',
     tag: { zh: '', en: '' },
@@ -51,6 +54,7 @@ export const CASES = [
   },
   {
     slug: 'eval',
+    logo: { src: '/logos/wordmarks/tiktok.svg', name: 'TikTok' },
     image: evalCover,
     imageAlt: 'The evaluation platform: reviewer accuracy and a list of scored conversations',
     tag: { zh: '', en: '' },
