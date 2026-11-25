@@ -17,13 +17,13 @@ collections:
     label: 页面文字
     files:
       - name: about-zh
-        label: 关于我 · 中文
+        label: 关于我，中文
         file: src/content/pages/about-zh.md
         fields:
           - { name: title, label: 备注名, widget: string }
           - { name: body, label: 正文, widget: markdown }
       - name: about-en
-        label: 关于我 · English
+        label: 关于我 English
         file: src/content/pages/about-en.md
         fields:
           - { name: title, label: 备注名, widget: string }

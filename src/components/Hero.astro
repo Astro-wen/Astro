@@ -8,7 +8,7 @@ const resumeHref = `${base}/Aaron-Wen-Resume.pdf`;
 {/*
   Hero —— 孤星×现代主义风格
   -------------------------------------------
-  1. 编号胶条（border-left 粗色条 · 孤星系统消息做法）
+  1. 编号胶条（border-left 粗色条，孤星系统消息做法）
   2. 主标题：Geist 900 + 紧字距 + RGB 错位阴影（Lonetrail 海报风）
   3. 姓名打字：Aaron Wen → 温思源 → AstroW（W 为 SVG 手写）
   4. 左侧竖色条装饰（Lonetrail 四色条）
@@ -44,8 +44,8 @@ const resumeHref = `${base}/Aaron-Wen-Resume.pdf`;
   {/* 身份 */}
   <div class="reveal mt-10" style="--reveal-delay: 240ms">
     <p class="display-lg text-xl sm:text-2xl text-ink-900">
-      <span class="i18n-zh">产品经理</span>
-      <span class="i18n-en">Product Manager</span>
+      <span class="i18n-zh">产品经理，数据工程师 / 分析师</span>
+      <span class="i18n-en">Product Manager, Data Engineer / Analyst</span>
     </p>
   </div>
 
@@ -124,7 +124,7 @@ const resumeHref = `${base}/Aaron-Wen-Resume.pdf`;
 
 <script is:inline>
   // ============================================================
-  // Email · 点击复制 + 反馈（GitHub 风格）
+  // Email 点击复制 + 反馈（GitHub 风格）
   // ============================================================
   (function () {
     var btn = document.getElementById('email-copy');
@@ -186,7 +186,7 @@ const resumeHref = `${base}/Aaron-Wen-Resume.pdf`;
 
 <script is:inline>
   // ============================================================
-  // Hero · 姓名打字状态机 + 手写 W（无手电筒）
+  // Hero 姓名打字状态机 + 手写 W（无手电筒）
   // ============================================================
   (function () {
     const el = document.getElementById('name-text');
@@ -210,7 +210,7 @@ const resumeHref = `${base}/Aaron-Wen-Resume.pdf`;
 
     function setCaret(v) { caret.classList.toggle('is-hidden', !v); }
 
-    // Lone Modern · 以"尾字红橙高亮"方式渲染打字机当前状态
+    // Lone Modern 以"尾字红橙高亮"方式渲染打字机当前状态
     function renderWithAccent(str) {
       el.textContent = '';
       if (!str) return;

@@ -5,7 +5,7 @@ orgShort: "NOTIQUE"
 orgZh: "Notique AI（创业项目）"
 orgEn: "Notique AI (Startup)"
 logo: "/logos/notique.png"
-role: "联合创始人 · 产品负责人"
+role: "联合创始人，产品负责人"
 roleEn: "Co-Founder & Head of Product"
 team: "AI 录音笔 + 房产经纪人虚拟助理"
 teamEn: "AI Recorder + Virtual Assistant for Real Estate Agents"
@@ -13,7 +13,7 @@ tint: "#FF0A9C"
 start: 2026-03-01
 location: "Los Angeles, CA"
 locationZh: "美国 洛杉矶"
-tags: ["AI Hardware", "Virtual Assistant", "Cloudflare R2 · D1 · Queues", "LLM Verification", "Tableau"]
+tags: ["AI Hardware", "Virtual Assistant", "Cloudflare R2, D1, Queues", "LLM Verification", "Tableau"]
 caseStudy: "notique"
 featured: true
 current: true

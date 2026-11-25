@@ -16,8 +16,8 @@ location: "San Jose, CA"
 locationZh: "美国 圣何塞"
 highlight: "绩效评估 E+（远超预期）"
 highlightEn: "Performance Evaluation: E+ (Significantly Exceeds Expectations)"
-tags: ["Multi-Agent", "LLM Evaluation", "LangGraph", "NL Search", "SQL · Python"]
-caseStudy: "tiktok-eval"
+tags: ["Multi-Agent", "LLM Evaluation", "LangGraph", "NL Search", "SQL, Python"]
+caseStudy: "orbit"
 featured: true
 current: false
 ---

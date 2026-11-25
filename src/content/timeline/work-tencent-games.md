@@ -15,6 +15,7 @@ end: 2026-06-30
 location: "Shenzhen, China / Los Angeles, CA"
 locationZh: "中国 深圳 / 美国 洛杉矶"
 tags: ["AIYO", "SkillHub", "PUBG Mobile", "VALORANT Mobile", "A/B Testing", "SQL"]
+caseStudy: "aiyo"
 featured: true
 current: false
 ---

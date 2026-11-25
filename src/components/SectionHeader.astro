@@ -3,7 +3,7 @@
  * SectionHeader —— 编号胶条（非横幅）
  * ---------------------------------------------------
  * 视觉结构（Lonetrail/印刷现代主义）：
- *   [大号橙红数字 01]  粗黑中文标题 · [Oswald 窄体英文 tag]
+ *   [大号橙红数字 01]  粗黑中文标题 [Oswald 窄体英文 tag]
  *   ─────────────── 细分隔线 ───────────────
  *   （可选）副标
  *
@@ -22,9 +22,11 @@ interface Props {
   subtitleEn?: string;
   delay?: number;
   id?: string;
+  /** 标题层级。页面的主标题用 h1，其余用默认的 h2 */
+  as?: 'h1' | 'h2';
 }
 
-const { index, title, tag, subtitle, subtitleEn, delay = 0, id } = Astro.props;
+const { index, title, tag, subtitle, subtitleEn, delay = 0, id , as: Heading = 'h2' } = Astro.props;
 ---
 
 <header class="reveal mb-8 sm:mb-10" id={id} style={`--reveal-delay: ${delay}ms`}>
@@ -35,10 +37,10 @@ const { index, title, tag, subtitle, subtitleEn, delay = 0, id } = Astro.props;
     </span>
 
     {/* 中：中文主标 / EN 模式下显示 tag 作为主标 */}
-    <h2 class="display-lg text-2xl sm:text-3xl text-ink-900 leading-tight flex-1 min-w-0">
+    <Heading class="display-lg text-2xl sm:text-3xl text-ink-900 leading-tight flex-1 min-w-0">
       <span class="i18n-zh">{title}</span>
       <span class="i18n-en">{tag ?? title}</span>
-    </h2>
+    </Heading>
 
     {/* 右：Oswald 窄体英文 tag —— 仅英文模式下作为装饰显示 */}
     {tag && (

@@ -10,16 +10,16 @@ import { getCollection } from 'astro:content';
 const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
 ---
 
-<BaseLayout title="作品 Work" description="产品案例与个人项目">
+<BaseLayout title="作品 Work" description="做过的产品与个人项目">
   <section class="container-wide py-12 sm:py-16">
     <PageHeader
       zh="作品"
       en="Work"
-      leadZh="两个完整的产品案例，以及几个自己动手做的项目。"
-      leadEn="Two full product case studies, plus a few things I built on my own."
+      leadZh="三个做过的产品，以及几个自己动手做的项目。"
+      leadEn="Three products I worked on, plus a few things I built on my own."
     />
 
-    <h2 class="section-eyebrow"><T zh="产品案例" en="Case studies" /></h2>
+    <h2 class="section-eyebrow"><T zh="产品" en="Products" /></h2>
     <ul class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-5" role="list">
       {CASES.map((c) => <li><CaseCard item={c} /></li>)}
     </ul>

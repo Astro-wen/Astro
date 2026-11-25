@@ -1,0 +1,88 @@
+---
+/**
+ * 画面查看器 —— 一个模块的若干画面放在同一个窗口里。
+ * 大图在上，可以在窗口里上下滚；下面一排缩略图，点哪张看哪张。
+ * 只有一张画面时不显示缩略图。
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Frame { img: ImageMetadata; alt: string }
+interface Props { id: string; frames: Frame[] }
+const { id, frames } = Astro.props;
+---
+<div class="fv" data-viewer={id}>
+  <div class="fv-win">
+    <div class="fv-bar" aria-hidden="true"><span></span><span></span><span></span></div>
+    <div class="fv-view" tabindex="0" role="group" aria-label={frames[0].alt}>
+      {frames.map((f, i) => (
+        <Image
+          class="fv-img"
+          data-i={i}
+          hidden={i !== 0}
+          src={f.img}
+          alt={f.alt}
+          widths={[900, 1500, f.img.width]}
+          sizes="(min-width: 1500px) 1400px, 94vw"
+          format="webp"
+          quality={84}
+          loading="lazy"
+        />
+      ))}
+    </div>
+  </div>
+  {frames.length > 1 && (
+    <div class="fv-thumbs" role="group" aria-label="Screens">
+      {frames.map((f, i) => (
+        <button type="button" class="fv-thumb" data-i={i} aria-pressed={i === 0 ? 'true' : 'false'} aria-label={f.alt}>
+          <Image src={f.img} alt="" widths={[240]} sizes="120px" format="webp" quality={70} loading="lazy" />
+        </button>
+      ))}
+    </div>
+  )}
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-viewer]').forEach((root) => {
+    const view = root.querySelector<HTMLElement>('.fv-view')!;
+    const imgs = [...root.querySelectorAll<HTMLImageElement>('.fv-img')];
+    const thumbs = [...root.querySelectorAll<HTMLButtonElement>('.fv-thumb')];
+    thumbs.forEach((t) => t.addEventListener('click', () => {
+      const i = t.dataset.i;
+      imgs.forEach((im) => (im.hidden = im.dataset.i !== i));
+      thumbs.forEach((b) => b.setAttribute('aria-pressed', String(b === t)));
+      view.scrollTop = 0;
+      view.setAttribute('aria-label', t.getAttribute('aria-label') ?? '');
+    }));
+  });
+</script>
+
+<style>
+  .fv-win { border: 1px solid #2A2F33; border-radius: 14px; overflow: hidden; background: #0B0D0E; }
+  .fv-bar { display: flex; gap: 6px; padding: 10px 12px; background: #1A1D20; }
+  .fv-bar span { inline-size: 10px; block-size: 10px; border-radius: 50%; background: #3A3F44; }
+  /* 窗口高度封顶，长页面在里面滚 */
+  .fv-view { max-block-size: min(78svh, 56rem); overflow-y: auto; overscroll-behavior: contain; background: #FFFFFF; }
+  .fv-view:focus-visible { outline: 3px solid #EFE6D3; outline-offset: -3px; }
+  .fv-img { display: block; inline-size: 100%; block-size: auto; }
+  .fv-img[hidden] { display: none; }
+
+  .fv-thumbs { display: flex; gap: 0.6rem; margin-top: 0.8rem; padding-bottom: 0.4rem; overflow-x: auto; }
+  .fv-thumb {
+    flex: none;
+    inline-size: clamp(5.5rem, 9vw, 8rem);
+    aspect-ratio: 16 / 10;
+    padding: 0;
+    border: 1px solid #2A2F33;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #141719;
+    cursor: pointer;
+    opacity: 0.55;
+    transition: opacity 150ms, border-color 150ms;
+  }
+  .fv-thumb :global(img) { display: block; inline-size: 100%; block-size: 100%; object-fit: cover; object-position: top; }
+  .fv-thumb:hover { opacity: 0.9; }
+  .fv-thumb[aria-pressed='true'] { opacity: 1; border-color: #FF5A3C; box-shadow: 0 0 0 1px #FF5A3C; }
+  .fv-thumb:focus-visible { outline: 3px solid #EFE6D3; outline-offset: 2px; }
+</style>

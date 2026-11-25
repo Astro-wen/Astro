@@ -42,7 +42,8 @@ function resolveCover(src?: string): string | undefined {
 ---
 
 <article
-  class="reveal card-expandable group relative"
+  id={entry.slug}
+  class="reveal card-expandable group relative scroll-mt-24"
   style={`--reveal-delay: ${revealDelay}`}
   data-expanded={defaultOpen ? 'true' : 'false'}
 >
@@ -80,7 +81,7 @@ function resolveCover(src?: string): string | undefined {
                 <span class="i18n-en">{roleEn ?? role}</span>
                 {team && (
                   <span class="text-ink-500">
-                    <span class="mx-1.5">·</span>
+                    <span class="mx-1.5">/</span>
                     <span class="i18n-zh">{team}</span>
                     <span class="i18n-en">{teamEn ?? team}</span>
                   </span>
@@ -181,8 +182,8 @@ function resolveCover(src?: string): string | undefined {
 
           {caseStudy && (
             <a href={`${base}/work/${caseStudy}`} class="case-cta">
-              <span class="i18n-zh">查看完整案例</span>
-              <span class="i18n-en">Read the case study</span>
+              <span class="i18n-zh">看这个产品</span>
+              <span class="i18n-en">See the product</span>
               <span aria-hidden="true">→</span>
             </a>
           )}

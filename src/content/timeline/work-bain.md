@@ -7,8 +7,8 @@ orgEn: "Bain & Company"
 logo: "/logos/bain.jpg"
 role: "助理咨询顾问实习生"
 roleEn: "Associate Consultant Intern"
-team: "大中华区 · 远程"
-teamEn: "Greater China · Remote"
+team: "大中华区，远程"
+teamEn: "Greater China, Remote"
 tint: "#CC092F"
 start: 2025-12-01
 end: 2026-06-30

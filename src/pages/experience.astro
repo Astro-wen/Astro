@@ -36,3 +36,23 @@ const experiences = sortExperience(all.filter((t) => t.data.kind === 'work'));
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  // 从首页点某个 logo 进来：地址里带着那一段的名字。展开它，收起其他的，滚到它那里。
+  const openFromHash = () => {
+    const id = decodeURIComponent(location.hash.slice(1));
+    const target = id ? document.getElementById(id) : null;
+    if (!target) return;
+    document.querySelectorAll<HTMLElement>('.card-expandable').forEach((card) => {
+      const on = card === target;
+      card.dataset.expanded = on ? 'true' : 'false';
+      card.querySelector('.card-trigger')?.setAttribute('aria-expanded', on ? 'true' : 'false');
+    });
+    const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    // 等展开的高度变化落定再滚，不然会停在偏上的位置
+    setTimeout(() => target.scrollIntoView({ behavior: calm ? 'auto' : 'smooth', block: 'start' }), 80);
+  };
+  openFromHash();
+  addEventListener('hashchange', openFromHash);
+</script>
+

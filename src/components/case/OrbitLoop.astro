@@ -1,0 +1,247 @@
+---
+/**
+ * Orbit 自迭代闭环 —— 可交互的流程图。
+ * 1. 选"手里有什么"：Planner 据此决定从哪一步开始，前面的步骤变淡。
+ * 2. 点任意一步：下面显示这一步吃什么、吐什么、谁在干活。
+ * 3. 打开"这一版没过验收"：路线从验收退回迭代，不再往后走。
+ * 整套系统已经上线，六步都是实线。
+ */
+import T from '@/components/T.astro';
+
+type Who = 'human' | 'llm' | 'script';
+interface Step {
+  id: string; zh: string; en: string;
+  state: 'live' | 'planned';
+  mine?: boolean;
+  who: Who[];
+  inZh: string; inEn: string; outZh: string; outEn: string;
+  noteZh: string; noteEn: string;
+}
+const steps: Step[] = [
+  { id: 'analyze', zh: '分析', en: 'Analyse', state: 'live', who: ['llm', 'human'],
+    inZh: '一个想改善的指标', inEn: 'A metric to improve',
+    outZh: '按贡献排好序的机会点', outEn: 'Opportunities ranked by impact',
+    noteZh: '按技能和版本把数据拆开，找出最拖后腿的地方。人看过、点了通过才往下走。', noteEn: 'Breaks the data down by skill and version to find what drags the metric most. A person reviews and approves before it moves on.' },
+  { id: 'attribute', zh: '归因', en: 'Diagnose', state: 'live', who: ['llm', 'human'],
+    inZh: '机会点，或一批对话', inEn: 'An opportunity, or a batch of conversations',
+    outZh: '问题出在哪的结论', outEn: 'A conclusion on what is going wrong',
+    noteZh: '拉真实对话和机器人当时的推理过程，把问题归成几类。', noteEn: 'Pulls real conversations and the bot’s reasoning at the time, and clusters the problems.' },
+  { id: 'iterate', zh: '迭代', en: 'Revise', state: 'live', who: ['llm', 'human', 'script'],
+    inZh: '归因结论，或一句明确的改法', inEn: 'A diagnosis, or an explicit change',
+    outZh: '技能的新版本和前后对比', outEn: 'A new skill version with a diff',
+    noteZh: 'AI 先改出草稿，人可以接着改，然后走集成流水线。', noteEn: 'The AI drafts the change, a person can edit it, then it goes through the integration pipeline.' },
+  { id: 'evaluate', zh: '验收', en: 'Evaluate', state: 'live', who: ['script', 'llm'],
+    inZh: '新旧两个版本，同一批对话', inEn: 'Old and new versions, the same conversations',
+    outZh: '逐条的分数、理由、证据', outEn: 'Per-conversation scores, reasons and evidence',
+    noteZh: '安排考试的和判卷的分开：一个决定考谁、用哪批题、哪套规则，另一个只管逐条打分。', noteEn: 'Scheduling the exam and grading it are separate jobs: one decides what to test, on which cases and by which rules; the other only scores each case.' },
+  { id: 'report', zh: '报告', en: 'Report', state: 'live', who: ['script', 'llm'],
+    inZh: '验收结果', inEn: 'Evaluation results',
+    outZh: '人能读、能复算的报告', outEn: 'A report a person can read and recompute',
+    noteZh: '数字由脚本算，AI 只负责解释，每个结论都能追回原始对话。', noteEn: 'Scripts compute the numbers, the AI only explains, and every conclusion traces back to the conversations.' },
+  { id: 'ship', zh: '批准与实验', en: 'Approve and test', state: 'live', who: ['human'],
+    inZh: '报告', inEn: 'The report',
+    outZh: '扩大、再改，或回滚', outEn: 'Roll out, revise, or roll back',
+    noteZh: '人点头之后先小流量试，看真实效果再决定。', noteEn: 'Once a person signs off, it runs on a small share of traffic first.' },
+];
+const whoLabel = { human: { zh: '人', en: 'Person' }, llm: { zh: 'AI', en: 'AI' }, script: { zh: '脚本', en: 'Script' } };
+const entries = [
+  { v: 'analyze', zh: '只有一个目标', en: 'Just a goal' },
+  { v: 'attribute', zh: '有一批对话', en: 'A batch of conversations' },
+  { v: 'iterate', zh: '已经知道怎么改', en: 'I know the fix' },
+];
+---
+<div class="ob" data-orbit data-entry="analyze" data-step="analyze">
+  <fieldset class="ob-entry">
+    <legend><T zh="你手里有什么？" en="What do you have?" /></legend>
+    {entries.map((e, i) => (
+      <label><input type="radio" name="ob-entry" value={e.v} checked={i === 0} /><span><T zh={e.zh} en={e.en} /></span></label>
+    ))}
+  </fieldset>
+
+  <div class="ob-planner" aria-hidden="true">
+    <span class="ob-planner-box">Planner</span>
+    <span class="ob-planner-line"></span>
+  </div>
+
+  <ol class="ob-track">
+    {steps.map((s, i) => (
+      <li class:list={['ob-node', `ob-${s.state}`, { 'ob-mine': s.mine }]} data-id={s.id} data-i={i}>
+        <button type="button" aria-pressed={i === 0 ? 'true' : 'false'}>
+          <span class="ob-who" aria-hidden="true">
+            {s.who.map((w) => <i class={`ob-ico ob-${w}`}></i>)}
+          </span>
+          <span class="ob-name"><T zh={s.zh} en={s.en} /></span>
+        </button>
+      </li>
+    ))}
+    <li class="ob-return" aria-hidden="true"><span><T zh="没过，退回" en="Failed, go back" /></span></li>
+  </ol>
+
+  <p class="ob-memory" aria-hidden="true"><span class="ob-memory-dot"></span><T zh="每一轮人怎么审、怎么改，都记下来，下一轮 Planner 会用" en="How people reviewed and edited each round is remembered and reused by the Planner" /></p>
+
+  <label class="ob-fail"><input type="checkbox" /><span class="ob-switch" aria-hidden="true"></span><T zh="这一版没过验收" en="This version failed evaluation" /></label>
+
+  <div class="ob-panels" aria-live="polite">
+    {steps.map((s, i) => (
+      <div class="ob-panel" data-id={s.id} hidden={i !== 0}>
+        <p class="ob-io">
+          <span class="ob-chip"><T zh={s.inZh} en={s.inEn} /></span>
+          <span class="ob-arrow" aria-hidden="true">→</span>
+          <span class="ob-chip ob-chip-out"><T zh={s.outZh} en={s.outEn} /></span>
+        </p>
+        <p class="ob-note"><T zh={s.noteZh} en={s.noteEn} /></p>
+        <p class="ob-by">
+          {s.who.map((w) => <span class="ob-by-item"><i class={`ob-ico ob-${w}`} aria-hidden="true"></i><T zh={whoLabel[w].zh} en={whoLabel[w].en} /></span>)}
+        </p>
+      </div>
+    ))}
+  </div>
+
+  <ul class="ob-legend" role="list">
+    <li><i class="ob-ico ob-human" aria-hidden="true"></i><T zh="人" en="Person" /></li>
+    <li><i class="ob-ico ob-llm" aria-hidden="true"></i><T zh="AI" en="AI" /></li>
+    <li><i class="ob-ico ob-script" aria-hidden="true"></i><T zh="脚本" en="Script" /></li>
+  </ul>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-orbit]').forEach((root) => {
+    const nodes = [...root.querySelectorAll<HTMLElement>('.ob-node')];
+    const panels = [...root.querySelectorAll<HTMLElement>('.ob-panel')];
+    const order = nodes.map((n) => n.dataset.id!);
+    const select = (id: string) => {
+      root.dataset.step = id;
+      nodes.forEach((n) => n.querySelector('button')!.setAttribute('aria-pressed', String(n.dataset.id === id)));
+      panels.forEach((p) => (p.hidden = p.dataset.id !== id));
+    };
+    const paint = () => {
+      const entry = root.dataset.entry!;
+      const failed = root.querySelector<HTMLInputElement>('.ob-fail input')!.checked;
+      const start = order.indexOf(entry);
+      const stop = failed ? order.indexOf('evaluate') : order.length - 1;
+      nodes.forEach((n, i) => {
+        n.classList.toggle('is-skipped', i < start);
+        n.classList.toggle('is-off', i > stop);
+        n.classList.toggle('is-redo', failed && n.dataset.id === 'iterate');
+      });
+      root.classList.toggle('is-failed', failed);
+      root.style.setProperty('--entry', String(start));
+    };
+    nodes.forEach((n) => n.querySelector('button')!.addEventListener('click', () => select(n.dataset.id!)));
+    root.querySelectorAll<HTMLInputElement>('.ob-entry input').forEach((r) => r.addEventListener('change', () => {
+      root.dataset.entry = r.value; paint(); select(r.value);
+    }));
+    root.querySelector('.ob-fail input')!.addEventListener('change', (e) => {
+      paint(); if ((e.target as HTMLInputElement).checked) select('evaluate');
+    });
+    paint();
+  });
+</script>
+
+<style>
+  .ob { --line: #2A2F33; --ink: #EFE6D3; --mute: #9AA3A9; --hot: #FF5A3C; --cyan: #4FD1C5; color: var(--ink); }
+  .ob :global(p) { margin: 0; }
+
+  .ob-entry { border: 0; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+  .ob-entry legend { float: left; margin-inline-end: 0.75rem; padding: 0; color: var(--mute); font-size: 0.95rem; }
+  .ob-entry label { position: relative; cursor: pointer; }
+  .ob-entry input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .ob-entry label span {
+    display: inline-flex; align-items: center; min-block-size: 44px; padding: 0 1.1rem;
+    border: 1px solid var(--line); border-radius: 999px; font-weight: 600; font-size: 0.95rem;
+    transition: border-color 150ms, background-color 150ms, color 150ms;
+  }
+  .ob-entry input:checked + span { background: var(--ink); border-color: var(--ink); color: #0B0D0E; }
+  .ob-entry input:focus-visible + span { outline: 3px solid var(--ink); outline-offset: 3px; }
+
+  /* Planner：一个盒子，一条线落到被选中的起点上方 */
+  .ob-planner { display: none; }
+  .ob-track { list-style: none; margin: 1.5rem 0 0; padding: 0; display: grid; gap: 0.6rem; position: relative; }
+  .ob-node button {
+    inline-size: 100%;
+    display: flex; align-items: center; gap: 0.8rem;
+    min-block-size: 56px; padding: 0.7rem 1rem;
+    border: 1.5px solid var(--line); border-radius: 14px;
+    background: #141719; color: var(--ink);
+    font: inherit; font-weight: 700; font-size: 1.05rem; text-align: start;
+    cursor: pointer;
+    transition: border-color 200ms, background-color 200ms, opacity 250ms, transform 200ms;
+  }
+  .ob-planned button { border-style: dashed; }
+  .ob-mine button { box-shadow: inset 0 -3px 0 var(--cyan); }
+  .ob-node button:hover { border-color: var(--ink); }
+  .ob-node button[aria-pressed='true'] { border-color: var(--hot); background: #1E1512; }
+  .ob-node button:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  .ob-node.is-skipped button, .ob-node.is-off button { opacity: 0.3; }
+  .ob-node.is-redo button { border-color: var(--hot); border-style: solid; }
+  .ob-who { display: inline-flex; gap: 0.3rem; }
+  .ob-return { display: none; color: var(--hot); font-size: 0.85rem; font-weight: 700; }
+  .is-failed .ob-return { display: block; }
+
+  /* 三种执行者的小图标 */
+  .ob-ico { display: inline-block; inline-size: 1.05rem; block-size: 1.05rem; flex: none; background: currentColor; opacity: 0.9; }
+  .ob-human { border-radius: 50% 50% 46% 46% / 62% 62% 38% 38%; clip-path: polygon(30% 0, 70% 0, 70% 38%, 100% 62%, 100% 100%, 0 100%, 0 62%, 30% 38%); }
+  .ob-llm { clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); }
+  .ob-script { clip-path: polygon(0 12%, 100% 12%, 100% 32%, 0 32%, 0 44%, 100% 44%, 100% 64%, 0 64%, 0 76%, 70% 76%, 70% 96%, 0 96%); }
+
+  .ob-memory { margin-top: 1rem !important; display: flex; align-items: center; gap: 0.6rem; color: var(--mute); font-size: 0.9rem; }
+  .ob-memory-dot { inline-size: 0.6rem; block-size: 0.6rem; border-radius: 50%; border: 2px dotted var(--mute); flex: none; }
+
+  .ob-fail { margin-top: 1.25rem; display: inline-flex; align-items: center; gap: 0.7rem; min-block-size: 44px; cursor: pointer; font-weight: 600; }
+  .ob-fail input { position: absolute; opacity: 0; }
+  .ob-switch { inline-size: 2.6rem; block-size: 1.5rem; border-radius: 999px; background: #2A2F33; position: relative; transition: background-color 150ms; }
+  .ob-switch::after { content: ''; position: absolute; inset: 3px auto 3px 3px; inline-size: 1.1rem; border-radius: 50%; background: var(--ink); transition: translate 150ms; }
+  .ob-fail input:checked + .ob-switch { background: var(--hot); }
+  .ob-fail input:checked + .ob-switch::after { translate: 1.1rem 0; }
+  .ob-fail input:focus-visible + .ob-switch { outline: 3px solid var(--ink); outline-offset: 3px; }
+
+  .ob-panels { margin-top: 1.5rem; padding: 1.25rem 1.4rem; border: 1px solid var(--line); border-radius: 16px; background: #141719; min-block-size: 9.5rem; }
+  .ob-io { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
+  .ob-chip { padding: 0.45rem 0.9rem; border-radius: 10px; background: #1F2326; font-weight: 600; font-size: 0.98rem; }
+  .ob-chip-out { background: var(--ink); color: #0B0D0E; }
+  .ob-arrow { color: var(--hot); font-weight: 800; font-size: 1.2rem; }
+  .ob-note { margin-top: 0.9rem !important; color: #C9CDD0; line-height: 1.65; max-inline-size: 44em; }
+  .ob-by { margin-top: 0.9rem !important; display: flex; flex-wrap: wrap; gap: 1.1rem; color: var(--mute); font-size: 0.9rem; }
+  .ob-by-item { display: inline-flex; align-items: center; gap: 0.45rem; }
+
+  .ob-legend { list-style: none; margin: 1.1rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.6rem 1.5rem; color: var(--mute); font-size: 0.88rem; }
+  .ob-legend li { display: inline-flex; align-items: center; gap: 0.5rem; }
+  .ob-key { inline-size: 1.4rem; block-size: 0.9rem; border-radius: 4px; border: 1.5px solid var(--ink); }
+  .ob-key-planned { border-style: dashed; }
+  .ob-key-mine { border-color: var(--line); box-shadow: inset 0 -3px 0 var(--cyan); }
+
+  /* 宽屏：横排成一条流水线，步骤之间有箭头 */
+  @media (min-width: 62rem) {
+    .ob-planner { display: grid; margin-top: 1.5rem; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0 1.4rem; }
+    .ob-planner-box {
+      grid-column: calc(var(--entry, 0) + 1);
+      justify-self: center;
+      padding: 0.35rem 0.9rem; border-radius: 8px;
+      background: var(--ink); color: #0B0D0E; font-weight: 800; font-size: 0.85rem; letter-spacing: 0.04em;
+    }
+    .ob-planner-line { grid-column: calc(var(--entry, 0) + 1); justify-self: center; inline-size: 2px; block-size: 1.1rem; background: var(--ink); }
+    .ob-track { margin-top: 0; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 1.4rem; }
+    .ob-node { position: relative; }
+    .ob-node button { flex-direction: column; align-items: flex-start; justify-content: space-between; min-block-size: 6.5rem; }
+    .ob-node:not(:nth-child(6))::after {
+      content: ''; position: absolute; inset-block-start: 50%; inset-inline-end: -1.05rem;
+      inline-size: 0.7rem; block-size: 0.7rem; translate: 0 -50%;
+      border-block-start: 2px solid #626A70; border-inline-end: 2px solid #626A70; rotate: 45deg;
+    }
+    .ob-node.is-skipped::after, .ob-node.is-off::after { opacity: 0.25; }
+    /* 退回的弧线：从"验收"底下绕回"迭代" */
+    .ob-return {
+      position: absolute; inset-block-start: calc(100% + 0.35rem);
+      inset-inline-start: calc((100% + 1.4rem) / 6 * 2 + (100% - 1.4rem * 5) / 12);
+      inline-size: calc((100% + 1.4rem) / 6);
+      block-size: 1.6rem;
+      border: 2px solid var(--hot); border-block-start: 0; border-radius: 0 0 12px 12px;
+      text-align: center;
+    }
+    .ob-return span { position: relative; inset-block-start: 1.75rem; }
+    .is-failed .ob-memory { margin-top: 3.6rem !important; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ob-node button, .ob-switch, .ob-switch::after { transition: none; }
+  }
+</style>

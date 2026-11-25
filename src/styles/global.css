@@ -65,7 +65,7 @@
     font-feature-settings: 'ss01', 'cv11', 'tnum';
     /* 默认（中文模式）：Noto Sans SC 打头，气质严谨 */
     font-family: 'Noto Sans SC', 'Inter', -apple-system, 'Helvetica Neue', Arial, sans-serif;
-    /* Lone Modern · 全局极淡 32px 米色网格（不抢内容） */
+    /* Lone Modern 全局极淡 32px 米色网格（不抢内容） */
     background-image:
       repeating-linear-gradient(0deg,  transparent 0 31px, rgba(239, 230, 211, 0.04) 31px 32px),
       repeating-linear-gradient(90deg, transparent 0 31px, rgba(239, 230, 211, 0.04) 31px 32px);
@@ -127,7 +127,7 @@
   }
 
   /* ============================================================
-     孤星风 · 系统消息胶条 —— 真正的 "border-left 粗色条 + 实底 + 大字"
+     孤星风，系统消息胶条 —— 真正的 "border-left 粗色条 + 实底 + 大字"
      参考 CSS 里 .event--user-block / .event--live-warning 结构
      ============================================================ */
   .tape-chip {
@@ -378,7 +378,7 @@
   }
 
   /* ============================================================
-     语言切换 · 纯 CSS 驱动
+     语言切换，纯 CSS 驱动
      根元素 html[data-lang="en"] 隐藏 .i18n-zh，反之亦然
      缺省（无 data-lang）显示中文
      ============================================================ */
@@ -427,9 +427,19 @@
   }
 
   /* ============================================================
-     Lone Modern · 打字机尾字红橙高亮
+     Lone Modern 打字机尾字红橙高亮
      参考图（Astro[o] W[红]）：最后一个字符用 var(--accent) 上色
      ============================================================ */
   .name-accent { color: var(--accent); }
 
+}
+
+/* 文章里的宽表格：自己在容器里横向滚动，不把整页撑宽 */
+@layer components {
+  .prose table {
+    display: block;
+    max-inline-size: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
 }

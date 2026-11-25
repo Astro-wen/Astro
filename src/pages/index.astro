@@ -1,122 +1,286 @@
 ---
+/**
+ * 首页 —— 一张目录。从上到下：我是谁、待过哪些地方、做过什么。
+ * 每一块都直接把内容摆出来，并且带一个看得见的"点进去"。
+ */
+import { Image } from 'astro:assets';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Hero from '@/components/Hero.astro';
-import SectionHeader from '@/components/SectionHeader.astro';
-import CaseCard from '@/components/CaseCard.astro';
-import LogoPlaceholder from '@/components/LogoPlaceholder.astro';
-import PostCard from '@/components/PostCard.astro';
+import OrbitFlow from '@/components/case/OrbitFlow.astro';
 import T from '@/components/T.astro';
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import { SITE } from '@/lib/site';
+import { sortExperience } from '@/lib/timeline';
 import { CASES } from '@/lib/cases';
-import { sortExperience, formatRange } from '@/lib/timeline';
-
-const all = await getCollection('timeline');
-const experiences = sortExperience(all.filter((t) => t.data.kind === 'work'));
-const education = all.filter((t) => t.data.kind === 'education');
-// 首页只列最近几段，完整内容在 /experience
-const recent = experiences.slice(0, 5);
-
-const posts = (await getCollection('blog', ({ data }) => !data.draft))
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-  .slice(0, 3);
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const all = await getCollection('timeline');
+const orgs = [
+  ...sortExperience(all.filter((t) => t.data.kind === 'work')),
+  ...all.filter((t) => t.data.kind === 'education'),
+];
+
+// 横版字标：文件在 public/logos/wordmarks/，ratio 是宽高比，用来让长短不一的 logo 看起来一样重
+const MARKS: Record<string, { file: string; ratio: number; k?: number; raw?: boolean; name?: string }> = {
+  'work-hoyoverse': { file: 'hoyoverse.svg', ratio: 5.7 },
+  'work-notique': { file: 'asteroom.svg', ratio: 7.66, name: 'Asteroom' },
+  'work-current': { file: 'tiktok.svg', ratio: 3.43 },
+  'work-tencent-games': { file: 'tencent.svg', ratio: 7.46 },
+  'work-bain': { file: 'bain.svg', ratio: 9 },
+  'work-sega': { file: 'sega.svg', ratio: 3, raw: true },
+  'work-chinadaily': { file: 'chinadaily.png', ratio: 7.1 },
+  'work-mymentor': { file: 'mymentor.png', ratio: 1.14, k: 0.82 },
+  'work-xinhua': { file: 'xinhua.png', ratio: 1.95, k: 1.22 },
+  'edu-university': { file: 'ucla.svg', ratio: 3.05 },
+};
+const marks = orgs
+  .map((o) => ({ m: MARKS[o.id.replace(/\.md$/, '')], name: o.data.orgEn || o.data.org, slug: o.slug }))
+  .map((x) => ({ ...x, name: x.m?.name ?? x.name }))
+  .filter((x) => x.m);
+
+// 关于：取关于页正文的前两段。正文在后台改了，这里跟着变
+const lead = async (slug: string) => {
+  const e = await getEntry('pages', slug);
+  return (e?.body ?? '')
+    .split(/\n\s*\n/)
+    .map((x) => x.trim())
+    .filter(Boolean)
+    .slice(0, 1)
+    .map((x) => x.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>'));
+};
+const aboutZh = await lead('about-zh');
+const aboutEn = await lead('about-en');
+
+const NAMES: Record<string, string> = { notique: 'Notique', aiyo: 'AIYO', orbit: 'Orbit' };
 ---
 
 <BaseLayout title={SITE.name} description={SITE.description} mascot>
-  <Hero />
-
-  {/* ============ 作品 ============ */}
-  <section id="work" class="container-wide py-12 sm:py-16 scroll-mt-20">
-    <SectionHeader index="01" title="作品" tag="Work" />
-    <ul class="grid grid-cols-1 md:grid-cols-2 gap-5" role="list">
-      {CASES.map((c) => <li><CaseCard item={c} /></li>)}
-    </ul>
-    <p class="mt-6 text-right">
-      <a href={`${base}/work`} class="home-more"><T zh="全部作品" en="All work" /> <span aria-hidden="true">→</span></a>
-    </p>
-  </section>
-
-  {/* ============ 经历（精简） ============ */}
-  <section id="experience" class="container-wide py-12 sm:py-16 scroll-mt-20">
-    <SectionHeader index="02" title="经历" tag="Experience" />
-    <ul class="xp" role="list">
-      {recent.map((e) => (
-        <li class="xp-row">
-          <LogoPlaceholder logo={e.data.logo} name={e.data.orgShort || e.data.org} tint={e.data.tint} size={40} />
-          <span class="xp-main">
-            <span class="xp-org"><T zh={e.data.orgZh ?? e.data.org} en={e.data.orgEn ?? e.data.org} /></span>
-            <span class="xp-role"><T zh={e.data.role} en={e.data.roleEn ?? e.data.role} /></span>
-          </span>
-          <span class="xp-date">
-            <T zh={formatRange(e.data.start, e.data.end, 'zh')} en={formatRange(e.data.start, e.data.end, 'en')} />
-          </span>
-        </li>
-      ))}
-      {education.map((e) => (
-        <li class="xp-row">
-          <LogoPlaceholder logo={e.data.logo} name={e.data.orgShort || e.data.org} tint={e.data.tint} size={40} />
-          <span class="xp-main">
-            <span class="xp-org"><T zh={e.data.orgZh ?? e.data.org} en={e.data.orgEn ?? e.data.org} /></span>
-            <span class="xp-role"><T zh={e.data.role} en={e.data.roleEn ?? e.data.role} /></span>
-          </span>
-          <span class="xp-date">
-            <T zh={formatRange(e.data.start, e.data.end, 'zh')} en={formatRange(e.data.start, e.data.end, 'en')} />
-          </span>
-        </li>
-      ))}
-    </ul>
-    <p class="mt-6 text-right">
-      <a href={`${base}/experience`} class="home-more">
-        <T zh={`完整经历（共 ${experiences.length} 段）`} en={`Full experience (${experiences.length} roles)`} /> <span aria-hidden="true">→</span>
-      </a>
-    </p>
-  </section>
-
-  {/* ============ 文章 ============ */}
-  {posts.length > 0 && (
-    <section id="writing" class="container-wide py-12 sm:py-16 scroll-mt-20">
-      <SectionHeader index="03" title="文章" tag="Writing" />
-      <div>
-        {posts.map((post) => <PostCard post={post} />)}
+  <div class="hm">
+    {/* 第一屏：我是谁 + 待过哪里。高度留出一截，让下面"项目"两个字露出一半 */}
+    <div class="hm-fold">
+      <div class="hm-wrap hm-top">
+        <div class="hm-me"><Hero /></div>
+        <a class="ab" href={`${base}/about`}>
+          <span class="ab-bars" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span class="ab-text i18n-zh" lang="zh-CN">{aboutZh.map((x) => <span set:html={x} />)}</span>
+          <span class="ab-text i18n-en" lang="en">{aboutEn.map((x) => <span set:html={x} />)}</span>
+          <span class="pill"><T zh="关于我" en="About me" /><i aria-hidden="true"></i></span>
+        </a>
       </div>
-      <p class="mt-6 text-right">
-        <a href={`${base}/blog`} class="home-more"><T zh="全部文章" en="All posts" /> <span aria-hidden="true">→</span></a>
-      </p>
+
+      {/* 经历：每个 logo 各自是一个入口，点了直接到那一段 */}
+      <section class="lg" data-rise aria-labelledby="hm-xp">
+        <div class="lg-strip">
+          <div class="hm-wrap lg-head">
+            <h2 class="lg-h" id="hm-xp"><b class="xmark" aria-hidden="true"></b><T zh="经历" en="Experience" /></h2>
+            <a class="pill pill-dark" href={`${base}/experience`}><T zh="查看更多" en="Read more" /><i aria-hidden="true"></i></a>
+          </div>
+        </div>
+        <ul class="hm-wrap" role="list">
+          {marks.map((x, i) => (
+            <li style={`--n:${i}`}>
+              <a href={`${base}/experience#${x.slug}`} aria-label={x.name}>
+                <img class:list={{ raw: x.m.raw }} src={`${base}/logos/wordmarks/${x.m.file}`} alt="" style={`--k:${(x.m.k ?? Math.sqrt(x.m.ratio)).toFixed(3)};aspect-ratio:${x.m.ratio}`} loading="eager" decoding="async" draggable="false" />
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    </div>
+
+    <section class="hm-wrap pj" aria-labelledby="hm-work">
+      <div class="pj-head">
+        <h2 class="pj-h" id="hm-work"><T zh="项目" en="Projects" /></h2>
+        <span class="dots" aria-hidden="true"></span>
+        <a class="pill" href={`${base}/work`}><T zh="查看更多" en="Read more" /><i aria-hidden="true"></i></a>
+      </div>
+      <ul class="wc-list" role="list">
+        {CASES.map((c, i) => (
+          <li data-rise>
+            <a class="wc" data-tilt href={`${base}/work/${c.slug}`}>
+              <div class="wc-vis">
+                {c.image
+                  ? <Image src={c.image} alt={c.imageAlt} widths={[640, 1100]} sizes="(min-width: 62rem) 52vw, 92vw" format="webp" quality={84} loading="eager" draggable="false" />
+                  : <OrbitFlow />}
+              </div>
+              <div class="wc-body">
+                <span class="wc-no" aria-hidden="true">NO.{String(i + 1).padStart(2, '0')}</span>
+                <h3>{NAMES[c.slug]}</h3>
+                <p><T zh={c.summary.zh} en={c.summary.en} /></p>
+                <span class="pill"><T zh="查看更多" en="Read more" /><i aria-hidden="true"></i></span>
+              </div>
+            </a>
+          </li>
+        ))}
+      </ul>
     </section>
-  )}
+  </div>
 </BaseLayout>
 
-<style>
-  .home-more {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    min-block-size: 32px;
-    color: #C9CDD0;
-    font-size: 0.85rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    border-bottom: 1px solid #626A70;
-  }
-  .home-more:hover { color: #FF5A3C; border-bottom-color: #FF5A3C; }
+<script>
+  const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  .xp { list-style: none; margin: 0; padding: 0; border-top: 1px solid #2A2F33; }
-  .xp-row {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
-    align-items: center;
-    gap: 0.9rem 1rem;
-    padding: 0.85rem 0;
-    border-bottom: 1px solid #2A2F33;
+  // 卡片跟着鼠标微微倾斜，上面有一道跟手的高光
+  if (fine && !calm) {
+    document.querySelectorAll<HTMLElement>('[data-tilt]').forEach((el) => {
+      el.addEventListener('pointermove', (e) => {
+        const r = el.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width;
+        const y = (e.clientY - r.top) / r.height;
+        el.style.setProperty('--rx', ((0.5 - y) * 7).toFixed(2) + 'deg');
+        el.style.setProperty('--ry', ((x - 0.5) * 9).toFixed(2) + 'deg');
+        el.style.setProperty('--gx', (x * 100).toFixed(1) + '%');
+        el.style.setProperty('--gy', (y * 100).toFixed(1) + '%');
+      });
+      el.addEventListener('pointerleave', () => { el.style.setProperty('--rx', '0deg'); el.style.setProperty('--ry', '0deg'); });
+    });
   }
-  .xp-main { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; }
-  .xp-org { color: #EFE6D3; font-weight: 700; font-size: 1rem; line-height: 1.35; }
-  .xp-role { color: #9AA3A9; font-size: 0.88rem; line-height: 1.45; }
-  .xp-date { color: #9AA3A9; font-size: 0.85rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
-  @media (max-width: 520px) {
-    .xp-row { grid-template-columns: auto 1fr; }
-    .xp-date { grid-column: 2; }
+
+  // 滚到才出现
+  const rise = [...document.querySelectorAll<HTMLElement>('[data-rise]')];
+  if (calm || !('IntersectionObserver' in window)) rise.forEach((el) => el.classList.add('is-in'));
+  else {
+    const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } }), { threshold: 0.12 });
+    rise.forEach((el) => io.observe(el));
   }
+</script>
+
+<style>
+  .hm { --pad: max(1.25rem, 5vw); --pf: clamp(2.6rem, 12.5vw, 11rem); --paper: #EFE6D3; --ink: #121416; }
+  .hm-wrap { display: block; max-inline-size: 84rem; margin-inline: auto; padding-inline: var(--pad); box-sizing: border-box; inline-size: 100%; }
+
+  /* 第一屏的高度 = 视口 - 顶栏 - "项目"标题的一半，所以标题正好露出上半截 */
+  .hm-fold { display: flex; flex-direction: column; gap: 2.5rem; padding-block-end: 1.5rem; padding-block-start: clamp(1.75rem, 5svh, 3.5rem); min-block-size: calc(100svh - 3.5rem - var(--pf) * 0.5 - 1.5rem); box-sizing: border-box; }
+
+  /* 名字这一块压紧，把位置让给下面的内容 */
+  .hm-me :global(#hero-root) { max-inline-size: none; margin: 0; padding: 0; }
+  .hm-me :global(#hero-root h1) { font-size: clamp(2.8rem, 6.2vw, 5.6rem); }
+  .hm-me :global(#hero-root h1 > span:first-child) { margin-bottom: 1rem; }
+  .hm-me :global(#hero-root .mt-10) { margin-top: 1.75rem; }
+  .hm-me :global(#hero-root .mt-8) { margin-top: 1.75rem; }
+  .hm-me :global(#hero-root .mt-16) { margin-top: 2.75rem; }
+  /* 名字右边那组装饰短线在这里会压到职位那行字，首页不要 */
+  .hm-me :global(#hero-root .pointer-events-none.absolute) { display: none; }
+
+  .hm-top { display: grid; gap: 2.5rem; align-items: center; flex: 1; align-content: center; }
+  @media (min-width: 62rem) { .hm-top { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); gap: clamp(2rem, 4vw, 4rem); } }
+
+  /* ---------- 胶囊标签：站里所有"点进去"都长这样 ---------- */
+  .pill {
+    position: relative; isolation: isolate; overflow: hidden;
+    display: inline-flex; align-items: center; gap: 0.7em; justify-self: start;
+    padding: 0.36em 0.4em 0.36em 1em; border-radius: 999px;
+    background: var(--paper); color: var(--ink);
+    font-family: 'Archivo Black', 'Inter', 'PingFang SC', sans-serif; font-size: 0.82rem; font-weight: 900; letter-spacing: 0.02em; text-transform: uppercase; white-space: nowrap;
+    transition: color 260ms;
+  }
+  /* 悬停：一层颜色从左往右铺满整个按钮，移开再收回去 */
+  .pill::before { content: ''; position: absolute; inset: 0; z-index: -1; background: #FF5A3C; scale: 0 1; transform-origin: left; transition: scale 420ms cubic-bezier(0.3, 0.7, 0.2, 1); }
+  .pill i { position: relative; display: block; inline-size: 2.2em; block-size: 1.5em; overflow: hidden; border-radius: 999px; background: var(--ink); color: var(--paper); transition: background 260ms, color 260ms; }
+  .pill i::before, .pill i::after { content: '→'; position: absolute; inset: 0; display: grid; place-items: center; font-family: 'Inter', system-ui, sans-serif; font-style: normal; font-weight: 800; font-size: 1.05em; line-height: 1; transition: translate 420ms cubic-bezier(0.3, 0.7, 0.2, 1); }
+  .pill i::after { translate: -110% 0; }
+  .pill-dark { background: var(--ink); color: var(--paper); }
+  .pill-dark i { background: var(--paper); color: var(--ink); }
+  :is(a.pill:hover, a.pill:focus-visible, .ab:hover .pill, .wc:hover .pill) { color: #fff; }
+  :is(a.pill:hover, a.pill:focus-visible, .ab:hover .pill, .wc:hover .pill)::before { scale: 1 1; }
+  :is(a.pill:hover, a.pill:focus-visible, .ab:hover .pill, .wc:hover .pill) i { background: #fff; color: #FF5A3C; }
+  :is(a.pill:hover, a.pill:focus-visible, .ab:hover .pill, .wc:hover .pill) i::before { translate: 110% 0; }
+  :is(a.pill:hover, a.pill:focus-visible, .ab:hover .pill, .wc:hover .pill) i::after { translate: 0 0; }
+  @media (prefers-reduced-motion: reduce) { .pill::before, .pill i::before, .pill i::after { transition: none; } }
+  a.pill:focus-visible, .ab:focus-visible, .wc:focus-visible { outline: 3px solid var(--paper); outline-offset: 4px; }
+
+  /* 三排小点，角落里的记号 */
+  .dots { inline-size: 1.5rem; block-size: 1.5rem; background: radial-gradient(circle, var(--paper) 0 1.6px, transparent 2px) 0 0 / 0.5rem 0.5rem; mask: linear-gradient(135deg, #000 55%, transparent 56%); -webkit-mask: linear-gradient(135deg, #000 55%, transparent 56%); opacity: 0.8; }
+
+  /* ---------- 关于 ---------- */
+  .ab { position: relative; display: grid; gap: 1.4rem; padding: 0.6rem 0 0.6rem 2.4rem; }
+  .ab-bars { position: absolute; inset: 0 auto 0 0; display: flex; gap: 3px; }
+  .ab-bars i { inline-size: 5px; block-size: 100%; transform-origin: top; }
+  .ab-bars i:nth-child(1) { background: #4FD1C5; }
+  .ab-bars i:nth-child(2) { background: #F5C542; }
+  .ab-bars i:nth-child(3) { background: #FF5A3C; }
+  .ab-text { display: grid; gap: 0.6rem; font-size: clamp(1.1rem, 1.6vw, 1.45rem); line-height: 1.7; color: #C9CFD3; }
+  .ab-text :global(strong) { color: var(--paper); font-weight: 800; }
+  @media (prefers-reduced-motion: no-preference) {
+    .ab-bars i { animation: ab-bar 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both; transition: translate 260ms; }
+    .ab-bars i:nth-child(2) { animation-delay: 90ms; }
+    .ab-bars i:nth-child(3) { animation-delay: 180ms; }
+    .ab:hover .ab-bars i:nth-child(1) { translate: 0 -4px; }
+    .ab:hover .ab-bars i:nth-child(3) { translate: 0 4px; }
+  }
+  @keyframes ab-bar { from { scale: 1 0; } }
+
+  /* 滚到才出现 */
+  @media (prefers-reduced-motion: no-preference) {
+    .wc-list [data-rise] { opacity: 0; translate: 0 26px; transition: opacity 600ms, translate 700ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+    .wc-list [data-rise].is-in { opacity: 1; translate: 0 0; }
+    .lg[data-rise] li { opacity: 0; translate: 0 10px; transition: opacity 420ms, translate 420ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+    .lg.is-in li { opacity: 1; translate: 0 0; }
+    .lg.is-in li:nth-child(n) { transition-delay: calc(60ms * var(--n, 0)); }
+  }
+
+  /* ---------- 经历 ---------- */
+  .lg { display: block; }
+  /* 一条通栏的米色纸带，只放标题和按钮 */
+  .lg-strip {
+    color: var(--ink); padding-block: calc(0.55rem + 3px + 0.9rem) 0.9rem;
+    background:
+      linear-gradient(90deg, #4FD1C5 0 33.3%, #F5C542 33.3% 66.6%, #FF5A3C 66.6%) 0 0.55rem / 100% 3px no-repeat,
+      linear-gradient(#2A2D30, #2A2D30) 0 0 / 100% 0.55rem no-repeat,
+      repeating-linear-gradient(45deg, rgba(18, 20, 22, 0.04) 0 1px, transparent 1px 14px),
+      repeating-linear-gradient(-45deg, rgba(18, 20, 22, 0.04) 0 1px, transparent 1px 14px),
+      var(--paper);
+  }
+  .lg-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.6rem 1rem; }
+  .lg-h { display: inline-flex; align-items: center; gap: 0.35em; margin: 0; font-family: 'Archivo Black', 'Inter', 'PingFang SC', sans-serif; font-size: clamp(1.5rem, 3.2vw, 2.6rem); font-weight: 900; line-height: 1; letter-spacing: -0.02em; text-transform: uppercase; }
+  /* 四块方块拼成的叉 */
+  .xmark { inline-size: 0.72em; aspect-ratio: 1; background: currentColor; border-radius: 0.1em; clip-path: polygon(0 0, 38% 0, 50% 18%, 62% 0, 100% 0, 100% 38%, 82% 50%, 100% 62%, 100% 100%, 62% 100%, 50% 82%, 38% 100%, 0 100%, 0 62%, 18% 50%, 0 38%); }
+  .lg ul { list-style: none; margin-block: 0; padding-block: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lg li { display: grid; box-shadow: inset -1px 0 0 #1E2225, inset 0 -1px 0 #1E2225; }
+  .lg li a { position: relative; display: grid; place-items: center; block-size: clamp(4.5rem, 6.6vw, 6rem); padding-inline: 1.25rem; }
+  .lg img {
+    --u: clamp(2.6rem, 4.3vw, 4.4rem);
+    inline-size: calc(var(--u) * var(--k)); max-inline-size: 100%; block-size: auto;
+    filter: brightness(0) invert(1); opacity: 0.62; transition: opacity 240ms, scale 300ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    user-select: none; -webkit-user-drag: none;
+  }
+  /* 已经在文件里调成白色的，不再过滤镜 */
+  .lg img.raw { filter: none; }
+  .lg li a:hover img, .lg li a:focus-visible img { opacity: 1; scale: 1.06; }
+  .lg li a::after { content: ''; position: absolute; inset: auto 0 0; block-size: 3px; background: linear-gradient(90deg, #4FD1C5 0 33.3%, #F5C542 33.3% 66.6%, #FF5A3C 66.6%); scale: 0 1; transform-origin: left; transition: scale 260ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+  .lg li a:hover::after, .lg li a:focus-visible::after { scale: 1 1; }
+  .lg li a:focus-visible { outline: 3px solid var(--paper); outline-offset: -3px; }
+  @media (min-width: 40rem) { .lg ul { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+
+  /* ---------- 项目 ---------- */
+  .pj { padding-block: 1.5rem clamp(4rem, 10svh, 7rem); }
+  .pj-head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 1.25rem; margin-block-end: clamp(2.5rem, 7svh, 5rem); border-block-end: 2px solid var(--paper); padding-block-end: 0.6rem; }
+  .pj-h { margin: 0 auto 0 0; font-family: 'Archivo Black', 'Inter', 'PingFang SC', sans-serif; font-size: var(--pf); font-weight: 900; line-height: 0.95; letter-spacing: -0.03em; text-transform: uppercase; color: var(--paper); }
+  .pj-head .pill, .pj-head .dots { margin-block-end: 0.9rem; }
+
+  .wc-list { list-style: none; margin: 0; padding: 0; display: grid; gap: clamp(3.5rem, 10svh, 7rem); }
+  .wc-list li { display: grid; perspective: 1400px; }
+  .wc { display: grid; gap: 1.5rem; align-items: center; }
+  @media (min-width: 62rem) {
+    .wc { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: clamp(2rem, 4.5vw, 4.5rem); }
+    .wc-list li:nth-child(even) .wc-vis { order: 2; }
+  }
+  /* 画面装在一个厚边圆角的"显示器"里 */
+  .wc-vis {
+    position: relative; aspect-ratio: 16 / 10; overflow: hidden; background: #14181B;
+    border: clamp(5px, 0.6vw, 9px) solid #2A2D30; border-radius: clamp(14px, 1.8vw, 26px);
+    box-shadow: 0 0 0 1px rgba(239, 230, 211, 0.18), 0 18px 40px rgba(0, 0, 0, 0.45);
+    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform 220ms ease-out, box-shadow 300ms; will-change: transform;
+  }
+  .wc:hover .wc-vis { box-shadow: 0 0 0 1px rgba(239, 230, 211, 0.5), 0 34px 80px rgba(0, 0, 0, 0.6); }
+  .wc-vis::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0; transition: opacity 300ms; background: radial-gradient(40rem circle at var(--gx, 50%) var(--gy, 50%), rgba(239, 230, 211, 0.1), transparent 45%); }
+  .wc:hover .wc-vis::after { opacity: 1; }
+  .wc-vis > :global(img) { display: block; inline-size: 100%; block-size: 100%; object-fit: cover; user-select: none; -webkit-user-drag: none; }
+  .wc-body { display: grid; align-content: start; justify-items: start; gap: 1rem; }
+  .wc-no { font-family: 'Archivo Black', 'Inter', sans-serif; font-size: 0.85rem; letter-spacing: 0.08em; color: #FF5A3C; }
+  .wc-body h3 { margin: 0; font-family: 'Archivo Black', 'Inter', sans-serif; font-size: clamp(2.4rem, 4.6vw, 4.2rem); line-height: 1; letter-spacing: -0.02em; color: var(--paper); }
+  .wc:hover h3 { text-shadow: 3px 0 0 rgba(255, 90, 60, 0.6), -3px 0 0 rgba(79, 209, 197, 0.6); }
+  .wc-body p { margin: 0; max-inline-size: 26em; font-size: clamp(1.05rem, 1.35vw, 1.25rem); line-height: 1.65; color: #A9B0B5; }
+  .wc-body .pill { margin-top: 0.5rem; }
 </style>
