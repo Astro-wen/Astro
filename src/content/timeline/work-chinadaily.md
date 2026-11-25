@@ -7,8 +7,8 @@ orgEn: "China Daily"
 logo: "/logos/chinadaily.svg"
 role: "记者实习生"
 roleEn: "Intern Reporter"
-team: "商业条线 · 聚焦中企海外本地化"
-teamEn: "Business Desk · Chinese Enterprise Localization"
+team: "商业条线，聚焦中企海外本地化"
+teamEn: "Business Desk, Chinese Enterprise Localization"
 tint: "#B8152B"
 start: 2024-12-01
 end: 2025-06-30

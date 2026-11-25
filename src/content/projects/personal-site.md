@@ -1,9 +1,10 @@
 ---
 name: 'Personal Site'
 summary: '你正在看的这个站点。基于 Astro + Tailwind + MDX，静态部署到 GitHub Pages。'
+summaryEn: "The site you are reading. Astro, Tailwind and MDX, deployed as static files to GitHub Pages."
 stack: ['Astro', 'TypeScript', 'Tailwind', 'MDX']
-url: 'https://astro-wen.github.io'
-repo: 'https://github.com/your-handle/personal-site'
+url: 'https://astro-wen.github.io/Astro/'
+repo: 'https://github.com/Astro-wen/Astro'
 order: 1
 featured: true
 ---
@@ -14,7 +15,6 @@ featured: true
 
 - 日常写作（技术笔记、读书笔记、随想）
 - 项目索引
-- 当前正在关注的事情（Now 页）
 - 完整的教育与工作 Timeline
 
 ## 技术细节

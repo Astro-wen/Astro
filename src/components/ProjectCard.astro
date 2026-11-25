@@ -7,7 +7,7 @@ interface Props {
   index?: number;
 }
 const { project, index = 0 } = Astro.props;
-const { name, summary, stack, url, repo } = project.data;
+const { name, summary, summaryEn, stack, url, repo } = project.data;
 
 // VHS 三原色索引色标（按 index % 3 轮换） —— 左侧 4px 装饰
 const vhsColors = ['#29D2C8', '#F4C341', '#E8483D'];
@@ -45,7 +45,8 @@ const barColor = vhsColors[index % 3];
     </div>
   </div>
   <p class="mt-2 text-sm sm:text-base text-ink-700 leading-relaxed">
-    {summary}
+    <span class="i18n-zh" lang="zh-CN">{summary}</span>
+    <span class="i18n-en" lang="en">{summaryEn ?? summary}</span>
   </p>
   {stack.length > 0 && (
     <div class="mt-4 flex flex-wrap gap-1.5">

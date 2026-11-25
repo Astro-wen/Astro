@@ -5,8 +5,8 @@ export const SITE = {
   name: 'Aaron Wen',
   nameZh: '温思源',
   nameAlias: 'AstroW',
-  role: '产品经理',
-  roleEn: 'Product Manager',
+  role: '产品经理，数据工程师 / 分析师',
+  roleEn: 'Product Manager, Data Engineer / Analyst',
   url: 'https://astro-wen.github.io',
   description: 'UCLA 在读 AI 产品经理，聚焦 AI 原生产品、游戏与数据驱动增长，具备 TikTok、腾讯 AI 产品实习与 AI 硬件创业经历。',
   author: 'Aaron Wen',
@@ -19,10 +19,10 @@ export const SITE = {
     email: 'mailto:linmengfdm@gmail.com',
   },
   nav: [
-    { label: '经历', href: '/' },
-    { label: '关于', href: '/about' },
-    { label: '项目', href: '/projects' },
+    { label: '作品', href: '/work' },
+    { label: '经历', href: '/experience' },
     { label: '文章', href: '/blog' },
+    { label: '关于', href: '/about' },
   ],
 } as const;
 

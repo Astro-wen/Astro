@@ -1,0 +1,138 @@
+---
+/**
+ * AIYO —— 腾讯游戏知识库里的 AI 专区。
+ * 设计稿原型的全部 38 个画面，按产品自己的栏目分组陈列。
+ */
+import type { ImageMetadata } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import T from '@/components/T.astro';
+import FrameViewer from '@/components/case/FrameViewer.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const mods = import.meta.glob<{ default: ImageMetadata }>('../../assets/work/aiyo/frames/*.jpg', { eager: true });
+const frame = (n: number) => mods[`../../assets/work/aiyo/frames/${String(n).padStart(2, '0')}.jpg`].default;
+
+// 每个栏目：名字 + 属于它的画面（编号是原型里的顺序）和一句画面说明（给读屏用）
+const groups = [
+  { id: 'home', zh: '首页', en: 'Home', frames: [
+    [1, 'Home: banner, AI news, articles, teahouse poll and course library'],
+    [11, 'Home with the banner carousel on its second slide'],
+    [22, 'Home with a hover state on a news card'],
+    [23, 'Home with the subscribe tooltip open'],
+    [25, 'Home with the mascot speaking'],
+    [8, 'A campaign banner for a game agent beta'],
+  ] },
+  { id: 'tasks', zh: '新手任务', en: 'Onboarding tasks', frames: [
+    [6, 'Welcome dialog listing four starter tasks'],
+    [10, 'Task one dialog over the home page'],
+    [15, 'Task two dialog: join the teahouse'],
+    [17, 'Task three dialog: read an AI article'],
+    [20, 'Task four dialog: bonus reward'],
+  ] },
+  { id: 'news', zh: 'AI 动态', en: 'AI News', frames: [
+    [2, 'AI News: industry updates, quotes from builders and a timeline feed'],
+  ] },
+  { id: 'teahouse', zh: '茶水间', en: 'Teahouse', frames: [
+    [4, 'Teahouse: a pixel-art lounge, model ratings and discussion threads'],
+    [7, 'Teahouse topic page with search results'],
+    [27, 'A teahouse thread with a poll and comments'],
+    [28, 'Delete confirmation over a thread'],
+    [14, 'New post dialog, empty'],
+    [16, 'New post dialog, filled in'],
+    [19, 'New post dialog with the mention list open'],
+  ] },
+  { id: 'rating', zh: '模型评分', en: 'Model ratings', frames: [
+    [21, 'Model rating wall: cards with radar charts'],
+    [24, 'Rating detail dialog for one model'],
+    [26, 'Rating dialog in another state'],
+  ] },
+  { id: 'library', zh: '课程库', en: 'Library', frames: [
+    [3, 'Library: filters by topic and resource type, with course cards'],
+    [9, 'Course detail with comments'],
+    [13, 'Course detail with a video player'],
+    [29, 'Comment box, empty'],
+    [30, 'Comment box with text'],
+    [31, 'Comment box with formatting'],
+    [32, 'Comment box with a quoted reference'],
+    [33, 'Comment posted'],
+    [34, 'Comment box with the mention list open'],
+    [35, 'Comment with a linked reference'],
+    [36, 'Sticker panel open under the comment box'],
+    [37, 'Full sticker panel'],
+    [38, 'Hover card over a reference'],
+  ] },
+  { id: 'articles', zh: 'AI 文章', en: 'Articles', frames: [
+    [5, 'Articles: pick a role and keywords to filter AI practice articles'],
+  ] },
+  { id: 'skills', zh: '技能中心', en: 'Skill Hub', frames: [
+    [12, 'Skill Hub: filters and a publish button'],
+  ] },
+  { id: 'profile', zh: '个人中心', en: 'Profile', frames: [
+    [18, 'Profile: my posts, comments and likes received'],
+  ] },
+] as const;
+---
+<BaseLayout title="AIYO" description="AIYO：我在腾讯游戏发起并上线的内部 AI 平台，按岗位组织内容。">
+  <article class="ay">
+    <header class="ay-head container-wide">
+      <a href={`${base}/work`} class="ay-back"><span aria-hidden="true">←</span> <T zh="全部作品" en="All work" /></a>
+      <h1 class="ay-h1">AIYO</h1>
+      <p class="ay-sub">
+        <T
+          zh="腾讯游戏内部的 AI 平台，我发起并做到上线。日活 27,000。"
+          en="Tencent Games’ internal AI platform. I initiated it and took it to launch. 27,000 daily active users."
+        />
+      </p>
+      <nav class="ay-nav" aria-label="Modules">
+        <ul role="list">
+          {groups.map((g) => <li><a href={`#${g.id}`}><T zh={g.zh} en={g.en} /><span class="ay-count" aria-hidden="true">{g.frames.length}</span></a></li>)}
+        </ul>
+      </nav>
+    </header>
+
+    {groups.map((g) => (
+      <section class="ay-sec" id={g.id} aria-labelledby={`${g.id}-h`}>
+        <h2 id={`${g.id}-h`} class="ay-h2"><T zh={g.zh} en={g.en} /></h2>
+        <FrameViewer id={g.id} frames={g.frames.map(([n, alt]) => ({ img: frame(n), alt }))} />
+      </section>
+    ))}
+
+    <footer class="ay-foot container-wide">
+      <p>
+        <T
+          zh="画面来自设计稿原型，里面的文字是占位内容。我从发现需求做到前端开发，和一位后端一起把它上线。"
+          en="These are frames from the design prototype, with placeholder text. I took it from finding the need through to front-end build, and shipped it with one backend engineer."
+        />
+      </p>
+    </footer>
+  </article>
+</BaseLayout>
+
+<script>
+  document.querySelectorAll<HTMLImageElement>('.ay img').forEach((img) => { img.draggable = false; });
+</script>
+
+<style>
+  .ay { padding-block: 3rem 5rem; }
+  .ay :global(img) { -webkit-user-drag: none; user-select: none; }
+  .ay-back { display: inline-flex; align-items: center; gap: 0.4rem; min-block-size: 32px; color: #9AA3A9; font-size: 0.9rem; }
+  .ay-back:hover { color: #FF5A3C; }
+  .ay-h1 { margin: 1.5rem 0 0; font-size: clamp(3rem, 10vw, 7rem); font-weight: 800; line-height: 1; letter-spacing: -0.04em; color: #EFE6D3; }
+  .ay-sub { margin: 1rem 0 0; max-inline-size: 34em; color: #C9CDD0; font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.6; }
+  .ay-nav ul { list-style: none; margin: 2rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .ay-nav a {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    min-block-size: 40px; padding: 0 1rem;
+    border: 1px solid #2A2F33; border-radius: 999px;
+    color: #EFE6D3; font-weight: 600; font-size: 0.95rem;
+  }
+  .ay-nav a:hover { border-color: #FF5A3C; color: #FF5A3C; }
+  .ay-nav a:focus-visible { outline: 3px solid #EFE6D3; outline-offset: 2px; }
+  .ay-count { color: #8A949B; font-size: 0.8rem; font-variant-numeric: tabular-nums; }
+
+  .ay-sec { margin: 4.5rem auto 0; padding-inline: max(1.25rem, 4vw); max-inline-size: 100rem; scroll-margin-top: 5rem; }
+  .ay-h2 { margin: 0 0 1rem; font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 800; letter-spacing: -0.025em; color: #EFE6D3; }
+
+  .ay-foot { margin-top: 5rem; padding-top: 1.5rem; border-top: 1px solid #2A2F33; color: #9AA3A9; font-size: 0.92rem; line-height: 1.7; }
+  .ay-foot p { margin: 0; max-inline-size: 46rem; }
+</style>

@@ -1,0 +1,185 @@
+---
+/**
+ * 分步导览 —— 每一步是一张真实界面图，画面上的高亮点就是"该点这里"。
+ * 访客点高亮点（或"下一步"）才前进。
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import T from '@/components/T.astro';
+
+interface Step {
+  img: ImageMetadata;
+  alt: string;
+  /** 高亮点的位置，百分比。最后一步没有 */
+  spot?: { x: number; y: number } | null;
+  zh: string;
+  en: string;
+  /** 高亮点的说明：点了会发生什么 */
+  doZh?: string;
+  doEn?: string;
+}
+interface Props { id: string; steps: Step[]; dark?: boolean }
+const { id, steps, dark = false } = Astro.props;
+const ratio = `${steps[0].img.width} / ${steps[0].img.height}`;
+---
+<div class:list={['tr', { 'tr-dark': dark }]} data-tour={id}>
+  <div class="tr-frame" style={`aspect-ratio:${ratio}`}>
+    {steps.map((s, i) => (
+      <div class="tr-shot" data-step={i} hidden={i !== 0} style={`--sx:${s.spot?.x ?? 50}%;--sy:${s.spot?.y ?? 30}%`}>
+        <Image
+          src={s.img}
+          alt={s.alt}
+          widths={[760, 1320, 2000, s.img.width]}
+          sizes="(min-width: 1600px) 1500px, 94vw"
+          format="webp"
+          quality={86}
+          loading={i === 0 ? 'lazy' : 'lazy'}
+        />
+        {s.spot && (
+          <button type="button" class="tr-spot" style={`left:${s.spot.x}%;top:${s.spot.y}%`} data-next>
+            <span class="tr-vh"><T zh={s.doZh ?? '下一步'} en={s.doEn ?? 'Next step'} /></span>
+          </button>
+        )}
+      </div>
+    ))}
+  </div>
+
+  <div class="tr-bar">
+    <p class="tr-count" aria-hidden="true"><span class="tr-now">1</span> / {steps.length}</p>
+    <div class="tr-text" aria-live="polite">
+      {steps.map((s, i) => (
+        <p class="tr-cap" data-step={i} hidden={i !== 0}>
+          <strong><T zh={s.zh} en={s.en} /></strong>
+          {s.doZh && <span class="tr-do"><span class="tr-dot" aria-hidden="true"></span><T zh={s.doZh} en={s.doEn ?? s.doZh} /></span>}
+        </p>
+      ))}
+    </div>
+    <div class="tr-nav">
+      <button type="button" class="tr-btn" data-prev disabled><T zh="上一步" en="Back" /></button>
+      <button type="button" class="tr-btn tr-btn-main" data-next><T zh="下一步" en="Next" /></button>
+      <button type="button" class="tr-btn tr-btn-main" data-restart hidden><T zh="从头再看" en="Start over" /></button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-tour]').forEach((root) => {
+    const shots = [...root.querySelectorAll<HTMLElement>('.tr-shot')];
+    const caps = [...root.querySelectorAll<HTMLElement>('.tr-cap')];
+    const now = root.querySelector<HTMLElement>('.tr-now')!;
+    const prev = root.querySelector<HTMLButtonElement>('.tr-nav [data-prev]')!;
+    const next = root.querySelector<HTMLButtonElement>('.tr-nav [data-next]')!;
+    const restart = root.querySelector<HTMLButtonElement>('[data-restart]')!;
+    const last = shots.length - 1;
+    let i = 0;
+
+    const show = (n: number, focusNav = false) => {
+      i = Math.max(0, Math.min(last, n));
+      shots.forEach((s, k) => (s.hidden = k !== i));
+      caps.forEach((c, k) => (c.hidden = k !== i));
+      now.textContent = String(i + 1);
+      prev.disabled = i === 0;
+      next.hidden = i === last;
+      restart.hidden = i !== last;
+      // 提前把下一步的图取回来，点的时候不闪
+      const img = shots[i + 1]?.querySelector('img');
+      if (img) img.loading = 'eager';
+      if (focusNav) (i === last ? restart : next).focus({ preventScroll: true });
+    };
+
+    root.addEventListener('click', (e) => {
+      const t = (e.target as HTMLElement).closest('button');
+      if (!t || !root.contains(t)) return;
+      if (t.hasAttribute('data-next')) show(i + 1, t.classList.contains('tr-spot'));
+      else if (t.hasAttribute('data-prev')) show(i - 1);
+      else if (t.hasAttribute('data-restart')) show(0, true);
+    });
+    show(0);
+  });
+</script>
+
+<style>
+  .tr { --tr-line: #D2D2D7; --tr-ink: #1D1D1F; --tr-mute: #6E6E73; --tr-accent: #3D5BF0; --tr-bar: #FFFFFF; }
+  .tr-dark { --tr-line: #2C2C2E; --tr-ink: #F5F5F7; --tr-mute: #A1A1A6; --tr-accent: #9DB0FF; --tr-bar: #141719; }
+  .tr { border: 1px solid var(--tr-line); border-radius: 18px; overflow: hidden; background: var(--tr-bar); }
+  .tr-frame { position: relative; background: #FFFFFF; }
+  .tr-shot { position: absolute; inset: 0; }
+  .tr-shot[hidden] { display: none; }
+  .tr-shot :global(img) { display: block; inline-size: 100%; block-size: 100%; object-fit: cover; }
+
+  /* 手机上整张图太小：以高亮点为中心放大，点的位置不变 */
+  @media (max-width: 40rem) {
+    .tr-frame { overflow: hidden; }
+    .tr-shot :global(img) { transform: scale(2.3); transform-origin: var(--sx) var(--sy); }
+  }
+
+  /* 高亮点：实心圆点 + 向外扩散的环。点击区域 44px */
+  .tr-spot {
+    position: absolute;
+    inline-size: 44px;
+    block-size: 44px;
+    margin: -22px 0 0 -22px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+  }
+  .tr-spot::before, .tr-spot::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    border-radius: 50%;
+  }
+  .tr-spot::before { inline-size: 18px; block-size: 18px; background: #3D5BF0; box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.95), 0 4px 14px rgba(20, 30, 90, 0.45); }
+  .tr-spot::after { inline-size: 18px; block-size: 18px; border: 2px solid #3D5BF0; }
+  .tr-spot:focus-visible { outline: 3px solid #3D5BF0; outline-offset: 2px; }
+  @media (prefers-reduced-motion: no-preference) {
+    .tr-spot::after { animation: tr-ping 1.6s ease-out infinite; }
+  }
+  @keyframes tr-ping { from { transform: scale(1); opacity: 0.9; } to { transform: scale(3.2); opacity: 0; } }
+
+  .tr-vh { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+  .tr-bar {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid var(--tr-line);
+    color: var(--tr-ink);
+  }
+  .tr-bar p { margin: 0; }
+  .tr-count { font-size: 0.85rem; font-weight: 700; color: var(--tr-mute); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .tr-now { color: var(--tr-accent); }
+  .tr-cap { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.3rem 0.9rem; font-size: 1.02rem; line-height: 1.45; }
+  .tr-cap[hidden] { display: none; }
+  .tr-cap :global(strong) { font-weight: 700; color: var(--tr-ink); }
+  .tr-do { display: inline-flex; align-items: center; gap: 0.45rem; color: var(--tr-mute); font-size: 0.95rem; }
+  .tr-dot { inline-size: 10px; block-size: 10px; border-radius: 50%; background: #3D5BF0; box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.9); flex: none; }
+  .tr-nav { grid-column: 1 / -1; display: flex; gap: 0.6rem; justify-content: flex-end; }
+  @media (min-width: 52rem) {
+    .tr-bar { grid-template-columns: auto minmax(0, 1fr) auto; }
+    .tr-nav { grid-column: auto; }
+  }
+  .tr-btn {
+    min-block-size: 44px;
+    padding: 0 1.1rem;
+    border: 1px solid var(--tr-line);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--tr-ink);
+    font: inherit;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+  }
+  .tr-btn[hidden] { display: none; }
+  .tr-btn:disabled { opacity: 0.4; cursor: default; }
+  .tr-btn:not(:disabled):hover { border-color: var(--tr-accent); color: var(--tr-accent); }
+  .tr-btn-main { background: #3D5BF0; border-color: #3D5BF0; color: #FFFFFF; }
+  .tr-btn-main:not(:disabled):hover { background: #2F49CF; border-color: #2F49CF; color: #FFFFFF; }
+  .tr-btn:focus-visible { outline: 3px solid var(--tr-accent); outline-offset: 3px; }
+</style>

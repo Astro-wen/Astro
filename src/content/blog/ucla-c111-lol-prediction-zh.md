@@ -9,7 +9,7 @@ draft: false
 
 > **语言**: 这是完整报告的中文版。[English Version →](/blog/ucla-c111-lol-prediction-en)
 >
-> **相关链接**: [项目官网](https://astro-wen.github.io/UCLA_C111_LoL/) · [GitHub 仓库](https://github.com/Astro-wen/UCLA_C111_LoL) · [Kaggle 数据集](https://www.kaggle.com/datasets/bobbyscience/league-of-legends-diamond-ranked-games-10-min) · [Colab 代码](https://colab.research.google.com/drive/1M3lTclYuREo6cQWqkfEM9ozNS7ymSdts?usp=sharing)
+> **相关链接**: [项目官网](https://astro-wen.github.io/UCLA_C111_LoL/), [GitHub 仓库](https://github.com/Astro-wen/UCLA_C111_LoL), [Kaggle 数据集](https://www.kaggle.com/datasets/bobbyscience/league-of-legends-diamond-ranked-games-10-min), [Colab 代码](https://colab.research.google.com/drive/1M3lTclYuREo6cQWqkfEM9ozNS7ymSdts?usp=sharing)
 
 ---
 
@@ -658,4 +658,4 @@ L1 Logistic Regression 表现最佳，平均 73.5%，标准差仅 1.5%——泛�
 
 ---
 
-**课程信息**: AOS C111/204 - Introduction to Machine Learning for Physical Sciences · UCLA 大气与海洋科学系 · Dr. Alexander Lozinski · 2025 年 12 月
+**课程信息**: AOS C111/204 - Introduction to Machine Learning for Physical Sciences, UCLA 大气与海洋科学系 Dr. Alexander Lozinski, 2025 年 12 月

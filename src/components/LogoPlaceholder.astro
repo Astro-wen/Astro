@@ -14,7 +14,13 @@ interface Props {
   class?: string;
 }
 
-const { logo, name, tint, size = 48, class: className = '' } = Astro.props;
+import { existsSync } from 'node:fs';
+
+const { logo: logoProp, name, tint, size = 48, class: className = '' } = Astro.props;
+
+// 本地 logo 文件还没放进 public/ 时，退回首字母方块，而不是显示一张裂图
+const isRemote = logoProp?.startsWith('http');
+const logo = logoProp && (isRemote || existsSync(`public/${logoProp.replace(/^\//, '')}`)) ? logoProp : undefined;
 
 // 自动为相对路径的 logo 加上 BASE_URL 前缀
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');

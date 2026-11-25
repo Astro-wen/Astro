@@ -1,0 +1,401 @@
+---
+/**
+ * 四个功能的介绍 —— 每个都是一个可以点的小演示，用页面自己的样式画，不放宣传图。
+ * 合并多场录音 / 照片嵌进记录 / 多种材料出结论 / Ask AI。
+ */
+import { Image } from 'astro:assets';
+import T from '@/components/T.astro';
+import photo from '@/assets/work/notique/gen-showing.jpg';
+
+const asks = [
+  {
+    q: { zh: '客户在担心什么？', en: 'What objections came up?' },
+    a: {
+      zh: ['月供想控制在 $1,600 以内', '想赶在二月租约到期前成交', '贷款预批还没下来'],
+      en: ['Wants the payment near $1,600 a month', 'Needs to close before the lease ends in February', 'No lender pre-approval yet'],
+    },
+  },
+  {
+    q: { zh: '帮我写一封跟进邮件', en: 'Write a follow-up email' },
+    a: {
+      zh: ['Curtis 你好，今天聊得很愉快。', '按你说的 22 万预算，我挑了三套周四可以看。', '另外附了两家贷款机构的联系方式，你可以先把预批办了。'],
+      en: ['Hi Curtis, good talking today.', 'At your $220K budget I shortlisted three homes we can see Thursday.', 'I have also attached two lenders so you can start pre-approval.'],
+    },
+  },
+  {
+    q: { zh: '他最在意什么？', en: 'What mattered most to him?' },
+    a: {
+      zh: ['三个孩子，想住得宽敞点', '公寓住了两年半，想搬了', '手头能动的钱有一万到一万二'],
+      en: ['More room for three kids', 'Moving out of the apartment after two and a half years', 'Has $10,000 to $12,000 to put toward the purchase'],
+    },
+  },
+];
+---
+<ul class="ft" role="list">
+  {/* ---------- 1. 合并多场 ---------- */}
+  <li class="ft-card ft-merge">
+    <div class="ft-copy">
+      <h3><T zh="聊一次有纪要，聊几次能看出来龙去脉。" en="One meeting gives you minutes. Several give you the whole picture." /></h3>
+      <p><T zh="同一个客户的录音和文件丢进一个项目，它会合成一份总览，每天再单独出一份。" en="Put a client’s recordings and reference files in one project. Get one overview, plus a summary for each date." /></p>
+    </div>
+    <div class="ft-demo" data-merge>
+      <div class="mg-in">
+        <span class="mg-chip mg-a"><i class="fi fi-mp3" aria-hidden="true">MP3</i><span class="mg-name"><T zh="首次咨询" en="First consult" /></span><span class="mg-date"><T zh="9 月 21 日" en="Sep 21" /></span></span>
+        <span class="mg-chip mg-b"><i class="fi fi-mp3" aria-hidden="true">MP3</i><span class="mg-name"><T zh="带看复盘" en="Showing debrief" /></span><span class="mg-date"><T zh="9 月 22 日" en="Sep 22" /></span></span>
+        <span class="mg-chip mg-c"><i class="fi fi-pdf" aria-hidden="true">PDF</i><span class="mg-name"><T zh="贷款预批说明" en="Pre-approval letter" /></span><span class="mg-date"><T zh="参考文件" en="Reference" /></span></span>
+      </div>
+      <button type="button" class="mg-btn" aria-pressed="false">
+        <span class="mg-btn-off"><T zh="合并" en="Merge" /></span>
+        <span class="mg-btn-on"><T zh="拆开" en="Split" /></span>
+      </button>
+      <div class="mg-out">
+        <div class="mg-sum mg-sum-all">
+          <strong><T zh="项目总览" en="Overall summary" /></strong>
+          <span><T zh="现在什么情况、最要紧的事、还没定的、下一步" en="Current understanding, what matters now, open issues, next steps" /></span>
+        </div>
+        <div class="mg-sum"><strong>09 / 22</strong><span><T zh="摸清了买家要什么，定了怎么看房" en="Buyer profile clarified, search strategy locked" /></span></div>
+        <div class="mg-sum"><strong>09 / 21</strong><span><T zh="预算、月供、手头的钱" en="Budget, monthly payment, funds available" /></span></div>
+      </div>
+    </div>
+  </li>
+
+  {/* ---------- 2. 照片嵌进记录 ---------- */}
+  <li class="ft-card ft-photo">
+    <div class="ft-copy">
+      <h3><T zh="拍的照片，会跟着那句话。" en="Photos belong in the conversation." /></h3>
+      <p><T zh="边录边拍。照片会自己出现在逐字稿里你按快门的那个位置。" en="Take a photo while recording and it lands in the transcript at the moment you took it." /></p>
+    </div>
+    <div class="ft-demo" data-photo>
+      <ol class="ph-lines">
+        <li><span class="ph-t">00:04</span><span><T zh="厨房去年刚翻新过，台面是石英石。" en="The kitchen was redone last year. Quartz counters." /></span></li>
+        <li class="ph-target">
+          <span class="ph-t">00:24</span><span><T zh="客厅朝南，下午光线最好。" en="The living room faces south. Best light in the afternoon." /></span>
+          <span class="ph-img"><Image src={photo} alt="" widths={[480]} sizes="240px" format="webp" quality={80} loading="lazy" /></span>
+        </li>
+        <li><span class="ph-t">00:41</span><span><T zh="后院围栏得修，卖家答应处理。" en="The back fence needs work. The seller agreed to fix it." /></span></li>
+      </ol>
+      <button type="button" class="ph-btn" aria-pressed="false">
+        <i class="ph-cam" aria-hidden="true"></i>
+        <span class="ph-btn-off"><T zh="在 00:24 拍一张" en="Take a photo at 00:24" /></span>
+        <span class="ph-btn-on"><T zh="拿掉照片" en="Remove the photo" /></span>
+      </button>
+    </div>
+  </li>
+
+  {/* ---------- 4. Ask AI ---------- */}
+  <li class="ft-card ft-ask">
+    <div class="ft-copy">
+      <h3><T zh="散会才想起来的事，回头问它。" en="Ask what you only thought of afterwards." /></h3>
+      <p><T zh="录音、照片、文件它都看过。点一个试试。" en="It has seen the recordings, photos and files, so it can answer. Pick a question." /></p>
+    </div>
+    <div class="ft-demo" data-ask>
+      <div class="ak-qs" role="group" aria-label="Sample questions">
+        {asks.map((x, i) => (
+          <button type="button" class="ak-q" data-i={i} aria-pressed={i === 0 ? 'true' : 'false'}><T zh={x.q.zh} en={x.q.en} /></button>
+        ))}
+      </div>
+      <div class="ak-as" aria-live="polite">
+        {asks.map((x, i) => (
+          <div class="ak-a" data-i={i} hidden={i !== 0}>
+            <span class="ak-spark" aria-hidden="true">✦</span>
+            <ul>
+              {x.a.zh.map((line, k) => <li style={`--k:${k}`}><T zh={line} en={x.a.en[k]} /></li>)}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </li>
+</ul>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-merge], [data-photo], [data-mix]').forEach((demo) => {
+    const btn = demo.querySelector<HTMLButtonElement>('button')!;
+    btn.addEventListener('click', () => {
+      const on = btn.getAttribute('aria-pressed') !== 'true';
+      btn.setAttribute('aria-pressed', String(on));
+      demo.classList.toggle('is-on', on);
+    });
+  });
+  document.querySelectorAll<HTMLElement>('[data-ask]').forEach((demo) => {
+    const qs = [...demo.querySelectorAll<HTMLButtonElement>('.ak-q')];
+    const as = [...demo.querySelectorAll<HTMLElement>('.ak-a')];
+    qs.forEach((q) => q.addEventListener('click', () => {
+      qs.forEach((b) => b.setAttribute('aria-pressed', String(b === q)));
+      as.forEach((a) => (a.hidden = a.dataset.i !== q.dataset.i));
+    }));
+  });
+  // 第一次滚到眼前时，自动演示一次合并和拍照
+  if ('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        io.unobserve(e.target);
+        const btn = e.target.querySelector<HTMLButtonElement>('button');
+        setTimeout(() => { if (btn?.getAttribute('aria-pressed') !== 'true') btn?.click(); }, 700);
+      });
+    }, { threshold: 0.6 });
+        document.querySelectorAll('[data-merge], [data-photo]').forEach((d) => io.observe(d));
+  }
+</script>
+
+<style>
+  .ft {
+    --ink: #1D1D1F; --mute: #6E6E73; --blue: #3D5BF0; --line: #E3E3E8;
+    list-style: none;
+    margin: 1rem auto 0;
+    padding: 0;
+    max-inline-size: 84rem;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  @media (min-width: 56rem) {
+    .ft { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .ft-ask { grid-column: 1 / -1; flex-direction: row; align-items: center; gap: 3rem; }
+    .ft-ask > * { flex: 1; min-inline-size: 0; }
+    .ft-ask .ft-demo { margin-top: 0; }
+  }
+  .ft-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding: clamp(1.25rem, 3vw, 2.25rem);
+    border-radius: 24px;
+    background: #F5F5F7;
+    color: var(--ink);
+    text-align: start;
+  }
+  .ft-copy h3 { margin: 0; font-size: clamp(1.35rem, 2.6vw, 1.9rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; text-wrap: balance; }
+  .ft-copy p { margin: 0.6rem 0 0; color: var(--mute); font-size: 1rem; line-height: 1.6; max-inline-size: 46ch; }
+  .ft-demo {
+    margin-top: auto;
+    padding: 1.1rem;
+    border-radius: 16px;
+    background: #FFFFFF;
+    box-shadow: 0 6px 24px rgba(20, 22, 30, 0.06);
+    font-size: 0.92rem;
+    line-height: 1.45;
+  }
+  .ft button { font: inherit; cursor: pointer; }
+  .ft button:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+
+  /* 文件图标：一页纸的形状，右上折角，下面写类型 */
+  .fi {
+    position: relative;
+    display: inline-grid;
+    place-items: end center;
+    flex: none;
+    inline-size: 2rem;
+    block-size: 2.5rem;
+    padding-bottom: 0.3rem;
+    border-radius: 5px;
+    background: var(--fi, #3D5BF0);
+    color: #FFFFFF;
+    font-style: normal;
+    font-size: 0.6rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    clip-path: polygon(0 0, 68% 0, 100% 24%, 100% 100%, 0 100%);
+  }
+  .fi::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto auto;
+    inline-size: 32%;
+    block-size: 24%;
+    background: rgba(255, 255, 255, 0.45);
+    border-end-start-radius: 3px;
+  }
+  .fi-mp3 { --fi: #3D5BF0; }
+  .fi-pdf { --fi: #E5484D; }
+  .fi-ppt { --fi: #F0883E; }
+  .fi-jpg { --fi: #12A594; }
+
+  /* ---------- 合并 ---------- */
+  .mg-in { display: grid; gap: 0.5rem; }
+  .mg-chip {
+    display: flex; align-items: center; gap: 0.75rem;
+    padding: 0.55rem 0.8rem;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #FFFFFF;
+    font-weight: 600;
+    transition: transform 500ms cubic-bezier(0.3, 0.7, 0.2, 1), opacity 400ms;
+  }
+  .mg-name { font-weight: 700; }
+  .mg-date { margin-inline-start: auto; color: var(--mute); font-size: 0.82rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .mg-btn {
+    display: block;
+    margin: 0.9rem auto;
+    min-block-size: 44px;
+    padding: 0 1.6rem;
+    border: 0;
+    border-radius: 999px;
+    background: var(--blue);
+    color: #FFFFFF;
+    font-weight: 700;
+  }
+  .mg-btn:hover { background: #2F49CF; }
+  .mg-btn-on, .is-on .mg-btn-off { display: none; }
+  .is-on .mg-btn-on { display: inline; }
+  .mg-out { display: grid; gap: 0.5rem; }
+  .mg-sum {
+    display: grid; gap: 0.15rem;
+    padding: 0.65rem 0.8rem;
+    border-radius: 12px;
+    background: #EEF1FF;
+    opacity: 0.25;
+    transform: translateY(8px);
+    transition: opacity 450ms, transform 450ms;
+  }
+  .mg-sum strong { color: var(--blue); font-size: 0.85rem; letter-spacing: 0.02em; }
+  .mg-sum span { color: #3A3D45; }
+  .mg-sum-all { background: var(--blue); }
+  .mg-sum-all strong, .mg-sum-all span { color: #FFFFFF; }
+  .is-on .mg-sum { opacity: 1; transform: none; }
+  .is-on .mg-sum:nth-child(2) { transition-delay: 120ms; }
+  .is-on .mg-sum:nth-child(3) { transition-delay: 240ms; }
+  .is-on .mg-chip { opacity: 0.45; transform: scale(0.97); }
+  .is-on .mg-b { transform: translateY(-0.5rem) scale(0.97); }
+  .is-on .mg-c { transform: translateY(-1rem) scale(0.97); }
+
+  /* ---------- 照片 ---------- */
+  .ph-lines { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.7rem; }
+  .ph-lines li { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.2rem 0.7rem; align-items: baseline; }
+  .ph-t { padding: 0.1rem 0.5rem; border-radius: 999px; background: #F1F2F5; color: var(--mute); font-size: 0.78rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .ph-target .ph-t { background: #EEF1FF; color: var(--blue); }
+  .ph-img {
+    grid-column: 2;
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transition: grid-template-rows 450ms cubic-bezier(0.3, 0.7, 0.2, 1), opacity 350ms, margin 450ms;
+  }
+  .ph-img :global(img) { display: block; min-block-size: 0; inline-size: min(100%, 15rem); block-size: auto; border-radius: 10px; }
+  .is-on .ph-img { grid-template-rows: 1fr; opacity: 1; margin-top: 0.4rem; }
+  .ph-btn {
+    display: inline-flex; align-items: center; gap: 0.55rem;
+    margin-top: 1rem;
+    min-block-size: 44px;
+    padding: 0 1.2rem;
+    border: 1px solid var(--blue);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--blue);
+    font-weight: 700;
+  }
+  .ph-btn:hover { background: #EEF1FF; }
+  .ph-cam { inline-size: 1rem; block-size: 0.75rem; border: 2px solid currentColor; border-radius: 3px; }
+  .ph-btn-on, .is-on .ph-btn-off { display: none; }
+  .is-on .ph-btn-on { display: inline; }
+
+  /* ---------- 多种材料：先散着，点一下排整齐 ---------- */
+  .mx-stage { position: relative; aspect-ratio: 16 / 10; }
+  .mx-it {
+    position: absolute;
+    inset-inline-start: calc(var(--l) * 1%);
+    inset-block-start: calc(var(--t) * 1%);
+    inline-size: 17%;
+    aspect-ratio: 4 / 3;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    background: #F1F2F5;
+    box-shadow: 0 6px 16px rgba(20, 22, 30, 0.14);
+    rotate: calc(var(--r) * 1deg);
+    transition: inset 650ms cubic-bezier(0.3, 0.7, 0.2, 1), rotate 650ms cubic-bezier(0.3, 0.7, 0.2, 1), box-shadow 400ms;
+    transition-delay: calc((var(--w) * 3 + var(--c)) * 35ms);
+  }
+  .mx-ph { overflow: hidden; }
+  .mx-ph :global(img) { inline-size: 100%; block-size: 100%; object-fit: cover; }
+  .mx-it .fi { inline-size: 42%; block-size: auto; aspect-ratio: 4 / 5; font-size: clamp(0.4rem, 1.1vw, 0.62rem); padding-bottom: 8%; }
+  /* 整理后：3 × 3，照片一行、录音一行、文件一行 */
+  .is-on .mx-it {
+    inset-inline-start: calc(22% + var(--c) * 19.5%);
+    inset-block-start: calc(3% + var(--w) * 33%);
+    rotate: 0deg;
+    box-shadow: 0 2px 6px rgba(20, 22, 30, 0.08);
+  }
+  .mx-out {
+    margin: 0; padding: 0 0 0 1.3rem;
+    display: grid; gap: 0.45rem;
+    color: #2A2D34;
+  }
+  .mx-out li { opacity: 0.2; transition: opacity 450ms; }
+  .mx-out li::marker { color: var(--blue); font-weight: 800; }
+  .is-on .mx-out li { opacity: 1; }
+  .is-on .mx-out li:nth-child(1) { transition-delay: 500ms; }
+  .is-on .mx-out li:nth-child(2) { transition-delay: 650ms; }
+  .is-on .mx-out li:nth-child(3) { transition-delay: 800ms; }
+
+  /* 滚动版：往下滑，散着的九样东西各自收进下面对应的那一行结论里 */
+  @supports ((animation-timeline: scroll()) and (animation-range: 0% 100%)) {
+    @media (prefers-reduced-motion: no-preference) {
+      .ft-mix { view-timeline: --mix block; }
+      .ft-mix .mg-btn { display: none; }
+      .ft-mix .mx-stage { margin-bottom: 0.9rem; }
+      .ft-mix .mx-it {
+        transition: none;
+        transform-origin: 0 0;
+        animation: mx-collect linear both;
+        animation-timeline: --mix;
+        animation-range: cover calc(36% + var(--c) * 2% + var(--w) * 4%) cover calc(56% + var(--c) * 2% + var(--w) * 4%);
+      }
+      .ft-mix .mx-out li {
+        transition: none;
+        animation: mx-line linear both;
+        animation-timeline: --mix;
+      }
+      .ft-mix .mx-out li:nth-child(1) { animation-range: cover 52% cover 60%; }
+      .ft-mix .mx-out li:nth-child(2) { animation-range: cover 56% cover 64%; }
+      .ft-mix .mx-out li:nth-child(3) { animation-range: cover 60% cover 68%; }
+    }
+  }
+  @keyframes mx-collect {
+    from {
+      inset-inline-start: calc(var(--l) * 1%);
+      inset-block-start: calc(var(--t) * 1%);
+      rotate: calc(var(--r) * 1deg);
+      scale: 1;
+      opacity: 1;
+    }
+    75% { opacity: 1; }
+    to {
+      inset-inline-start: 2%;
+      inset-block-start: calc(100% + 0.95rem + var(--w) * 1.82rem);
+      rotate: 0deg;
+      scale: 0.1;
+      opacity: 0;
+    }
+  }
+  @keyframes mx-line { from { opacity: 0.18; } to { opacity: 1; } }
+
+  /* ---------- Ask AI ---------- */
+  .ak-qs { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .ak-q {
+    min-block-size: 40px;
+    padding: 0 0.95rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #FFFFFF;
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .ak-q:hover { border-color: var(--blue); }
+  .ak-q[aria-pressed='true'] { background: var(--blue); border-color: var(--blue); color: #FFFFFF; }
+  .ak-as { margin-top: 0.9rem; min-block-size: 7.2rem; }
+  .ak-a { display: flex; gap: 0.6rem; padding: 0.85rem 0.95rem; border-radius: 14px; background: #F4F6FF; }
+  .ak-a[hidden] { display: none; }
+  .ak-spark { color: var(--blue); }
+  .ak-a ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.35rem; color: #2A2D34; }
+  @media (prefers-reduced-motion: no-preference) {
+    .ak-a li { animation: ak-in 420ms both; animation-delay: calc(var(--k) * 160ms + 80ms); }
+  }
+  @keyframes ak-in { from { opacity: 0; transform: translateY(6px); } }
+  @media (prefers-reduced-motion: reduce) {
+    .mg-chip, .mg-sum, .ph-img, .mx-it, .mx-out li { transition: none; }
+  }
+</style>

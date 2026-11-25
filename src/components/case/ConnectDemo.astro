@@ -1,0 +1,227 @@
+---
+/**
+ * 两种连接方式 —— 左手机，右笔，透明底素材。
+ * 切换"USB-C 直插"和"蓝牙"：直插时笔滑过去插进手机，蓝牙时两者分开、中间是信号。
+ * 状态完全由单选按钮和 CSS 驱动，不需要脚本。
+ */
+import { Image } from 'astro:assets';
+import T from '@/components/T.astro';
+import phone from '@/assets/work/notique/asset-phone.png';
+import pen from '@/assets/work/notique/asset-pen.png';
+---
+<section class="cn" aria-labelledby="cn-h">
+  <div class="cn-sticky">
+  <h2 id="cn-h" class="cn-h"><T zh="怎么连都行。" en="Two ways to connect." /></h2>
+
+  <fieldset class="cn-switch">
+    <legend class="cn-vh"><T zh="连接方式" en="Connection" /></legend>
+    <label class="cn-opt">
+      <input type="radio" name="cn-mode" value="usb" checked />
+      <span><T zh="USB-C 直插" en="USB-C" /></span>
+    </label>
+    <label class="cn-opt">
+      <input type="radio" name="cn-mode" value="ble" />
+      <span><T zh="蓝牙" en="Bluetooth" /></span>
+    </label>
+  </fieldset>
+
+  <div class="cn-stage">
+    <div class="cn-phone">
+      <Image src={phone} alt="A phone lying flat, its USB-C port facing the pen" widths={[480, 900, 1491]} sizes="(min-width: 1100px) 460px, 42vw" format="webp" quality={90} loading="lazy" />
+      <div class="cn-screen cn-screen-usb" aria-hidden="true">
+        <span class="cn-screen-t"><T zh="正在导入录音" en="Importing recording" /></span>
+        <span class="cn-bar"><span></span></span>
+      </div>
+      <div class="cn-screen cn-screen-ble" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7l10 10-5 5V2l5 5L7 17" /></svg>
+        <span class="cn-screen-t"><T zh="已连接 Notique" en="Connected to Notique" /></span>
+      </div>
+    </div>
+
+    <svg class="cn-waves" viewBox="0 0 60 100" aria-hidden="true">
+      <path class="cn-wave cn-wave-1" d="M22 36 Q32 50 22 64" />
+      <path class="cn-wave cn-wave-2" d="M30 26 Q46 50 30 74" />
+      <path class="cn-wave cn-wave-3" d="M38 16 Q60 50 38 84" />
+    </svg>
+
+    <div class="cn-pen">
+      <Image src={pen} alt="The Notique pen lying flat, its USB-C plug facing the phone" widths={[520, 1000, 2132]} sizes="(min-width: 1100px) 480px, 44vw" format="webp" quality={90} loading="lazy" />
+    </div>
+  </div>
+
+  <div class="cn-lines">
+  <p class="cn-line cn-line-usb">
+    <span class="cn-num">15</span><span class="cn-unit"><T zh="秒" en="sec" /></span>
+    <span class="cn-desc"><T zh="拔开笔帽就是插头。一小时的录音，15 秒传完。" en="The cap end is the plug. A one-hour recording moves across as soon as it is in." /></span>
+  </p>
+  <p class="cn-line cn-line-ble">
+    <span class="cn-num">0</span><span class="cn-unit"><T zh="根线" en="cables" /></span>
+    <span class="cn-desc"><T zh="不想掏笔？在手机上点一下，走蓝牙同步。" en="Leave the pen in your pocket and sync over Bluetooth in the app." /></span>
+  </p>
+  </div>
+  <p class="cn-hint" aria-hidden="true"><T zh="往下滑" en="Scroll to plug in" /> ↓</p>
+  </div>
+</section>
+
+<style>
+  .cn {
+    --ink: #1D1D1F;
+    --mute: #6E6E73;
+    --blue: #3D5BF0;
+    background: #F5F5F7;
+    padding: 6rem 1.25rem;
+    text-align: center;
+    overflow: clip;
+  }
+  .cn-h {
+    margin: 0;
+    font-size: clamp(2rem, 5.6vw, 4rem);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+  }
+  .cn-vh { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+  .cn-switch {
+    position: relative;
+    display: inline-flex;
+    margin: 1.75rem 0 0;
+    padding: 4px;
+    border: 0;
+    border-radius: 999px;
+    background: #E3E3E8;
+  }
+  .cn-opt { position: relative; cursor: pointer; }
+  .cn-opt input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .cn-opt span {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: 44px;
+    padding: 0 1.4rem;
+    border-radius: 999px;
+    color: var(--mute);
+    font-weight: 700;
+    font-size: 1rem;
+    transition: background-color 200ms, color 200ms;
+  }
+  .cn-opt input:checked + span { background: #FFFFFF; color: var(--ink); box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12); }
+  .cn-opt input:focus-visible + span { outline: 3px solid var(--blue); outline-offset: 2px; }
+
+  /* 舞台：宽 100 份、高 26 份。手机宽 42，笔宽 43.5，接口和插头在同一条水平线上 */
+  .cn-stage {
+    position: relative;
+    max-inline-size: 68rem;
+    margin: 3rem auto 0;
+    aspect-ratio: 100 / 26;
+  }
+  .cn-stage :global(img) { display: block; inline-size: 100%; block-size: auto; }
+  .cn-phone, .cn-pen { position: absolute; transition: transform 800ms cubic-bezier(0.3, 0.7, 0.2, 1); }
+  .cn-phone { inset-inline-start: 3%; inset-block-start: 12.9%; inline-size: 42%; z-index: 2; filter: drop-shadow(0 18px 24px rgba(20, 22, 30, 0.16)); }
+  .cn-pen { inset-inline-start: 53.5%; inset-block-start: 42.4%; inline-size: 43.5%; z-index: 1; filter: drop-shadow(0 10px 12px rgba(20, 22, 30, 0.2)); }
+
+  .cn-screen {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: #2A2D34;
+    font-size: clamp(0.6rem, 1.5vw, 1rem);
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 300ms;
+  }
+  .cn-screen-ble { color: var(--blue); }
+  .cn-bar { inline-size: 42%; block-size: 6px; border-radius: 3px; background: #D5D8DE; overflow: hidden; }
+  .cn-bar span { display: block; block-size: 100%; background: var(--blue); transform-origin: left; transform: scaleX(0); }
+
+  .cn-waves {
+    position: absolute;
+    inset-inline-start: 46%;
+    inset-block-start: 14%;
+    inline-size: 6.5%;
+    block-size: 76%;
+    fill: none;
+    stroke: var(--blue);
+    stroke-width: 3;
+    stroke-linecap: round;
+    opacity: 0;
+    transition: opacity 300ms;
+  }
+
+  /* 直插：手机和笔向中间靠拢，插头没入接口 */
+  .cn:has(input[value='usb']:checked) .cn-phone { transform: translateX(11.9%); }
+  .cn:has(input[value='usb']:checked) .cn-pen { transform: translateX(-11.6%); }
+  .cn:has(input[value='usb']:checked) .cn-screen-usb { opacity: 1; transition-delay: 700ms; }
+  .cn:has(input[value='usb']:checked) .cn-bar span { animation: cn-fill 1600ms 900ms ease-out both; }
+  .cn:has(input[value='ble']:checked) .cn-screen-ble { opacity: 1; transition-delay: 300ms; }
+  .cn:has(input[value='ble']:checked) .cn-waves { opacity: 1; transition-delay: 400ms; }
+  .cn:has(input[value='ble']:checked) .cn-wave { animation: cn-pulse 1800ms ease-in-out infinite; }
+  .cn-wave-2 { animation-delay: 200ms !important; }
+  .cn-wave-3 { animation-delay: 400ms !important; }
+
+  .cn-line { display: none; margin: 2.5rem 0 0; }
+  .cn:has(input[value='usb']:checked) .cn-line-usb,
+  .cn:has(input[value='ble']:checked) .cn-line-ble { display: block; }
+  .cn-num { font-size: clamp(3.5rem, 11vw, 7rem); font-weight: 800; line-height: 0.9; letter-spacing: -0.05em; color: var(--blue); font-variant-numeric: tabular-nums; }
+  .cn-unit { margin-inline-start: 0.4rem; font-size: clamp(1.3rem, 3.4vw, 2.2rem); font-weight: 800; color: var(--blue); }
+  .cn-desc { display: block; margin: 0.6rem auto 0; color: var(--mute); font-size: 1.1rem; max-inline-size: 34ch; }
+
+  .cn-hint { display: none; margin: 1.5rem 0 0; color: var(--mute); font-size: 0.85rem; }
+
+  /* ---------- 滚动版：往下滑插入，往上滑拔出，进度条跟着滚动走 ---------- */
+  @supports ((animation-timeline: scroll()) and (animation-range: 0% 100%)) {
+    @media (prefers-reduced-motion: no-preference) {
+      .cn { block-size: 320vh; padding-block: 0; view-timeline: --cn block; }
+      .cn-sticky {
+        position: sticky;
+        inset-block-start: 0;
+        block-size: 100svh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding-block: 4rem 1rem;
+      }
+      .cn-switch { display: none; }
+      .cn-hint { display: block; }
+      .cn-stage { inline-size: 100%; max-inline-size: 78rem; margin-top: clamp(1.5rem, 5svh, 3.5rem); }
+      .cn-lines { display: grid; margin-top: clamp(1rem, 4svh, 2.5rem); }
+      .cn .cn-line { display: block !important; grid-area: 1 / 1; margin: 0; }
+      .cn-phone, .cn-pen, .cn-screen, .cn-waves { transition: none; }
+      .cn .cn-phone, .cn .cn-pen, .cn .cn-screen, .cn .cn-waves, .cn .cn-wave, .cn .cn-bar span, .cn .cn-line, .cn-hint {
+        animation-duration: auto !important;
+        animation-timing-function: linear !important;
+        animation-fill-mode: both !important;
+        animation-delay: 0s !important;
+        animation-iteration-count: 1 !important;
+        animation-timeline: --cn !important;
+        animation-range: contain 0% contain 100% !important;
+      }
+      .cn .cn-phone { animation-name: cn-s-phone !important; }
+      .cn .cn-pen { animation-name: cn-s-pen !important; }
+      .cn .cn-waves, .cn .cn-screen-ble, .cn .cn-line-ble { animation-name: cn-s-out !important; }
+      .cn .cn-wave { animation-name: none !important; }
+      .cn .cn-screen-usb, .cn .cn-line-usb { animation-name: cn-s-in !important; }
+      .cn .cn-bar span { animation-name: cn-s-bar !important; }
+      .cn-hint { animation-name: cn-s-hint !important; }
+    }
+  }
+  @keyframes cn-s-phone { 0%, 16% { transform: translateX(0); } 46%, 100% { transform: translateX(11.9%); } }
+  @keyframes cn-s-pen { 0%, 16% { transform: translateX(0); } 46%, 100% { transform: translateX(-11.6%); } }
+  @keyframes cn-s-out { 0%, 12% { opacity: 1; } 22%, 100% { opacity: 0; } }
+  @keyframes cn-s-in { 0%, 44% { opacity: 0; } 52%, 100% { opacity: 1; } }
+  @keyframes cn-s-bar { 0%, 50% { transform: scaleX(0); } 90%, 100% { transform: scaleX(1); } }
+  @keyframes cn-s-hint { 0%, 30% { opacity: 1; } 44%, 100% { opacity: 0; } }
+
+  @keyframes cn-fill { to { transform: scaleX(1); } }
+  @keyframes cn-pulse { 0%, 100% { opacity: 0.25; } 50% { opacity: 1; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cn-phone, .cn-pen, .cn-screen, .cn-waves { transition: none; }
+    .cn:has(input[value='usb']:checked) .cn-bar span { animation: none; transform: scaleX(1); }
+    .cn:has(input[value='ble']:checked) .cn-wave { animation: none; }
+  }
+</style>

@@ -8,7 +8,7 @@ const resumeHref = `${base}/Aaron-Wen-Resume.pdf`;
 {/*
   Hero —— 孤星×现代主义风格
   -------------------------------------------
-  1. 编号胶条（border-left 粗色条 · 孤星系统消息做法）
+  1. 编号胶条（border-left 粗色条，孤星系统消息做法）
   2. 主标题：Geist 900 + 紧字距 + RGB 错位阴影（Lonetrail 海报风）
   3. 姓名打字：Aaron Wen → 温思源 → AstroW（W 为 SVG 手写）
   4. 左侧竖色条装饰（Lonetrail 四色条）
@@ -41,16 +41,11 @@ const resumeHref = `${base}/Aaron-Wen-Resume.pdf`;
     </span>
   </h1>
 
-  {/* 身份 + 年限 */}
-  <div class="reveal mt-10 flex flex-wrap items-baseline gap-x-4 gap-y-2" style="--reveal-delay: 240ms">
+  {/* 身份 */}
+  <div class="reveal mt-10" style="--reveal-delay: 240ms">
     <p class="display-lg text-xl sm:text-2xl text-ink-900">
-      <span class="i18n-zh">产品经理</span>
-      <span class="i18n-en">Product Manager</span>
-    </p>
-    <span class="hidden sm:inline h-4 w-px bg-line" aria-hidden="true"></span>
-    <p class="text-sm sm:text-base text-ink-700">
-      <span class="i18n-zh"><span data-exp-years>2</span> 年互联网产品经验</span>
-      <span class="i18n-en"><span data-exp-years>2</span> years in internet products</span>
+      <span class="i18n-zh">产品经理，数据工程师 / 分析师</span>
+      <span class="i18n-en">Product Manager, Data Engineer / Analyst</span>
     </p>
   </div>
 
@@ -129,24 +124,7 @@ const resumeHref = `${base}/Aaron-Wen-Resume.pdf`;
 
 <script is:inline>
   // ============================================================
-  // Experience years · 按入行时间（2024-07-01）自动四舍五入
-  // ============================================================
-  (function () {
-    var start = new Date(2024, 6, 1); // 2024-07-01（月份是 0 索引）
-    var now = new Date();
-    var months =
-      (now.getFullYear() - start.getFullYear()) * 12 +
-      (now.getMonth() - start.getMonth());
-    var years = Math.max(1, Math.round(months / 12));
-    document.querySelectorAll('[data-exp-years]').forEach(function (el) {
-      el.textContent = String(years);
-    });
-  })();
-</script>
-
-<script is:inline>
-  // ============================================================
-  // Email · 点击复制 + 反馈（GitHub 风格）
+  // Email 点击复制 + 反馈（GitHub 风格）
   // ============================================================
   (function () {
     var btn = document.getElementById('email-copy');
@@ -208,7 +186,7 @@ const resumeHref = `${base}/Aaron-Wen-Resume.pdf`;
 
 <script is:inline>
   // ============================================================
-  // Hero · 姓名打字状态机 + 手写 W（无手电筒）
+  // Hero 姓名打字状态机 + 手写 W（无手电筒）
   // ============================================================
   (function () {
     const el = document.getElementById('name-text');
@@ -232,7 +210,7 @@ const resumeHref = `${base}/Aaron-Wen-Resume.pdf`;
 
     function setCaret(v) { caret.classList.toggle('is-hidden', !v); }
 
-    // Lone Modern · 以"尾字红橙高亮"方式渲染打字机当前状态
+    // Lone Modern 以"尾字红橙高亮"方式渲染打字机当前状态
     function renderWithAccent(str) {
       el.textContent = '';
       if (!str) return;

@@ -7,8 +7,8 @@ orgEn: "Hindsight Inc. (Mymentor)"
 logo: "/logos/hindsight.jpeg"
 role: "技术产品经理实习生"
 roleEn: "Technical Product Manager Intern"
-team: "Mymentor · himentor 小程序"
-teamEn: "Mymentor · himentor Mini-Program"
+team: "Mymentor, himentor 小程序"
+teamEn: "Mymentor, himentor Mini-Program"
 tint: "#E94A3F"
 start: 2024-06-01
 end: 2024-09-01

@@ -1,6 +1,7 @@
 ---
 name: 'Yongge Restaurant Skill'
 summary: '一个把「勇哥餐饮创业说」方法论工程化为 Agent Skill 的餐饮创业决策系统：包含 9 篇方法论语料、30+ 真实案例、保本线计算器、快招识别器和街景 360° 选址打分模型。'
+summaryEn: "A restaurant-startup decision system packaged as an Agent Skill: 9 methodology documents, 30+ real cases, a break-even calculator, a franchise-scam detector and a street-view site scoring model."
 stack: ['Agent Skill', 'Python', 'LLM', 'RAG', 'Knowledge Engineering', 'Decision Support', 'CLI Tools']
 repo: 'https://github.com/Astro-wen/yongge-restaurant-skill/'
 order: -1

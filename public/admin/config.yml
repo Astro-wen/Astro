@@ -1,0 +1,106 @@
+# 内容后台（Sveltia CMS）。保存即向 GitHub 仓库提交，Pages 随后自动重新部署。
+backend:
+  name: github
+  repo: Astro-wen/Astro
+  branch: main
+  commit_messages:
+    create: "content: add {{collection}} {{slug}}"
+    update: "content: update {{collection}} {{slug}}"
+    delete: "content: remove {{collection}} {{slug}}"
+
+site_url: https://astro-wen.github.io/Astro/
+media_folder: public/media/uploads
+public_folder: /media/uploads
+
+collections:
+  - name: pages
+    label: 页面文字
+    files:
+      - name: about-zh
+        label: 关于我，中文
+        file: src/content/pages/about-zh.md
+        fields:
+          - { name: title, label: 备注名, widget: string }
+          - { name: body, label: 正文, widget: markdown }
+      - name: about-en
+        label: 关于我 English
+        file: src/content/pages/about-en.md
+        fields:
+          - { name: title, label: 备注名, widget: string }
+          - { name: body, label: 正文, widget: markdown }
+
+  - name: blog
+    label: 文章
+    folder: src/content/blog
+    extension: md
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { name: title, label: 标题, widget: string }
+      - { name: date, label: 日期, widget: datetime, format: "YYYY-MM-DD", time_format: false }
+      - { name: summary, label: 摘要（280 字以内）, widget: text }
+      - { name: tags, label: 标签, widget: list, required: false }
+      - { name: cover, label: 封面路径, widget: string, required: false }
+      - { name: draft, label: 草稿, widget: boolean, default: false }
+      - { name: body, label: 正文, widget: markdown }
+
+  - name: projects
+    label: 个人项目
+    folder: src/content/projects
+    extension: md
+    create: true
+    identifier_field: name
+    fields:
+      - { name: name, label: 名称, widget: string }
+      - { name: summary, label: 简介（中文）, widget: text }
+      - { name: summaryEn, label: 简介（英文）, widget: text, required: false }
+      - { name: stack, label: 技术栈, widget: list, required: false }
+      - { name: cover, label: 封面路径, widget: string, required: false }
+      - { name: url, label: 链接, widget: string, required: false }
+      - { name: repo, label: 仓库, widget: string, required: false }
+      - { name: order, label: 排序, widget: number, value_type: int, default: 0 }
+      - { name: featured, label: 精选, widget: boolean, default: false }
+      - { name: body, label: 正文, widget: markdown }
+
+  - name: timeline
+    label: 经历
+    folder: src/content/timeline
+    extension: md
+    create: true
+    identifier_field: org
+    fields:
+      - { name: kind, label: 类型, widget: select, options: [work, education] }
+      - { name: org, label: 机构名, widget: string }
+      - { name: orgShort, label: 机构短名, widget: string, required: false }
+      - { name: orgZh, label: 机构名（中文）, widget: string, required: false }
+      - { name: orgEn, label: 机构名（英文）, widget: string, required: false }
+      - { name: logo, label: Logo 路径, widget: string, required: false }
+      - { name: tint, label: Logo 底色, widget: string, required: false }
+      - { name: url, label: 外链, widget: string, required: false }
+      - { name: role, label: 职位（中文）, widget: string }
+      - { name: roleEn, label: 职位（英文）, widget: string, required: false }
+      - { name: team, label: 团队（中文）, widget: string, required: false }
+      - { name: teamEn, label: 团队（英文）, widget: string, required: false }
+      - { name: start, label: 开始, widget: datetime, format: "YYYY-MM-DD", time_format: false }
+      - { name: end, label: 结束（留空表示至今）, widget: datetime, format: "YYYY-MM-DD", time_format: false, required: false, default: "" }
+      - { name: location, label: 地点（英文）, widget: string, required: false }
+      - { name: locationZh, label: 地点（中文）, widget: string, required: false }
+      - { name: highlight, label: 高亮信息（中文）, widget: string, required: false }
+      - { name: highlightEn, label: 高亮信息（英文）, widget: string, required: false }
+      - { name: tags, label: 标签, widget: list, required: false }
+      - { name: featured, label: 精选, widget: boolean, default: false }
+      - { name: current, label: 进行中, widget: boolean, default: false }
+      - { name: defaultOpen, label: 默认展开, widget: boolean, required: false }
+      - { name: caseStudy, label: 案例页 slug, widget: string, required: false }
+      - name: articles
+        label: 相关作品
+        widget: list
+        required: false
+        fields:
+          - { name: title, label: 标题, widget: string }
+          - { name: titleEn, label: 标题（英文）, widget: string, required: false }
+          - { name: url, label: 链接, widget: string }
+          - { name: cover, label: 封面路径, widget: string, required: false }
+          - { name: date, label: 日期, widget: string, required: false }
+      # 正文里有中英两段 HTML 容器，用纯文本框编辑，避免富文本编辑器改动标签
+      - { name: body, label: 正文（含中英两段）, widget: text }

@@ -1,0 +1,651 @@
+---
+/**
+ * Notique 产品页 —— 按硬件官网的方式做：白底、大标题、真实照片、滚动入场。
+ * 上半是正式功能（录音笔），下半是 Pilot 功能（真人助理）。
+ * 页面不出现版本号。
+ */
+import { existsSync } from 'node:fs';
+import { Image } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import T from '@/components/T.astro';
+import Tour from '@/components/case/Tour.astro';
+import Features from '@/components/case/Features.astro';
+import SiteScene from '@/components/case/SiteScene.astro';
+import ConnectDemo from '@/components/case/ConnectDemo.astro';
+
+import hero from '@/assets/work/notique/gen-hero.jpg';
+import writing from '@/assets/work/notique/gen-writing.jpg';
+import showing from '@/assets/work/notique/gen-showing.jpg';
+import assistant from '@/assets/work/notique/gen-assistant.jpg';
+import app1 from '@/assets/work/notique/tour/app-1.jpg';
+import app2 from '@/assets/work/notique/tour/app-2.jpg';
+import app3 from '@/assets/work/notique/tour/app-3.jpg';
+import app4 from '@/assets/work/notique/tour/app-4.jpg';
+import pilot1 from '@/assets/work/notique/tour/pilot-1.jpg';
+import pilot2 from '@/assets/work/notique/tour/pilot-2.jpg';
+import pilot3 from '@/assets/work/notique/tour/pilot-3.jpg';
+import pilot4 from '@/assets/work/notique/tour/pilot-4.jpg';
+import pilot5 from '@/assets/work/notique/tour/pilot-5.jpg';
+import pilot6 from '@/assets/work/notique/tour/pilot-6.jpg';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+
+// "Trusted by" 的 logo：文件放进 public/logos/ 后自动显示，没放之前先用文字
+const trusted = [{ name: 'Asteroom', file: ['asteroom.svg', 'asteroom.png', 'asteroom.webp'].find((f) => existsSync(`public/logos/${f}`)) }];
+const APP = 'https://app.notiqueai.com/';
+const PILOT = 'https://notiqueva.vercel.app/';
+const SHOP = 'https://www.amazon.com/dp/B0GH7RG2BP';
+
+const appTour = [
+  { img: app1, spot: { x: 13.91, y: 27.69 }, alt: 'Notique web app: a project with two recordings on a timeline and a project summary',
+    zh: '两天聊了两次，合成了一份项目总览。', en: 'Two conversations across two days, merged into one project summary.',
+    doZh: '点开 9 月 22 日的当天纪要', doEn: 'Open the daily summary for 22 September' },
+  { img: app2, spot: { x: 55.38, y: 65.46 }, alt: 'Notique web app: meeting minutes for one day, organised by a real estate template',
+    zh: '这是那天的纪要，按房产周会的模板排好了。', en: 'That day’s minutes, laid out by the real estate weekly template.',
+    doZh: '点这条后面的小链接，看它是哪句话来的', doEn: 'Follow the link after this point to see its source' },
+  { img: app3, spot: { x: 96.85, y: 2.74 }, alt: 'Notique web app: the transcript segment behind a summary point, shown beside the minutes',
+    zh: '右边就是原话。', en: 'The transcript behind that point opens on the right.',
+    doZh: '点右上角的 QA，直接提问', doEn: 'Open QA in the top right to ask a question' },
+  { img: app4, spot: null, alt: 'Notique web app: questions asked about the project and the answers, each with a source link',
+    zh: '想问什么直接问，每个回答都能点回原话。', en: 'Ask anything about the project. Answers come with sources.' },
+];
+
+const pilotTour = [
+  { img: pilot1, spot: { x: 93.83, y: 44.49 }, alt: 'Pilot console: queue of conversations to verify, with deadlines, and open tickets',
+    zh: '助理先看队列，每场对话都有截止时间。', en: 'The assistant’s queue. Every conversation has a deadline.',
+    doZh: '点 Continue，开始核对', doEn: 'Select Continue to start verifying' },
+  { img: pilot2, spot: { x: 75.0, y: 57.2 }, alt: 'Pilot console: transcript on the left, AI-drafted facts with confidence and approve, edit, decline on the right',
+    zh: '左边是原话，右边是 AI 先拟好的要点。', en: 'Original words on the left, AI-drafted facts on the right.',
+    doZh: '点一下引文，看它是哪句话来的', doEn: 'Select the quote to see which line the fact came from' },
+  { img: pilot3, spot: { x: 2.42, y: 11.28 }, alt: 'Pilot console: the cited transcript line highlighted beside the fact',
+    zh: '那句原话亮了。对得上才放行。', en: 'The line it came from lights up.',
+    doZh: '返回队列', doEn: 'Go back to the queue' },
+  { img: pilot4, spot: { x: 50.93, y: 64.81 }, alt: 'Pilot console: open tickets the agent has asked for',
+    zh: '除了核对，还有经纪人派过来的活。', en: 'Beyond verifying, there are the tickets the agent has sent over.',
+    doZh: '点开这一张', doEn: 'Open this ticket' },
+  { img: pilot5, spot: { x: 28.38, y: 20.96 }, alt: 'Pilot console: a ticket with category, ETA, context and deliverables',
+    zh: '一张工单里有：类别、什么时候交、来龙去脉、要交的东西。', en: 'One ticket: category, ETA, context and deliverables.',
+    doZh: '看这位客户的档案', doEn: 'Open this client’s deal profile' },
+  { img: pilot6, spot: null, alt: 'Pilot console: a deal profile showing verified facts and what changed between conversations',
+    zh: '客户档案里只放核对过的内容。客户改过口，也会留一笔。', en: 'The deal profile holds verified facts only, and keeps a record when a client changes their mind.' },
+];
+
+const stats = [
+  { v: '8', u: { zh: '小时', en: 'hours' }, l: { zh: '连续录音', en: 'continuous recording' } },
+  { v: '21', u: { zh: '克', en: 'g' }, l: { zh: '跟一支签字笔差不多重', en: 'about the weight of a pen' } },
+  { v: '103', u: { zh: '种', en: '' }, l: { zh: '语言转写', en: 'languages transcribed' } },
+  { v: '32', u: { zh: 'GB', en: 'GB' }, l: { zh: '都存在笔里', en: 'stored on the pen' } },
+];
+
+---
+<BaseLayout
+  title="Notique"
+  bodyClass="nq-page nq-light-header"
+  description="Notique：一支直接插手机的 AI 录音笔，和笔后面替房产经纪人做事的真人助理（Pilot）。"
+>
+  <article class="nq">
+    {/* ================= 首屏 ================= */}
+    <header class="nq-hero">
+      <a href={`${base}/work`} class="nq-back"><span aria-hidden="true">←</span> <T zh="全部作品" en="All work" /></a>
+      <p class="nq-eyebrow"><img src={`${base}/logos/notique-wordmark.svg`} alt="Notique AI" width="192" height="36" /></p>
+      <h1 class="nq-h1 nq-roll" data-roll>
+        <span class="nq-vh">
+          <T zh="带看时聊到的每个细节，都帮你记着。" en="A pen that remembers every detail in every showing." />
+        </span>
+        <span class="i18n-en" lang="en" aria-hidden="true">
+          Remember every <span class="nq-slot" data-slot="y">{['detail', 'price', 'preference', 'date', 'requirement', 'promise'].map((w, i) => <span class:list={['nq-word', { 'is-in': i === 0 }]}>{w}</span>)}</span><br />
+          in every <span class="nq-slot" data-slot="x">{['showing', 'listing', 'buyer call', 'open house', 'negotiation', 'closing'].map((w, i) => <span class:list={['nq-word', { 'is-in': i === 0 }]}>{w}</span>)}</span>.
+        </span>
+        <span class="i18n-zh" lang="zh-CN" aria-hidden="true">
+          <span class="nq-slot" data-slot="x">{['带看', '面谈', '议价', '签约', '开放日', '通电话'].map((w, i) => <span class:list={['nq-word', { 'is-in': i === 0 }]}>{w}</span>)}</span>时聊到的每个<span class="nq-slot" data-slot="y">{['细节', '价格', '偏好', '日期', '要求', '承诺'].map((w, i) => <span class:list={['nq-word', { 'is-in': i === 0 }]}>{w}</span>)}</span>，<br />
+          都帮你记着。
+        </span>
+      </h1>
+      <p class="nq-cta">
+        <a href={APP} target="_blank" rel="noopener noreferrer" class="nq-pill nq-pill-solid">
+          <T zh="去试试" en="Try the product" /> <span aria-hidden="true">↗</span>
+        </a>
+        <a href="#pilot" class="nq-pill"><T zh="Pilot 功能" en="Pilot features" /> <span aria-hidden="true">↓</span></a>
+      </p>
+      <div class="nq-trusted">
+        <p class="nq-trusted-label">Trusted by</p>
+        <ul role="list">
+          {trusted.map((t) => (
+            <li>
+              {t.file
+                ? <img src={`${base}/logos/${t.file}`} alt={t.name} loading="lazy" />
+                : <span class="nq-trusted-name">{t.name}</span>}
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="nq-hero-img">
+        <Image
+          src={hero}
+          alt="The Notique recorder pen, matte black with a flat pocket clip"
+          widths={[640, 1100, 1672]}
+          sizes="(min-width: 1200px) 1100px, 96vw"
+          format="webp"
+          quality={88}
+          loading="eager"
+          fetchpriority="high"
+        />
+      </div>
+    </header>
+
+    {/* ================= 两种连接方式 ================= */}
+    <ConnectDemo />
+
+    {/* ================= 正式功能：照片拼格 ================= */}
+    <section class="nq-band" aria-labelledby="nq-live-h">
+      <p class="nq-chip"><T zh="正式功能" en="Available now" /></p>
+      <h2 id="nq-live-h" class="nq-h2 nq-center"><T zh="录完，剩下的交给它。" en="Record it. Sort it out." /></h2>
+
+      <ul class="nq-bento" role="list">
+        <li class="nq-tile nq-tile-photo nq-a">
+          <Image src={writing} alt="A hand writing in a notebook with the Notique pen while its recording light is on" widths={[640, 1100, 1672]} sizes="(min-width: 900px) 560px, 100vw" format="webp" quality={86} loading="lazy" />
+          <p class="nq-tile-cap"><T zh="它就是一支能写字的笔。" en="It looks like a pen. That is the point." /></p>
+        </li>
+        <li class="nq-tile nq-tile-photo nq-b">
+          <Image src={showing} alt="A real estate agent showing a home to a couple, the pen clipped in his shirt pocket" widths={[640, 1100, 1672]} sizes="(min-width: 900px) 560px, 100vw" format="webp" quality={86} loading="lazy" />
+          <p class="nq-tile-cap"><T zh="带看时别在口袋上，边走边录。" en="At a showing, it records from a pocket." /></p>
+        </li>
+        {stats.map((s, i) => (
+          <li class={`nq-tile nq-tile-stat nq-s${i + 1}`}>
+            <p class="nq-stat">
+              <span class="nq-stat-v">{s.v}</span>
+              <span class="nq-stat-u"><T zh={s.u.zh} en={s.u.en} /></span>
+            </p>
+            <p class="nq-stat-l"><T zh={s.l.zh} en={s.l.en} /></p>
+          </li>
+        ))}
+      </ul>
+
+      <Features />
+    </section>
+
+    <SiteScene />
+
+    <section class="nq-band nq-band-tour">
+      <div class="nq-demo">
+        <h3 class="nq-h3"><T zh="跟着点一遍，看它怎么用。" en="Several conversations, one timeline." /></h3>
+        <p class="nq-demo-sub"><T zh="这是正式版的真实界面，用的是演示项目。跟着蓝点点下去。" en="Real screens from the live app, on a demo project. Select the blue dot to move on." /></p>
+        <Tour id="app" steps={appTour} />
+        <p class="nq-try"><a href={APP} target="_blank" rel="noopener noreferrer" class="nq-pill"><T zh="自己上手试试" en="Try the live app" /> <span aria-hidden="true">↗</span></a></p>
+      </div>
+    </section>
+
+    {/* ================= Pilot 功能：真人助理 ================= */}
+    <section class="nq-pilot" id="pilot" aria-labelledby="nq-pilot-h">
+      <div class="nq-pilot-photo">
+        <Image src={assistant} alt="An assistant wearing a headset working at a monitor in the evening" widths={[800, 1280, 1672]} sizes="100vw" format="webp" quality={84} loading="lazy" />
+      </div>
+      <div class="nq-pilot-intro">
+        <p class="nq-chip nq-chip-dark"><T zh="Pilot 中，约 200 人在用" en="In pilot with about 200 people" /></p>
+        <h2 id="nq-pilot-h" class="nq-h1 nq-h1-dark">
+          <T zh="笔后面，<br />多了一个人。" en="Behind the pen,<br />a person." />
+        </h2>
+        <p class="nq-lede"><T zh="一位真人助理，替你把后面的事办完。" en="A human assistant finishes what comes after the conversation." /></p>
+      </div>
+
+      <div class="nq-demo nq-demo-dark">
+        <h3 class="nq-h3"><T zh="跟一单，看助理怎么干活。" en="One job, start to finish." /></h3>
+        <p class="nq-demo-sub"><T zh="这是 Pilot 后台的真实界面，数据是测试用的。跟着蓝点点下去。" en="Real screens from the pilot console, on test data. Select the blue dot to move on." /></p>
+        <Tour id="pilot" steps={pilotTour} dark />
+        <p class="nq-try"><a href={PILOT} target="_blank" rel="noopener noreferrer" class="nq-pill nq-pill-dark"><T zh="去 Pilot 里看看" en="Try the pilot" /> <span aria-hidden="true">↗</span></a><span class="nq-try-note"><T zh="需要试点账号" en="Pilot account required" /></span></p>
+      </div>
+
+      <footer class="nq-credit">
+        <p>
+          <T
+            zh="我是 Notique 的联合创始人，负责产品，从 2026 年 3 月做到现在。笔卖出去了大约 400 支。"
+            en="I am Notique's co-founder and head of product, since March 2026. About 400 pens sold."
+          />
+        </p>
+        <p class="nq-credit-links"><a href={SHOP} target="_blank" rel="noopener noreferrer"><T zh="去 Amazon 买一支" en="Buy the pen on Amazon" /> ↗</a></p>
+        <details class="nq-more">
+          <summary><T zh="我具体做了什么" en="What I actually did" /></summary>
+          <ul>
+            <li><T zh="<strong>方向</strong>：看了漏斗，又聊了 20 多位用户，发现大家录完音就不往下用了，所以从卖工具改成做助理服务。" en="<strong>Direction</strong>: funnel data and 20+ interviews showed people stopped after recording, so we moved from a tool to an assistant service." /></li>
+            <li><T zh="<strong>规则</strong>：AI 拟的每条要点都得能指回原话，指不回去就扔掉；助理没核对过的，不给经纪人看。" en="<strong>Rules</strong>: every AI-drafted fact must cite the original words or it is dropped; nothing reaches the agent before the assistant checks it." /></li>
+            <li><T zh="<strong>系统</strong>：Pilot 的前后端是我用 AI coding 搭的。浏览器碰不到数据库，所有请求都走同一个带权限检查的入口。" en="<strong>System</strong>: built the pilot front and back end with AI coding. The browser never touches the database; every call goes through one permission-checked endpoint." /></li>
+            <li><T zh="<strong>评估</strong>：上线前先离线测五项：召回、精确、证据、引用、稳定，每项单独设线。上线后看助理核对花多久，经纪人用没用交上去的东西。" en="<strong>Evaluation</strong>: offline scoring on recall, precision, evidence, citation and stability, each with its own bar. In production, review time and the agent's feedback on each deliverable." /></li>
+          </ul>
+        </details>
+      </footer>
+    </section>
+  </article>
+</BaseLayout>
+
+<style>
+  .nq {
+    --ink: #1D1D1F;
+    --mute: #6E6E73;
+    --blue: #3D5BF0;
+    background: #FFFFFF;
+    color: var(--ink);
+    font-family: 'Inter', 'PingFang SC', 'Noto Sans SC', system-ui, sans-serif;
+  }
+  .nq :global(img) { display: block; max-inline-size: 100%; block-size: auto; }
+  .nq p { margin: 0; }
+
+  /* ---------- 首屏 ---------- */
+  .nq-hero {
+    position: relative;
+    padding: 4.5rem 1.25rem 0;
+    text-align: center;
+    background: #FFFFFF;
+    overflow: clip;
+  }
+  .nq-back {
+    position: absolute;
+    inset: 1.25rem auto auto 1.25rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-block-size: 32px;
+    color: var(--mute);
+    font-size: 0.85rem;
+  }
+  .nq-back:hover { color: var(--ink); }
+  .nq-eyebrow { display: flex; justify-content: center; }
+  .nq-eyebrow img { inline-size: clamp(9rem, 16vw, 12rem); block-size: auto; }
+  .nq-h1 {
+    margin: 0.6rem auto 0;
+    font-size: clamp(2.5rem, 8.2vw, 6rem);
+    font-weight: 800;
+    line-height: 1.06;
+    letter-spacing: -0.035em;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  .nq-vh { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  /* 轮换的词：所有候选词叠在同一格里，宽度取最长的那个，换词时不会挤动别的字 */
+  .nq-slot { display: inline-grid; vertical-align: bottom; overflow: clip; overflow-clip-margin: 0.12em; color: var(--blue); text-align: start; justify-items: start; }
+  @media (prefers-reduced-motion: no-preference) { .nq-slot { transition: inline-size 440ms cubic-bezier(0.3, 0.7, 0.2, 1); } }
+  .nq-word { grid-area: 1 / 1; white-space: nowrap; opacity: 0; transform: translateY(0.7em); }
+  .nq-word.is-in { opacity: 1; transform: none; }
+  .nq-word.is-out { opacity: 0; transform: translateY(-0.7em); }
+  @media (prefers-reduced-motion: no-preference) {
+    .nq-word { transition: transform 440ms cubic-bezier(0.3, 0.7, 0.2, 1), opacity 320ms; }
+  }
+  /* 图片不参与拖拽和选中，避免被拖出一张半透明的副本 */
+  .nq :global(img) { -webkit-user-drag: none; user-select: none; -webkit-touch-callout: none; pointer-events: none; }
+
+  .nq-h2 {
+    margin: 0;
+    font-size: clamp(2rem, 5.6vw, 4rem);
+    font-weight: 800;
+    line-height: 1.08;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+    text-wrap: balance;
+  }
+  .nq-center { text-align: center; }
+  .nq-cta { margin-top: 1.75rem !important; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; }
+  .nq-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-block-size: 44px;
+    padding: 0 1.3rem;
+    border-radius: 999px;
+    border: 1px solid var(--blue);
+    color: var(--blue);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+  .nq-pill:hover { background: #EEF1FF; }
+  .nq-pill-solid { background: var(--blue); color: #FFFFFF; }
+  .nq-pill-solid:hover { background: #2F49CF; }
+  .nq-pill:focus-visible, .nq-back:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+  .nq-trusted { margin-top: 2.25rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.6rem 1.1rem; }
+  .nq-trusted-label { color: var(--mute); font-size: 0.82rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
+  .nq-trusted ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.75rem 2rem; }
+  .nq-trusted img { block-size: 2.25rem; inline-size: auto; }
+  .nq-trusted-name { color: #0E2F8F; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; }
+  .nq-hero-img { margin: 0.5rem auto 0; inline-size: min(96vw, 1100px); }
+  .nq-hero-img :global(img) { mix-blend-mode: multiply; }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .nq-eyebrow, .nq-h1:not(.nq-h1-dark), .nq-cta { animation: nq-in 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+    .nq-h1:not(.nq-h1-dark) { animation-delay: 80ms; }
+    .nq-cta { animation-delay: 180ms; }
+  }
+  @keyframes nq-in { from { opacity: 0; transform: translateY(18px); } }
+
+  /* ---------- 插上就传 ---------- */
+  .nq-zoom { background: #F5F5F7; }
+  .nq-zoom-stage {
+    display: grid;
+    gap: 2rem;
+    padding: 4rem 1.25rem;
+    max-inline-size: 72rem;
+    margin-inline: auto;
+    align-items: center;
+  }
+  .nq-zoom-frame { border-radius: 28px; overflow: hidden; background: #E9EAEE; }
+  .nq-zoom-frame :global(img) { inline-size: 100%; }
+  .nq-zoom-copy { text-align: center; }
+  .nq-zoom-stat { margin-top: 1.25rem !important; display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: 0.4rem 0.6rem; }
+  .nq-big { font-size: clamp(4rem, 14vw, 9rem); font-weight: 800; line-height: 0.9; letter-spacing: -0.05em; color: var(--blue); font-variant-numeric: tabular-nums; }
+  .nq-big-u { font-size: clamp(1.4rem, 4vw, 2.4rem); font-weight: 800; color: var(--blue); }
+  .nq-big-l { flex-basis: 100%; color: var(--mute); font-size: 1.1rem; }
+
+  /* ---------- 正式功能 ---------- */
+  .nq-band { padding: 6rem max(1.25rem, 4vw) 7rem; max-inline-size: 104rem; margin-inline: auto; }
+  .nq-bento { max-inline-size: 84rem; margin-inline: auto !important; }
+  .nq-chip {
+    inline-size: fit-content;
+    margin: 0 auto 1.1rem !important;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    background: #EEF1FF;
+    color: var(--blue);
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .nq-bento {
+    list-style: none;
+    margin: 3.5rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .nq-tile {
+    position: relative;
+    border-radius: 24px;
+    overflow: hidden;
+    background: #F5F5F7;
+    min-block-size: 9rem;
+  }
+  .nq-tile-photo { grid-column: 1 / -1; }
+  .nq-tile-photo :global(img) { inline-size: 100%; block-size: 100%; object-fit: cover; }
+  .nq-tile-cap {
+    padding: 1rem 1.25rem 1.2rem;
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--ink);
+    background: #F5F5F7;
+  }
+  .nq-tile-photo { display: flex; flex-direction: column; }
+  .nq-tile-photo :global(img) { flex: 1; min-block-size: 0; }
+  .nq-tile-pen { display: grid; place-items: center; background: #E6E6EB; grid-column: 1 / -1; }
+  .nq-tile-pen :global(img) { max-block-size: 20rem; inline-size: auto; }
+  .nq-tile-stat { padding: 1.4rem 1.25rem; display: flex; flex-direction: column; justify-content: flex-end; }
+  .nq-stat { display: flex; align-items: baseline; gap: 0.3rem; }
+  .nq-stat-v { font-size: clamp(2.6rem, 7vw, 4.2rem); font-weight: 800; line-height: 1; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+  .nq-stat-u { font-size: 1.15rem; font-weight: 800; }
+  .nq-stat-l { margin-top: 0.4rem !important; color: var(--mute); font-size: 0.92rem; }
+  .nq-tile-photo :global(img) { aspect-ratio: 16 / 10; }
+  .nq-tile-screen { grid-column: 1 / -1; display: flex; flex-direction: column; padding: 0.25rem 1.25rem 0; }
+  .nq-tile-screen .nq-tile-cap { padding-inline: 0; }
+  .nq-tile-screen :global(img) { inline-size: 100%; margin-top: auto; border-radius: 12px 12px 0 0; box-shadow: 0 10px 40px rgba(20, 22, 26, 0.12); }
+  @media (min-width: 56rem) {
+    .nq-bento { grid-template-columns: repeat(12, minmax(0, 1fr)); grid-auto-rows: 11rem; }
+    .nq-a { grid-column: 1 / span 6; grid-row: span 3; }
+    .nq-b { grid-column: 7 / span 6; grid-row: span 3; }
+    .nq-tile-photo :global(img) { aspect-ratio: auto; }
+    .nq-tile-stat { grid-column: span 3; }
+    .nq-tile-cap { font-size: 1.05rem; }
+  }
+
+  .nq-demo { max-inline-size: min(100%, 96rem); margin: 5rem auto 0; }
+  .nq-band-tour { padding-top: 1rem; }
+  .nq-band-tour .nq-demo { margin-top: 0; }
+  .nq-demo-dark { padding-inline: max(1.25rem, 4vw); margin-top: 3rem; max-inline-size: 104rem; }
+  .nq-h3 { margin: 0; font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 800; letter-spacing: -0.025em; line-height: 1.12; text-wrap: balance; }
+  .nq-demo-sub { margin: 0.7rem 0 1.5rem !important; color: var(--mute); font-size: 1.05rem; max-inline-size: 44ch; }
+  .nq-demo-dark .nq-demo-sub { color: #A1A1A6; }
+  .nq-try { margin-top: 1.25rem !important; display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; }
+  .nq-pill-dark { border-color: #9DB0FF; color: #9DB0FF; }
+  .nq-pill-dark:hover { background: #1C1F2E; }
+  .nq-try-note { color: #A1A1A6; font-size: 0.85rem; }
+
+  /* ---------- Pilot ---------- */
+  .nq-pilot { position: relative; background: #0B0D0E; color: #F5F5F7; padding: 0 0 4rem; }
+  .nq-pilot-photo { position: relative; }
+  .nq-pilot-photo :global(img) { inline-size: 100%; block-size: min(82svh, 56vw); min-block-size: 22rem; object-fit: cover; object-position: 70% 40%; }
+  .nq-pilot-photo::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, #0B0D0E 8%, rgb(11 13 14 / 0.55) 45%, rgb(11 13 14 / 0) 70%), linear-gradient(0deg, #0B0D0E 0%, rgb(11 13 14 / 0) 35%); }
+  .nq-pilot-intro { position: absolute; inset: 0 0 auto 0; block-size: min(82svh, 56vw); min-block-size: 22rem; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; text-align: left !important; padding-inline: max(1.25rem, 6vw) !important; }
+  .nq-pilot-intro .nq-chip { margin-inline: 0 !important; }
+  .nq-pilot-intro .nq-h1 { margin-inline: 0; }
+  .nq-pilot-intro { text-align: center; padding-inline: 1.25rem; }
+  .nq-chip-dark { background: #1C1F2E; color: #9DB0FF; }
+  .nq-h1-dark { color: #F5F5F7; }
+  .nq-lede { margin-top: 1.25rem !important; color: #A1A1A6; font-size: clamp(1.05rem, 2.4vw, 1.35rem); }
+
+  .nq-steps { margin-top: 3rem; }
+  .nq-steps-stage {
+    list-style: none;
+    max-inline-size: 90rem;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+    display: grid;
+    gap: 3.5rem;
+  }
+  .nq-step { display: grid; gap: 1.25rem; }
+  .nq-step-n { font-size: 0.85rem; font-weight: 700; color: #9DB0FF; font-variant-numeric: tabular-nums; }
+  .nq-step-t { margin-top: 0.2rem !important; font-size: clamp(1.5rem, 3.4vw, 2.4rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.15; }
+  .nq-step-s { margin-top: 0.4rem !important; color: #A1A1A6; font-size: 1rem; line-height: 1.55; max-inline-size: 30ch; }
+  .nq-browser { border-radius: 14px; overflow: hidden; background: #1C1C1E; border: 1px solid #2C2C2E; }
+  .nq-browser-bar { display: flex; gap: 6px; padding: 10px 12px; }
+  .nq-browser-bar span { inline-size: 10px; block-size: 10px; border-radius: 50%; background: #3A3A3C; }
+  .nq-browser :global(img) { inline-size: 100%; background: #FFFFFF; }
+
+  .nq-credit {
+    max-inline-size: 46rem;
+    margin: 6rem auto 0;
+    padding: 2rem 1.25rem 0;
+    border-top: 1px solid #2C2C2E;
+    color: #A1A1A6;
+    font-size: 0.92rem;
+    line-height: 1.7;
+  }
+  .nq-credit-links { margin-top: 0.75rem !important; }
+  .nq-credit-links a { color: #F5F5F7; text-decoration: underline; text-underline-offset: 3px; }
+  .nq-credit-links a:hover { color: #9DB0FF; }
+  .nq-more { margin-top: 1rem; }
+  .nq-more summary { cursor: pointer; min-block-size: 40px; display: inline-flex; align-items: center; color: #F5F5F7; font-weight: 600; }
+  .nq-more summary:focus-visible { outline: 3px solid #9DB0FF; outline-offset: 3px; }
+  .nq-more ul { margin: 0.5rem 0 0; padding-left: 1.1rem; display: grid; gap: 0.6rem; }
+  .nq-more :global(strong) { color: #F5F5F7; }
+
+  /* ================= 滚动动效（渐进增强） ================= */
+  @supports ((animation-timeline: scroll()) and (animation-range: 0% 100%)) {
+    @media (prefers-reduced-motion: no-preference) {
+      /* 首屏产品图：滚走时放大一点 */
+      .nq-hero-img {
+        animation: nq-hero-out linear both;
+        animation-timeline: scroll(root block);
+        animation-range: 0 90vh;
+      }
+
+      /* 插上就传：照片从接口特写拉远成一张圆角图 */
+      .nq-zoom { block-size: 300vh; view-timeline: --nq-zoom block; }
+      .nq-zoom-stage {
+        position: sticky;
+        inset-block-start: 0;
+        block-size: 100svh;
+        max-inline-size: none;
+        padding: 0;
+        display: block;
+        overflow: clip;
+      }
+      .nq-zoom-frame {
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        inline-size: min(94vw, 160svh, 1500px);
+        block-size: fit-content;
+        transform-origin: 52% 55%;
+        animation: nq-zoom-frame linear both;
+        animation-timeline: --nq-zoom;
+        animation-range: contain 0% contain 100%;
+      }
+      .nq-zoom-copy {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        pointer-events: none;
+      }
+      .nq-zoom-copy > * { grid-area: 1 / 1; }
+      .nq-zoom-copy .nq-h2 {
+        align-self: start;
+        margin-top: 14svh;
+        padding: 0.35em 0.6em;
+        border-radius: 0.5em;
+        background: rgba(255, 255, 255, 0.82);
+        backdrop-filter: blur(14px);
+        font-size: clamp(2.2rem, 7vw, 5rem);
+        animation: nq-zoom-title linear both;
+        animation-timeline: --nq-zoom;
+        animation-range: contain 0% contain 100%;
+      }
+      .nq-zoom-stat {
+        align-self: end;
+        margin: 0 0 max(3svh, 1.25rem) !important;
+        padding: 0.9rem 1.4rem;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.86);
+        backdrop-filter: blur(14px);
+        animation: nq-zoom-stat linear both;
+        animation-timeline: --nq-zoom;
+        animation-range: contain 0% contain 100%;
+      }
+      .nq-zoom-stat .nq-big { font-size: clamp(3rem, 9vw, 6rem); }
+
+      /* 拼格和截图：进入视口时浮上来 */
+      .nq-tile, .nq-pilot-intro > * {
+        animation: nq-rise linear both;
+        animation-timeline: view();
+        animation-range: entry 0% entry 70%;
+      }
+
+      /* Pilot：三步对应三张真实界面，滚动切换 */
+      @media (min-width: 62rem) {
+        .nq-steps { block-size: 340vh; view-timeline: --nq-steps block; }
+        .nq-steps-stage {
+          position: sticky;
+          inset-block-start: 0;
+          block-size: 100svh;
+          grid-template-columns: minmax(0, 3fr) minmax(0, 10fr);
+          grid-template-rows: 1fr auto auto auto 1fr;
+          column-gap: 3rem;
+          row-gap: 1.75rem;
+        }
+        .nq-step { display: contents; }
+        .nq-step-text { grid-column: 1; }
+        .nq-step-1 .nq-step-text { grid-row: 2; }
+        .nq-step-2 .nq-step-text { grid-row: 3; }
+        .nq-step-3 .nq-step-text { grid-row: 4; }
+        .nq-browser { grid-column: 2; grid-row: 1 / -1; align-self: center; }
+        .nq-step-text, .nq-browser {
+          animation-duration: auto;
+          animation-timing-function: linear;
+          animation-fill-mode: both;
+          animation-timeline: --nq-steps;
+          animation-range: contain 0% contain 100%;
+        }
+        .nq-step-1 .nq-step-text { animation-name: nq-step-1; }
+        .nq-step-2 .nq-step-text { animation-name: nq-step-2; }
+        .nq-step-3 .nq-step-text { animation-name: nq-step-3; }
+        .nq-step-2 .nq-browser { animation-name: nq-view-2; }
+        .nq-step-3 .nq-browser { animation-name: nq-view-3; }
+      }
+    }
+  }
+
+  @keyframes nq-hero-out { to { transform: scale(1.12) translateY(-4%); } }
+  @keyframes nq-zoom-frame {
+    0%, 12% { transform: scale(1.7); border-radius: 0; }
+    62%, 100% { transform: scale(1); border-radius: 28px; }
+  }
+  @keyframes nq-zoom-title {
+    0%, 14% { opacity: 1; transform: none; }
+    40%, 100% { opacity: 0; transform: translateY(-6svh) scale(0.94); }
+  }
+  @keyframes nq-zoom-stat {
+    0%, 58% { opacity: 0; transform: translateY(24px); }
+    74%, 100% { opacity: 1; transform: none; }
+  }
+  @keyframes nq-rise {
+    from { opacity: 0; transform: translateY(48px) scale(0.96); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes nq-step-1 { 0%, 28% { opacity: 1; } 36%, 100% { opacity: 0.28; } }
+  @keyframes nq-step-2 { 0%, 28% { opacity: 0.28; } 36%, 62% { opacity: 1; } 70%, 100% { opacity: 0.28; } }
+  @keyframes nq-step-3 { 0%, 62% { opacity: 0.28; } 70%, 100% { opacity: 1; } }
+  @keyframes nq-view-2 { 0%, 28% { opacity: 0; transform: translateY(18px); } 36%, 100% { opacity: 1; transform: none; } }
+  @keyframes nq-view-3 { 0%, 62% { opacity: 0; transform: translateY(18px); } 70%, 100% { opacity: 1; transform: none; } }
+</style>
+
+<script>
+  // 首屏标题：两组词轮流换，一次只动一组
+  const roll = document.querySelector<HTMLElement>('[data-roll]');
+  // 槽位宽度跟着当前的词走，短词后面不留空
+  const fit = (slot: HTMLElement) => {
+    const cur = slot.querySelector<HTMLElement>('.nq-word.is-in');
+    if (cur && cur.offsetWidth) slot.style.inlineSize = `${cur.offsetWidth}px`;
+  };
+  const fitAll = () => roll?.querySelectorAll<HTMLElement>('.nq-slot').forEach(fit);
+  if (roll) {
+    fitAll();
+    document.fonts?.ready.then(fitAll);
+    addEventListener('resize', fitAll);
+    new MutationObserver(fitAll).observe(document.documentElement, { attributes: true, attributeFilter: ['data-lang'] });
+  }
+  if (roll && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const step = (kind: string) => {
+      roll.querySelectorAll<HTMLElement>(`[data-slot="${kind}"]`).forEach((slot) => {
+        const words = [...slot.querySelectorAll<HTMLElement>('.nq-word')];
+        const cur = words.findIndex((w) => w.classList.contains('is-in'));
+        const next = (cur + 1) % words.length;
+        words.forEach((w) => w.classList.remove('is-out'));
+        words[cur].classList.replace('is-in', 'is-out');
+        words[next].classList.add('is-in');
+        fit(slot);
+      });
+    };
+    let tick = 0;
+    setInterval(() => { if (!document.hidden) step(tick++ % 2 === 0 ? 'y' : 'x'); }, 1580);
+  }
+  document.querySelectorAll<HTMLImageElement>('.nq img').forEach((img) => { img.draggable = false; });
+
+  // 头部配色：深色区域的上沿碰到头部下沿之前，头部用浅色
+  const pilot = document.querySelector<HTMLElement>('.nq-pilot');
+  const siteHeader = document.querySelector<HTMLElement>('.site-header');
+  if (pilot && siteHeader) {
+    let queued = false;
+    const sync = () => {
+      queued = false;
+      document.body.classList.toggle('nq-light-header', pilot.getBoundingClientRect().top > siteHeader.offsetHeight / 2);
+    };
+    const onScroll = () => { if (!queued) { queued = true; requestAnimationFrame(sync); } };
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', onScroll);
+    sync();
+  }
+</script>
+
+<style is:global>
+  /* 这一页上半是浅色、下半是深色。站点头部默认是深色的，
+     在浅色区域由脚本给 body 加 nq-light-header，这里把颜色全部写死，不依赖变量联动。 */
+  body.nq-light-header .site-header { background: rgb(255 255 255 / 0.94); border-bottom-color: #E5E5EA; }
+  body.nq-light-header .site-logo,
+  body.nq-light-header .menu-button,
+  body.nq-light-header .site-header.is-wide .site-menu a { color: #1D1D1F; }
+  body.nq-light-header .menu-button { border-color: #D2D2D7; }
+  body.nq-light-header .site-logo:focus-visible,
+  body.nq-light-header .menu-button:focus-visible,
+  body.nq-light-header .site-header.is-wide .site-menu a:focus-visible { outline-color: #1D1D1F; }
+  body.nq-light-header .site-header.is-wide .site-menu a:hover,
+  body.nq-light-header .site-header.is-wide .site-menu a[aria-current='page'] { color: #D93A1E; }
+  body.nq-light-header .lang-switch { border-color: #B9BCC4; }
+  body.nq-light-header .lang-switch button:not(.is-active) { color: #1D1D1F; }
+  body.nq-page footer.mt-32 { margin-top: 0; }
+</style>

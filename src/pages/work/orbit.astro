@@ -1,0 +1,73 @@
+---
+/**
+ * Orbit —— TikTok 客服 AI 的自迭代平台。
+ * 已脱敏：不出现同事姓名、地区拆分、业务目标和内部系统名。
+ */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import T from '@/components/T.astro';
+import OrbitLoop from '@/components/case/OrbitLoop.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+---
+<BaseLayout title="Orbit" description="Orbit：让客服机器人自己发现问题、自己改、改完先验收的自迭代平台。">
+  <article class="or">
+    <header class="container-wide">
+      <a href={`${base}/work`} class="or-back"><span aria-hidden="true">←</span> <T zh="全部作品" en="All work" /></a>
+      <h1 class="or-h1">Orbit</h1>
+      <p class="or-sub">
+        <T
+          zh="一套会自我改进的多智能体系统，已在 TikTok 客服上线。它能找出指标波动背后的根因，并验证自己提出的修复。我是它的产品经理。"
+          en="A self-improving multi-agent system, live in TikTok’s customer service. It finds the root cause behind a metric shift and validates its own fix. I was its product manager."
+        />
+      </p>
+    </header>
+
+    <section class="or-sec" aria-labelledby="or-loop-h">
+      <h2 id="or-loop-h" class="or-h2"><T zh="一轮是怎么转的" en="How one round goes" /></h2>
+      <OrbitLoop />
+    </section>
+
+    <section class="or-sec or-two" aria-labelledby="or-me-h">
+      <h2 id="or-me-h" class="or-h2"><T zh="我做了什么" en="What I did" /></h2>
+      <ul class="or-list" role="list">
+        <li>
+          <strong><T zh="主导这个产品" en="Led the product" /></strong>
+          <span><T zh="研发团队负责搭建，我负责产品：每一步做什么、交出什么、什么时候必须让人来看，都是我来定。" en="Engineering built it and I owned the product: what each step does, what it hands over, and when a person has to look." /></span>
+        </li>
+        <li>
+          <strong><T zh="让它先验证自己的修复" en="Made it validate its own fix" /></strong>
+          <span><T zh="改完不直接上线。同一批对话、同一套规则，新旧两版对着比，更好而且没有副作用才往下走。" en="A change does not ship straight away. Old and new run on the same conversations under the same rules, and only a better version with no side effects moves on." /></span>
+        </li>
+        <li>
+          <strong><T zh="排查从几天缩到 30 分钟以内" en="Investigations from days to under 30 minutes" /></strong>
+          <span><T zh="以前指标一波动，要几个角色接力查上好几天。现在给它一个目标，它自己拆数据、找根因。" en="A metric shift used to take several people days to trace. Now you give it a goal and it breaks down the data and finds the cause itself." /></span>
+        </li>
+      </ul>
+    </section>
+
+    <footer class="or-foot container-wide">
+      <p>
+        <T
+          zh="这一页做过脱敏：没有同事姓名、地区、业务目标和内部系统名，也没有放平台截图。"
+          en="This page is de-identified: no colleague names, regions, business targets or internal system names, and no platform screenshots."
+        />
+      </p>
+    </footer>
+  </article>
+</BaseLayout>
+
+<style>
+  .or { padding-block: 3rem 5rem; }
+  .or-back { display: inline-flex; align-items: center; gap: 0.4rem; min-block-size: 32px; color: #9AA3A9; font-size: 0.9rem; }
+  .or-back:hover { color: #FF5A3C; }
+  .or-h1 { margin: 1.5rem 0 0; font-size: clamp(3rem, 10vw, 7rem); font-weight: 800; line-height: 1; letter-spacing: -0.04em; color: #EFE6D3; }
+  .or-sub { margin: 1rem 0 0; max-inline-size: 34em; color: #C9CDD0; font-size: clamp(1rem, 2vw, 1.25rem); line-height: 1.6; }
+  .or-sec { margin: 4.5rem auto 0; padding-inline: max(1.25rem, 4vw); max-inline-size: 88rem; }
+  .or-h2 { margin: 0 0 1.5rem; font-size: clamp(1.6rem, 4vw, 2.6rem); font-weight: 800; letter-spacing: -0.025em; color: #EFE6D3; }
+  .or-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); }
+  .or-list li { display: grid; gap: 0.5rem; align-content: start; padding: 1.25rem 1.4rem; border: 1px solid #2A2F33; border-radius: 16px; background: #141719; }
+  .or-list strong { color: #EFE6D3; font-size: 1.15rem; font-weight: 800; line-height: 1.3; }
+  .or-list span { color: #C9CDD0; line-height: 1.65; }
+  .or-foot { margin-top: 5rem; padding-top: 1.5rem; border-top: 1px solid #2A2F33; color: #9AA3A9; font-size: 0.92rem; line-height: 1.7; }
+  .or-foot p { margin: 0; max-inline-size: 46rem; }
+</style>

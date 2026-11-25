@@ -17,6 +17,7 @@ const projects = defineCollection({
   schema: z.object({
     name: z.string(),
     summary: z.string(),
+    summaryEn: z.string().optional(),
     stack: z.array(z.string()).default([]),
     cover: z.string().optional(),
     url: z.string().url().optional(),
@@ -51,6 +52,7 @@ const timeline = defineCollection({
     featured: z.boolean().default(false),
     current: z.boolean().default(false), // 是否为当前进行中（用于右上角状态徽标）
     defaultOpen: z.boolean().optional(), // 折叠卡片是否默认展开（留空由渲染层决定）
+    caseStudy: z.string().optional(),    // 案例页 slug，对应 src/pages/work/<slug>.astro
     // 相关作品/报道链接（如记者经历的已发表文章），在展开区以卡片网格展示
     articles: z
       .array(
@@ -66,4 +68,12 @@ const timeline = defineCollection({
   }),
 });
 
-export const collections = { blog, projects, timeline };
+// 页面上的整段文字（如"关于我"），可在内容后台 /admin 里直接改
+const pages = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string().optional(),
+  }),
+});
+
+export const collections = { blog, projects, timeline, pages };

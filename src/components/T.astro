@@ -1,0 +1,12 @@
+---
+/**
+ * T —— 双语文本。两种语言都输出，由 html[data-lang] 决定显示哪一个。
+ * zh / en 允许包含少量行内 HTML（<strong>、<code>）。
+ */
+interface Props {
+  zh: string;
+  en: string;
+}
+const { zh, en } = Astro.props;
+---
+<span class="i18n-zh" lang="zh-CN" set:html={zh} /><span class="i18n-en" lang="en" set:html={en} />

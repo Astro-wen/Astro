@@ -1,0 +1,145 @@
+---
+/**
+ * Orbit 的结构图，做成终端窗口的样子：
+ * 信号 → Planner 派活 → 归因 / 改写 / 验收 → 报告和人批准。
+ * 当前这一步的框会亮，连线上有点在走，底下一行日志跟着换。纯 CSS。
+ */
+import T from '@/components/T.astro';
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const bars = [5, 6, 7, 7, 8, 7, 8, 4, 3, 2];
+const agents = [
+  { i: 2, zh: '归因', en: 'diagnose', dZh: '读真实对话', dEn: 'reads real chats' },
+  { i: 3, zh: '改写', en: 'revise', dZh: '出一个新版本', dEn: 'drafts a version' },
+  { i: 4, zh: '验收', en: 'evaluate', dZh: '新旧同题对比', dEn: 'old vs new' },
+];
+const log = [
+  { who: 'signal', zh: '指标下跌，已捕捉', en: 'metric dropped, captured' },
+  { who: 'planner', zh: '从归因开始，派给三个 agent', en: 'start at diagnose, 3 agents' },
+  { who: 'diagnose', zh: '读完对话，根因归成几类', en: 'chats read, causes clustered' },
+  { who: 'revise', zh: '新版本已生成，附前后对比', en: 'new version drafted with diff' },
+  { who: 'evaluate', zh: '同一批对话重跑，新版更好', en: 'same chats rerun, new wins' },
+  { who: 'human', zh: '已批准，小流量上线', en: 'approved, shipping to a slice' },
+];
+---
+<div class="of" aria-hidden="true">
+  <div class="of-bar"><i></i><i></i><i></i><img src={`${base}/logos/wordmarks/tiktok.svg`} alt="" draggable="false" /><span>~/orbit</span><b>live</b></div>
+
+  <div class="of-body">
+    <div class="of-side of-step" style="--i:1">
+      <strong>PLANNER</strong>
+      <span><T zh="决定从哪一步开始" en="picks the entry step" /></span>
+      <span><T zh="记住每次人怎么审" en="remembers every review" /></span>
+      <span><T zh="没过就退回重改" en="sends failures back" /></span>
+    </div>
+
+    <div class="of-main">
+      <div class="of-box of-step of-signal" style="--i:0">
+        <strong>SIGNAL</strong>
+        <span class="of-bars">{bars.map((h, n) => <i class:list={{ dn: n > 6 }} style={`--h:${h}`}></i>)}</span>
+        <span class="of-d"><T zh="指标波动" en="metric shifts" /></span>
+      </div>
+
+      <div class="of-wire"><i></i></div>
+
+      <div class="of-row">
+        {agents.map((a, n) => (
+          <>
+            {n > 0 && <span class="of-arrow">→</span>}
+            <div class="of-box of-step" style={`--i:${a.i}`}>
+              <strong><em></em><T zh={a.zh} en={a.en} /></strong>
+              <span class="of-d"><T zh={a.dZh} en={a.dEn} /></span>
+            </div>
+          </>
+        ))}
+      </div>
+
+      <div class="of-wire"><i></i></div>
+
+      <div class="of-box of-step of-ship" style="--i:5">
+        <strong><T zh="报告" en="report" /></strong><span class="of-arrow">→</span>
+        <strong><T zh="人批准" en="human approves" /></strong><span class="of-arrow">→</span>
+        <strong><T zh="上线" en="ship" /></strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="of-log">
+    {log.map((l, i) => (
+      <p style={`--i:${i}`}><b>{l.who}</b><T zh={l.zh} en={l.en} /></p>
+    ))}
+  </div>
+</div>
+
+<style>
+  .of {
+    --t: 12s;
+    --line: #1F4D55;
+    --hi: #4FD1C5;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    inline-size: 100%;
+    block-size: 100%;
+    container-type: size;
+    overflow: hidden;
+    background: #0A0E12;
+    color: #8FA6AC;
+    font-family: ui-monospace, 'SF Mono', Menlo, Consolas, 'PingFang SC', monospace;
+    font-size: clamp(8.5px, 1.85cqw, 15px);
+    line-height: 1.35;
+  }
+  .of strong { font-weight: 700; color: #D8E6E8; letter-spacing: 0.04em; }
+
+  .of-bar { display: flex; align-items: center; gap: 0.5em; padding: 0.7em 1.1em; border-block-end: 1px solid #172026; color: #5F7379; }
+  .of-bar i { inline-size: 0.7em; aspect-ratio: 1; border-radius: 50%; background: #FF5A3C; }
+  .of-bar i:nth-child(2) { background: #F5C542; }
+  .of-bar i:nth-child(3) { background: #4FD1C5; }
+  .of-bar img { block-size: 1.25em; inline-size: auto; margin-inline-start: 0.8em; filter: brightness(0) invert(1); opacity: 0.9; user-select: none; -webkit-user-drag: none; }
+  .of-bar span { margin-inline-start: 0.2em; }
+  .of-bar b { margin-inline-start: auto; font-weight: 700; color: #4FD1C5; }
+  .of-bar b::before { content: ''; display: inline-block; inline-size: 0.55em; aspect-ratio: 1; margin-inline-end: 0.5em; border-radius: 50%; background: currentColor; }
+
+  .of-body { display: grid; grid-template-columns: 27% minmax(0, 1fr); gap: 3.2cqw; padding: 4cqh 3.2cqw; min-block-size: 0; }
+  .of-side, .of-box { border: 1px solid var(--line); background: rgba(79, 209, 197, 0.03); }
+  .of-side { display: grid; align-content: center; gap: 0.9em; padding: 1em; }
+  .of-side strong { color: #B79CFF; }
+  .of-main { display: flex; flex-direction: column; min-block-size: 0; }
+  .of-box { display: grid; gap: 0.25em; justify-items: center; text-align: center; padding: 0.7em 0.6em; }
+  .of-signal { grid-template-columns: auto 1fr auto; align-items: center; justify-items: start; gap: 1em; padding-inline: 1em; }
+  .of-bars { display: flex; align-items: flex-end; gap: 0.3em; block-size: 1.6em; justify-self: stretch; }
+  .of-bars i { flex: 1; max-inline-size: 0.8em; block-size: calc(var(--h) * 12.5%); background: #2F7F86; }
+  .of-bars i.dn { background: #FF5A3C; }
+  .of-row { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: center; gap: 0.5em; }
+  .of-arrow { color: #3E6F77; }
+  .of-ship { display: flex; justify-content: center; align-items: center; gap: 0.9em; }
+  .of-box strong em { display: inline-block; inline-size: 0.55em; aspect-ratio: 1; margin-inline-end: 0.5em; border-radius: 50%; background: #2F4A50; }
+
+  .of-wire { position: relative; flex: 1; min-block-size: 1.2em; }
+  .of-wire::before { content: ''; position: absolute; inset: 0 auto 0 50%; border-inline-start: 1px dashed var(--line); }
+  .of-wire i { position: absolute; inset: 0 auto auto 50%; inline-size: 0.6em; aspect-ratio: 1; margin-inline-start: -0.3em; border-radius: 50%; background: #FF5A3C; box-shadow: 0 0 0.9em #FF5A3C; opacity: 0; }
+
+  .of-log { position: relative; display: grid; padding: 0.75em 1.1em; border-block-start: 1px solid #172026; background: #080B0E; }
+  .of-log p { grid-area: 1 / 1; margin: 0; display: flex; gap: 1em; white-space: nowrap; overflow: hidden; opacity: 0; }
+  .of-log p::before { content: '$'; color: #4FD1C5; }
+  .of-log b { font-weight: 700; color: #F5C542; }
+  .of-log p:first-child { opacity: 1; }
+
+  /* 窄的时候只留标题，细节那行不要 */
+  @container (max-width: 30rem) { .of-d, .of-side span { display: none; } .of-side { justify-items: center; } }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .of-step { animation: of-step var(--t) linear infinite; animation-delay: calc(var(--i) * var(--t) / 6); }
+    .of-step strong em { animation: of-dot var(--t) linear infinite; animation-delay: inherit; }
+    .of-log p, .of-log p:first-child { opacity: 0; animation: of-log var(--t) linear infinite; animation-delay: calc(var(--i) * var(--t) / 6); }
+    .of-wire i { animation: of-drop calc(var(--t) / 6) cubic-bezier(0.5, 0, 0.5, 1) infinite; }
+    .of-bar b::before { animation: of-blink 1.4s steps(2) infinite; }
+  }
+  @keyframes of-step {
+    0%, 15% { border-color: var(--hi); background: rgba(79, 209, 197, 0.14); box-shadow: 0 0 2.2em rgba(79, 209, 197, 0.28); color: #D8E6E8; }
+    18%, 100% { border-color: var(--line); background: rgba(79, 209, 197, 0.03); box-shadow: none; color: #8FA6AC; }
+  }
+  @keyframes of-dot { 0%, 15% { background: #FF5A3C; box-shadow: 0 0 0.8em #FF5A3C; } 18%, 100% { background: #2F4A50; box-shadow: none; } }
+  @keyframes of-log { 0% { opacity: 0; translate: 0 0.4em; } 2%, 15.6% { opacity: 1; translate: 0 0; } 16.6%, 100% { opacity: 0; } }
+  @keyframes of-drop { 0% { inset-block-start: 0; opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { inset-block-start: calc(100% - 0.6em); opacity: 0; } }
+  @keyframes of-blink { 50% { opacity: 0.25; } }
+</style>
